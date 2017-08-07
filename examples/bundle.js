@@ -48,31 +48,31 @@
 	window.geo = __webpack_require__(6);
 	
 	// bootstrap and themes
-	__webpack_require__(286);
-	__webpack_require__(293);
-	__webpack_require__(300);
+	// require('bootstrap/dist/css/bootstrap.css');
+	// require('bootswatch/flatly/bootstrap.css');
+	// require('bootstrap');
 	
 	// codemirror and plugins
-	__webpack_require__(313);
-	__webpack_require__(315);
-	__webpack_require__(317);
+	__webpack_require__(307);
+	__webpack_require__(309);
+	__webpack_require__(311);
 	
 	// Colorbrewer
-	__webpack_require__(319);
+	__webpack_require__(313);
 	
+	__webpack_require__(316);
+	__webpack_require__(318);
+	__webpack_require__(320);
+	__webpack_require__(321);
 	__webpack_require__(322);
+	__webpack_require__(323);
 	__webpack_require__(324);
+	__webpack_require__(325);
 	__webpack_require__(326);
-	__webpack_require__(327);
-	__webpack_require__(328);
-	__webpack_require__(329);
-	__webpack_require__(330);
-	__webpack_require__(331);
-	__webpack_require__(332);
 	
 	// common example code
-	__webpack_require__(333);
-	__webpack_require__(335);
+	// require('./common/css/examples.css');
+	// require('./common/js/examples');
 
 
 /***/ }),
@@ -12360,51 +12360,52 @@
 	
 	module.exports = $.extend({
 	  annotation: __webpack_require__(13),
-	  annotationLayer: __webpack_require__(224),
+	  annotationLayer: __webpack_require__(225),
 	  camera: __webpack_require__(217),
-	  choroplethFeature: __webpack_require__(229),
-	  contourFeature: __webpack_require__(230),
-	  domRenderer: __webpack_require__(231),
+	  choroplethFeature: __webpack_require__(230),
+	  contourFeature: __webpack_require__(231),
+	  domRenderer: __webpack_require__(232),
 	  event: __webpack_require__(15),
 	  feature: __webpack_require__(213),
-	  featureLayer: __webpack_require__(225),
-	  fetchQueue: __webpack_require__(232),
-	  fileReader: __webpack_require__(233),
+	  featureLayer: __webpack_require__(226),
+	  fetchQueue: __webpack_require__(233),
+	  fileReader: __webpack_require__(234),
 	  geo_action: __webpack_require__(16),
-	  graphFeature: __webpack_require__(234),
-	  heatmapFeature: __webpack_require__(235),
-	  imageTile: __webpack_require__(236),
-	  jsonReader: __webpack_require__(238),
+	  graphFeature: __webpack_require__(235),
+	  heatmapFeature: __webpack_require__(236),
+	  imageTile: __webpack_require__(237),
+	  jsonReader: __webpack_require__(239),
 	  layer: __webpack_require__(216),
 	  lineFeature: __webpack_require__(212),
-	  map: __webpack_require__(239),
-	  mapInteractor: __webpack_require__(227),
+	  map: __webpack_require__(240),
+	  mapInteractor: __webpack_require__(228),
 	  object: __webpack_require__(209),
-	  osmLayer: __webpack_require__(241),
-	  pathFeature: __webpack_require__(244),
+	  osmLayer: __webpack_require__(242),
+	  pathFeature: __webpack_require__(245),
 	  pointFeature: __webpack_require__(218),
 	  polygonFeature: __webpack_require__(223),
-	  quadFeature: __webpack_require__(228),
-	  pixelmapFeature: __webpack_require__(245),
+	  quadFeature: __webpack_require__(229),
+	  pixelmapFeature: __webpack_require__(246),
 	  renderer: __webpack_require__(208),
 	  sceneObject: __webpack_require__(214),
-	  tile: __webpack_require__(237),
-	  tileCache: __webpack_require__(243),
-	  tileLayer: __webpack_require__(242),
+	  textFeature: __webpack_require__(224),
+	  tile: __webpack_require__(238),
+	  tileCache: __webpack_require__(244),
+	  tileLayer: __webpack_require__(243),
 	  timestamp: __webpack_require__(215),
 	  transform: __webpack_require__(17),
-	  typedef: __webpack_require__(246),
-	  vectorFeature: __webpack_require__(247),
+	  typedef: __webpack_require__(247),
+	  vectorFeature: __webpack_require__(248),
 	  inherit: __webpack_require__(14),
-	  version: __webpack_require__(248),
-	  sha: __webpack_require__(249),
+	  version: __webpack_require__(249),
+	  sha: __webpack_require__(250),
 	
 	  util: __webpack_require__(89),
 	  jQuery: $,
-	  d3: __webpack_require__(250),
-	  gl: __webpack_require__(262),
-	  canvas: __webpack_require__(272),
-	  gui: __webpack_require__(280)
+	  d3: __webpack_require__(251),
+	  gl: __webpack_require__(263),
+	  canvas: __webpack_require__(273),
+	  gui: __webpack_require__(301)
 	}, __webpack_require__(207));
 	
 	if (window && !window.$) {
@@ -22639,6 +22640,7 @@
 	var lineFeature = __webpack_require__(212);
 	var pointFeature = __webpack_require__(218);
 	var polygonFeature = __webpack_require__(223);
+	var textFeature = __webpack_require__(224);
 	
 	var annotationId = 0;
 	
@@ -22651,18 +22653,22 @@
 	var annotationActionOwner = 'annotationAction';
 	
 	/**
-	 * Base annotation class
+	 * Base annotation class.
 	 *
-	 * @class geo.annotation
-	 * @param {string} type the type of annotation.  These should be registered
+	 * @class
+	 * @alias geo.annotation
+	 * @param {string} type The type of annotation.  These should be registered
 	 *    with utils.registerAnnotation and can be listed with same function.
-	 * @param {object?} options Inidividual annotations have additional options.
-	 * @param {string} [options.name] A name for the annotation.  This defaults to
+	 * @param {object?} [args] Individual annotations have additional options.
+	 * @param {string} [args.name] A name for the annotation.  This defaults to
 	 *    the type with a unique ID suffixed to it.
-	 * @param {geo.annotationLayer} [options.layer] a reference to the controlling
+	 * @param {geo.annotationLayer} [arg.layer] A reference to the controlling
 	 *    layer.  This is used for coordinate transforms.
-	 * @param {string} [options.state] initial annotation state.  One of the
-	 *    annotation.state values.
+	 * @param {string} [args.state] Initial annotation state.  One of the
+	 *    `geo.annotation.state` values.
+	 * @param {boolean|string[]} [args.showLabel=true] `true` to show the
+	 *    annotation label on annotations in done or edit states.  Alternately, a
+	 *    list of states in which to show the label.  Falsy to not show the label.
 	 * @returns {geo.annotation}
 	 */
 	var annotation = function (type, args) {
@@ -22672,10 +22678,12 @@
 	  }
 	
 	  annotationId += 1;
-	  var m_options = $.extend({}, args || {}),
+	  var m_options = $.extend({}, {showLabel: true}, args || {}),
 	      m_id = annotationId,
 	      m_name = m_options.name || (
 	        type.charAt(0).toUpperCase() + type.substr(1) + ' ' + annotationId),
+	      m_label = m_options.label || null,
+	      m_description = m_options.description || undefined,
 	      m_type = type,
 	      m_layer = m_options.layer,
 	      /* one of annotationState.* */
@@ -22683,6 +22691,8 @@
 	  delete m_options.state;
 	  delete m_options.layer;
 	  delete m_options.name;
+	  delete m_options.label;
+	  delete m_options.description;
 	
 	  /**
 	   * Clean up any resources that the annotation is using.
@@ -22693,7 +22703,7 @@
 	  /**
 	   * Get a unique annotation id.
 	   *
-	   * @returns {number} the annotation id.
+	   * @returns {number} The annotation id.
 	   */
 	  this.id = function () {
 	    return m_id;
@@ -22702,16 +22712,113 @@
 	  /**
 	   * Get or set the name of this annotation.
 	   *
-	   * @param {string|undefined} arg if undefined, return the name, otherwise
-	   *    change it.
-	   * @returns {this|string} the current name or this annotation.
+	   * @param {string|undefined} arg If `undefined`, return the name, otherwise
+	   *    change it.  When setting the name, the value is trimmed of
+	   *    whitespace.  The name will not be changed to an empty string.
+	   * @returns {this|string} The current name or this annotation.
 	   */
 	  this.name = function (arg) {
 	    if (arg === undefined) {
 	      return m_name;
 	    }
 	    if (arg !== null && ('' + arg).trim()) {
-	      m_name = ('' + arg).trim();
+	      arg = ('' + arg).trim();
+	      if (arg !== m_name) {
+	        m_name = arg;
+	        this.modified();
+	      }
+	    }
+	    return this;
+	  };
+	
+	  /**
+	   * Get or set the label of this annotation.
+	   *
+	   * @param {string|null|undefined} arg If `undefined`, return the label,
+	   *    otherwise change it.  `null` to clear the label.
+	   * @param {boolean} noFallback If not truthy and the label is `null`, return
+	   *    the name, otherwise return the actual value for label.
+	   * @returns {this|string} The current label or this annotation.
+	   */
+	  this.label = function (arg, noFallback) {
+	    if (arg === undefined) {
+	      return m_label === null && !noFallback ? m_name : m_label;
+	    }
+	    if (arg !== m_label) {
+	      m_label = arg;
+	      this.modified();
+	    }
+	    return this;
+	  };
+	
+	  /**
+	   * Return the coordinate associated with the label.
+	   *
+	   * @returns {geo.geoPosition|undefined} The map gcs position for the label,
+	   *    or `undefined` if no such position exists.
+	   */
+	  this._labelPosition = function () {
+	    var coor = this._coordinates(), position = {x: 0, y: 0}, i;
+	    if (!coor || !coor.length) {
+	      return undefined;
+	    }
+	    if (coor.length === 1) {
+	      return coor[0];
+	    }
+	    for (i = 0; i < coor.length; i += 1) {
+	      position.x += coor[i].x;
+	      position.y += coor[i].y;
+	    }
+	    position.x /= coor.length;
+	    position.y /= coor.length;
+	    return position;
+	  };
+	
+	  /**
+	   * If the label should be shown, get a record of the label that can be used
+	   * in a `geo.textFeature`.
+	   *
+	   * @returns {geo.annotationLayer.labelRecord|undefined} A label record, or
+	   *    `undefined` if it should not be shown.
+	   */
+	  this.labelRecord = function () {
+	    var show = this.options('showLabel');
+	    if (!show) {
+	      return;
+	    }
+	    var state = this.state();
+	    if ((show === true && state === annotationState.create) ||
+	        (show !== true && show.indexOf(state) < 0)) {
+	      return;
+	    }
+	    var style = this.options('labelStyle');
+	    var labelRecord = {
+	      text: this.label(),
+	      position: this._labelPosition()
+	    };
+	    if (!labelRecord.position) {
+	      return;
+	    }
+	    if (style) {
+	      labelRecord.style = style;
+	    }
+	    return labelRecord;
+	  };
+	
+	  /**
+	   * Get or set the description of this annotation.
+	   *
+	   * @param {string|undefined} arg If `undefined`, return the description,
+	   *    otherwise change it.
+	   * @returns {this|string} The current description or this annotation.
+	   */
+	  this.description = function (arg) {
+	    if (arg === undefined) {
+	      return m_description;
+	    }
+	    if (arg !== m_description) {
+	      m_description = arg;
+	      this.modified();
 	    }
 	    return this;
 	  };
@@ -22734,9 +22841,10 @@
 	  /**
 	   * Get or set the state of this annotation.
 	   *
-	   * @param {string|undefined} arg if undefined, return the state, otherwise
-	   *    change it.
-	   * @returns {this|string} the current state or this annotation.
+	   * @param {string|undefined} arg If `undefined`, return the state,
+	   *    otherwise change it.  This should be one of the
+	   *    `geo.annotation.state` values.
+	   * @returns {this|string} The current state or this annotation.
 	   */
 	  this.state = function (arg) {
 	    if (arg === undefined) {
@@ -22756,9 +22864,9 @@
 	  /**
 	   * Return actions needed for the specified state of this annotation.
 	   *
-	   * @param {string} state: the state to return actions for.  Defaults to
+	   * @param {string} [state] The state to return actions for.  Defaults to
 	   *    the current state.
-	   * @returns {array}: a list of actions.
+	   * @returns {geo.actionRecord[]} A list of actions.
 	   */
 	  this.actions = function () {
 	    return [];
@@ -22767,24 +22875,26 @@
 	  /**
 	   * Process any actions for this annotation.
 	   *
-	   * @param {object} evt: the action event.
-	   * @returns {boolean|string} true to update the annotation, 'done' if the
-	   *    annotation was completed (changed from create to done state), 'remove'
-	   *    if the annotation should be removed, falsy to not update anything.
+	   * @param {geo.event} evt The action event.
+	   * @returns {boolean|string} `true` to update the annotation, `'done'` if the
+	   *    annotation was completed (changed from create to done state),
+	   *    `'remove'` if the annotation should be removed, falsy to not update
+	   *    anything.
 	   */
 	  this.processAction = function () {
+	    return undefined;
 	  };
 	
 	  /**
 	   * Set or get options.
 	   *
-	   * @param {string|object} arg1 if undefined, return the options object.  If
-	   *    a string, either set or return the option of that name.  If an object,
-	   *    update the options with the object's values.
-	   * @param {object} arg2 if arg1 is a string and this is defined, set the
-	   *    option to this value.
-	   * @returns {object|this} if options are set, return the layer, otherwise
-	   *    return the requested option or the set of options.
+	   * @param {string|object} [arg1] If `undefined`, return the options object.
+	   *    If a string, either set or return the option of that name.  If an
+	   *    object, update the options with the object's values.
+	   * @param {object} [arg2] If `arg1` is a string and this is defined, set
+	   *    the option to this value.
+	   * @returns {object|this} If options are set, return the annotation,
+	   *    otherwise return the requested option or the set of options.
 	   */
 	  this.options = function (arg1, arg2) {
 	    if (arg1 === undefined) {
@@ -22795,6 +22905,13 @@
 	    }
 	    if (arg2 === undefined) {
 	      m_options = $.extend(true, m_options, arg1);
+	      /* For style objects, reextend them without recursiion.  This allows
+	       * setting colors without an opacity field, for instance. */
+	      ['style', 'editStyle', 'labelStyle'].forEach(function (key) {
+	        if (arg1[key] !== undefined) {
+	          $.extend(m_options[key], arg1[key]);
+	        }
+	      });
 	    } else {
 	      m_options[arg1] = arg2;
 	    }
@@ -22808,6 +22925,16 @@
 	      delete m_options.name;
 	      this.name(name);
 	    }
+	    if (m_options.label !== undefined) {
+	      var label = m_options.label;
+	      delete m_options.label;
+	      this.label(label);
+	    }
+	    if (m_options.description !== undefined) {
+	      var description = m_options.description;
+	      delete m_options.description;
+	      this.description(description);
+	    }
 	    this.modified();
 	    return this;
 	  };
@@ -22815,13 +22942,14 @@
 	  /**
 	   * Set or get style.
 	   *
-	   * @param {string|object} arg1 if undefined, return the options.style object.
-	   *    If a string, either set or return the style of that name.  If an
-	   *    object, update the style with the object's values.
-	   * @param {object} arg2 if arg1 is a string and this is defined, set the
-	   *    style to this value.
-	   * @returns {object|this} if styles are set, return the layer, otherwise
-	   *    return the requested style or the set of styles.
+	   * @param {string|object} [arg1] If `undefined`, return the current style
+	   *    object.  If a string and `arg2` is undefined, return the style
+	   *    associated with the specified key.  If a string and `arg2` is defined,
+	   *    set the named style to the specified value.  Otherwise, extend the
+	   *    current style with the values in the specified object.
+	   * @param {*} [arg2] If `arg1` is a string, the new value for that style.
+	   * @returns {object|this} Either the entire style object, the value of a
+	   *    specific style, or the current class instance.
 	   */
 	  this.style = function (arg1, arg2) {
 	    if (arg1 === undefined) {
@@ -22840,27 +22968,28 @@
 	  };
 	
 	  /**
-	   * Set or get edit style.
+	   * Set or get edit style.  These are the styles used in edit and create mode.
 	   *
-	   * @param {string|object} arg1 if undefined, return the options.editstyle
-	   *    object.  If a string, either set or return the style of that name.  If
-	   *    an object, update the style with the object's values.
-	   * @param {object} arg2 if arg1 is a string and this is defined, set the
-	   *    style to this value.
-	   * @returns {object|this} if styles are set, return the layer, otherwise
-	   *    return the requested style or the set of styles.
+	   * @param {string|object} [arg1] If `undefined`, return the current style
+	   *    object.  If a string and `arg2` is undefined, return the style
+	   *    associated with the specified key.  If a string and `arg2` is defined,
+	   *    set the named style to the specified value.  Otherwise, extend the
+	   *    current style with the values in the specified object.
+	   * @param {*} [arg2] If `arg1` is a string, the new value for that style.
+	   * @returns {object|this} Either the entire style object, the value of a
+	   *    specific style, or the current class instance.
 	   */
-	  this.editstyle = function (arg1, arg2) {
+	  this.editStyle = function (arg1, arg2) {
 	    if (arg1 === undefined) {
-	      return m_options.editstyle;
+	      return m_options.editStyle;
 	    }
 	    if (typeof arg1 === 'string' && arg2 === undefined) {
-	      return m_options.editstyle[arg1];
+	      return m_options.editStyle[arg1];
 	    }
 	    if (arg2 === undefined) {
-	      m_options.editstyle = $.extend(true, m_options.editstyle, arg1);
+	      m_options.editStyle = $.extend(true, m_options.editStyle, arg1);
 	    } else {
-	      m_options.editstyle[arg1] = arg2;
+	      m_options.editStyle[arg1] = arg2;
 	    }
 	    this.modified();
 	    return this;
@@ -22869,7 +22998,7 @@
 	  /**
 	   * Get the type of this annotation.
 	   *
-	   * @returns {string} the annotation type.
+	   * @returns {string} The annotation type.
 	   */
 	  this.type = function () {
 	    return m_type;
@@ -22878,11 +23007,11 @@
 	  /**
 	   * Get a list of renderable features for this annotation.  The list index is
 	   * functionally a z-index for the feature.  Each entry is a dictionary with
-	   * the key as the feature name (such as line, quad, or polygon), and the
-	   * value a dictionary of values to pass to the feature constructor, such as
-	   * style and coordinates.
+	   * the key as the feature name (such as `line`, `quad`, or `polygon`), and
+	   * the value a dictionary of values to pass to the feature constructor, such
+	   * as `style` and `coordinates`.
 	   *
-	   * @returns {array} an array of features.
+	   * @returns {array} An array of features.
 	   */
 	  this.features = function () {
 	    return [];
@@ -22890,32 +23019,36 @@
 	
 	  /**
 	   * Handle a mouse click on this annotation.  If the event is processed,
-	   * evt.handled should be set to true to prevent further processing.
+	   * evt.handled should be set to `true` to prevent further processing.
 	   *
-	   * @param {geo.event} evt the mouse click event.
-	   * @returns {boolean|string} true to update the annotation, 'done' if the
-	   *    annotation was completed (changed from create to done state), 'remove'
-	   *    if the annotation should be removed, falsy to not update anything.
+	   * @param {geo.event} evt The mouse click event.
+	   * @returns {boolean|string} `true` to update the annotation, `'done'` if
+	   *    the annotation was completed (changed from create to done state),
+	   *    `'remove'` if the annotation should be removed, falsy to not update
+	   *    anything.
 	   */
 	  this.mouseClick = function (evt) {
+	    return undefined;
 	  };
 	
 	  /**
 	   * Handle a mouse move on this annotation.
 	   *
-	   * @param {geo.event} evt the mouse move event.
-	   * @returns {boolean|string} true to update the annotation, falsy to not
+	   * @param {geo.event} evt The mouse move event.
+	   * @returns {boolean} Truthy to update the annotation, falsy to not
 	   *    update anything.
 	   */
 	  this.mouseMove = function (evt) {
+	    return undefined;
 	  };
 	
 	  /**
 	   * Get coordinates associated with this annotation in the map gcs coordinate
 	   * system.
 	   *
-	   * @param {array} coordinates: an optional array of coordinates to set.
-	   * @returns {array} an array of coordinates.
+	   * @param {geo.geoPosition[]} [coordinates] An optional array of coordinates
+	   *  to set.
+	   * @returns {geo.geoPosition[]} The current array of coordinates.
 	   */
 	  this._coordinates = function (coordinates) {
 	    return [];
@@ -22924,9 +23057,9 @@
 	  /**
 	   * Get coordinates associated with this annotation.
 	   *
-	   * @param {string|geo.transform} [gcs] undefined to use the interface gcs,
-	   *    null to use the map gcs, or any other transform.
-	   * @returns {array} an array of coordinates.
+	   * @param {string|geo.transform|null} [gcs] `undefined` to use the interface
+	   *    gcs, `null` to use the map gcs, or any other transform.
+	   * @returns {geo.geoPosition[]} An array of coordinates.
 	   */
 	  this.coordinates = function (gcs) {
 	    var coord = this._coordinates() || [];
@@ -22944,6 +23077,8 @@
 	  /**
 	   * Mark this annotation as modified.  This just marks the parent layer as
 	   * modified.
+	   *
+	   * @returns {this} The annotation.
 	   */
 	  this.modified = function () {
 	    if (this.layer()) {
@@ -22954,6 +23089,8 @@
 	
 	  /**
 	   * Draw this annotation.  This just updates and draws the parent layer.
+	   *
+	   * @returns {this} The annotation.
 	   */
 	  this.draw = function () {
 	    if (this.layer()) {
@@ -22967,7 +23104,7 @@
 	   * Return a list of styles that should be preserved in a geojson
 	   * representation of the annotation.
 	   *
-	   * @return {array} a list of style names to store.
+	   * @returns {string[]} A list of style names to store.
 	   */
 	  this._geojsonStyles = function () {
 	    return [
@@ -22977,38 +23114,41 @@
 	  };
 	
 	  /**
-	   * Return the coordinates to be stored in a geojson geometery object.
+	   * Return the coordinates to be stored in a geojson geometry object.
 	   *
-	   * @param {string|geo.transform} [gcs] undefined to use the interface gcs,
-	   *    null to use the map gcs, or any other transform.
-	   * @return {array} an array of flattened coordinates in the ingcs coordinate
-	   *    system.  Undefined if this annotation is incompelte.
+	   * @param {string|geo.transform|null} [gcs] `undefined` to use the interface
+	   *    gcs, `null` to use the map gcs, or any other transform.
+	   * @returns {array} An array of flattened coordinates in the interface gcs
+	   *    coordinate system.  `undefined` if this annotation is incomplete.
 	   */
 	  this._geojsonCoordinates = function (gcs) {
+	    return [];
 	  };
 	
 	  /**
 	   * Return the geometry type that is used to store this annotation in geojson.
 	   *
-	   * @return {string} a geojson geometry type.
+	   * @returns {string} A geojson geometry type.
 	   */
 	  this._geojsonGeometryType = function () {
+	    return '';
 	  };
 	
 	  /**
 	   * Return the annotation as a geojson object.
 	   *
-	   * @param {string|geo.transform} [gcs] undefined to use the interface gcs,
-	   *    null to use the map gcs, or any other transform.
-	   * @param {boolean} includeCrs: if true, include the coordinate system.
-	   * @return {object} the annotation as a geojson object, or undefined if it
+	   * @param {string|geo.transform|null} [gcs] `undefined` to use the interface
+	   *    gcs, `null` to use the map gcs, or any other transform.
+	   * @param {boolean} [includeCrs] If truthy, include the coordinate system.
+	   * @returns {object} The annotation as a geojson object, or `undefined` if it
 	   *    should not be represented (for instance, while it is being created).
 	   */
 	  this.geojson = function (gcs, includeCrs) {
 	    var coor = this._geojsonCoordinates(gcs),
 	        geotype = this._geojsonGeometryType(),
 	        styles = this._geojsonStyles(),
-	        objStyle = this.options('style'),
+	        objStyle = this.options('style') || {},
+	        objLabelStyle = this.options('labelStyle') || {},
 	        i, key, value;
 	    if (!coor || !coor.length || !geotype) {
 	      return;
@@ -23025,14 +23165,33 @@
 	        annotationId: this.id()
 	      }
 	    };
+	    if (m_label) {
+	      obj.properties.label = m_label;
+	    }
+	    if (m_description) {
+	      obj.properties.description = m_description;
+	    }
+	    if (this.options('showLabel') === false) {
+	      obj.properties.showLabel = this.options('showLabel');
+	    }
 	    for (i = 0; i < styles.length; i += 1) {
 	      key = styles[i];
 	      value = util.ensureFunction(objStyle[key])();
 	      if (value !== undefined) {
 	        if (key.toLowerCase().match(/color$/)) {
-	          value = util.convertColorToHex(value);
+	          value = util.convertColorToHex(value, 'needed');
 	        }
 	        obj.properties[key] = value;
+	      }
+	    }
+	    for (i = 0; i < textFeature.usedStyles.length; i += 1) {
+	      key = textFeature.usedStyles[i];
+	      value = util.ensureFunction(objLabelStyle[key])();
+	      if (value !== undefined) {
+	        if (key.toLowerCase().match(/color$/)) {
+	          value = util.convertColorToHex(value, 'needed');
+	        }
+	        obj.properties['label' + key.charAt(0).toUpperCase() + key.slice(1)] = value;
 	      }
 	    }
 	    if (includeCrs) {
@@ -23052,18 +23211,37 @@
 	};
 	
 	/**
-	 * Rectangle annotation class
+	 * Rectangle annotation class.
 	 *
 	 * Rectangles are always rendered as polygons.  This could be changed -- if no
 	 * stroke is specified, the quad feature would be sufficient and work on more
 	 * renderers.
 	 *
-	 * Must specify:
-	 *   corners: a list of four corners {x: x, y: y} in map gcs coordinates.
-	 * May specify:
-	 *   style.
-	 *     fill, fillColor, fillOpacity, stroke, strokeWidth, strokeColor,
-	 *     strokeOpacity
+	 * @class
+	 * @alias geo.rectangleAnnotation
+	 * @extends geo.annotation
+	 *
+	 * @param {object?} [args] Options for the annotation.
+	 * @param {string} [args.name] A name for the annotation.  This defaults to
+	 *    the type with a unique ID suffixed to it.
+	 * @param {string} [args.state] initial annotation state.  One of the
+	 *    annotation.state values.
+	 * @param {boolean|string[]} [args.showLabel=true] `true` to show the
+	 *    annotation label on annotations in done or edit states.  Alternately, a
+	 *    list of states in which to show the label.  Falsy to not show the label.
+	 * @param {geo.geoPosition[]} [args.corners] A list of four corners in map
+	 *    gcs coordinates.  These must be in order around the perimeter of the
+	 *    rectangle (in either direction).
+	 * @param {geo.geoPosition[]} [args.coordinates] An alternate name for
+	 *    `args.corners`.
+	 * @param {object} [args.style] The style to apply to a finished rectangle.
+	 *    This uses styles for polygons, including `fill`, `fillColor`,
+	 *    `fillOpacity`, `stroke`, `strokeWidth`, `strokeColor`, and
+	 *    `strokeOpacity`.
+	 * @param {object} [args.editStyle] The style to apply to a rectangle in edit
+	 *    mode.  This uses styles for polygons and lines, including `fill`,
+	 *    `fillColor`, `fillOpacity`, `stroke`, `strokeWidth`, `strokeColor`, and
+	 *    `strokeOpacity`.
 	 */
 	var rectangleAnnotation = function (args) {
 	  'use strict';
@@ -23083,7 +23261,7 @@
 	      strokeWidth: 3,
 	      uniformPolygon: true
 	    },
-	    editstyle: {
+	    editStyle: {
 	      fill: true,
 	      fillColor: {r: 0.3, g: 0.3, b: 0.3},
 	      fillOpacity: 0.25,
@@ -23102,9 +23280,9 @@
 	  /**
 	   * Return actions needed for the specified state of this annotation.
 	   *
-	   * @param {string} state: the state to return actions for.  Defaults to
+	   * @param {string} [state] The state to return actions for.  Defaults to
 	   *    the current state.
-	   * @returns {array}: a list of actions.
+	   * @returns {geo.actionRecord[]} A list of actions.
 	   */
 	  this.actions = function (state) {
 	    if (!state) {
@@ -23128,10 +23306,11 @@
 	  /**
 	   * Process any actions for this annotation.
 	   *
-	   * @param {object} evt: the action event.
-	   * @returns {boolean|string} true to update the annotation, 'done' if the
-	   *    annotation was completed (changed from create to done state), 'remove'
-	   *    if the annotation should be removed, falsy to not update anything.
+	   * @param {geo.event} evt The action event.
+	   * @returns {boolean|string} `true` to update the annotation, `'done'` if the
+	   *    annotation was completed (changed from create to done state),
+	   *    `'remove'` if the annotation should be removed, falsy to not update
+	   *    anything.
 	   */
 	  this.processAction = function (evt) {
 	    var layer = this.layer();
@@ -23155,7 +23334,7 @@
 	  /**
 	   * Get a list of renderable features for this annotation.
 	   *
-	   * @returns {array} an array of features.
+	   * @returns {array} An array of features.
 	   */
 	  this.features = function () {
 	    var opt = this.options(),
@@ -23168,7 +23347,7 @@
 	          features = [{
 	            polygon: {
 	              polygon: opt.corners,
-	              style: opt.editstyle
+	              style: opt.editStyle
 	            }
 	          }];
 	        }
@@ -23189,8 +23368,9 @@
 	   * Get coordinates associated with this annotation in the map gcs coordinate
 	   * system.
 	   *
-	   * @param {array} coordinates: an optional array of coordinates to set.
-	   * @returns {array} an array of coordinates.
+	   * @param {geo.geoPosition[]} [coordinates] An optional array of coordinates
+	   *  to set.
+	   * @returns {geo.geoPosition[]} The current array of coordinates.
 	   */
 	  this._coordinates = function (coordinates) {
 	    if (coordinates && coordinates.length >= 4) {
@@ -23202,12 +23382,12 @@
 	  };
 	
 	  /**
-	   * Return the coordinates to be stored in a geojson geometery object.
+	   * Return the coordinates to be stored in a geojson geometry object.
 	   *
-	   * @param {string|geo.transform} [gcs] undefined to use the interface gcs,
-	   *    null to use the map gcs, or any other transform.
-	   * @return {array} an array of flattened coordinates in the ingcs coordinate
-	   *    system.  Undefined if this annotation is incompelte.
+	   * @param {string|geo.transform|null} [gcs] `undefined` to use the interface
+	   *    gcs, `null` to use the map gcs, or any other transform.
+	   * @returns {array} An array of flattened coordinates in the interface gcs
+	   *    coordinate system.  `undefined` if this annotation is incomplete.
 	   */
 	  this._geojsonCoordinates = function (gcs) {
 	    var src = this.coordinates(gcs);
@@ -23225,7 +23405,7 @@
 	  /**
 	   * Return the geometry type that is used to store this annotation in geojson.
 	   *
-	   * @return {string} a geojson geometry type.
+	   * @returns {string} A geojson geometry type.
 	   */
 	  this._geojsonGeometryType = function () {
 	    return 'Polygon';
@@ -23235,7 +23415,7 @@
 	   * Return a list of styles that should be preserved in a geojson
 	   * representation of the annotation.
 	   *
-	   * @return {array} a list of style names to store.
+	   * @returns {string[]} A list of style names to store.
 	   */
 	  this._geojsonStyles = function () {
 	    return [
@@ -23246,8 +23426,8 @@
 	  /**
 	   * Set three corners based on an initial corner and a mouse event.
 	   *
-	   * @param {array} an array of four corners to update.
-	   * @param {geo.event} evt the mouse move event.
+	   * @param {geo.geoPosition} corners An array of four corners to update.
+	   * @param {geo.event} evt The mouse move event.
 	   */
 	  this._setCornersFromMouse = function (corners, evt) {
 	    var map = this.layer().map(),
@@ -23263,8 +23443,8 @@
 	  /**
 	   * Handle a mouse move on this annotation.
 	   *
-	   * @param {geo.event} evt the mouse move event.
-	   * @returns {boolean|string} true to update the annotation, falsy to not
+	   * @param {geo.event} evt The mouse move event.
+	   * @returns {boolean} Truthy to update the annotation, falsy to not
 	   *    update anything.
 	   */
 	  this.mouseMove = function (evt) {
@@ -23280,12 +23460,13 @@
 	
 	  /**
 	   * Handle a mouse click on this annotation.  If the event is processed,
-	   * evt.handled should be set to true to prevent further processing.
+	   * evt.handled should be set to `true` to prevent further processing.
 	   *
-	   * @param {geo.event} evt the mouse click event.
-	   * @returns {boolean|string} true to update the annotation, 'done' if the
-	   *    annotation was completed (changed from create to done state), 'remove'
-	   *    if the annotation should be removed, falsy to not update anything.
+	   * @param {geo.event} evt The mouse click event.
+	   * @returns {boolean|string} `true` to update the annotation, `'done'` if
+	   *    the annotation was completed (changed from create to done state),
+	   *    `'remove'` if the annotation should be removed, falsy to not update
+	   *    anything.
 	   */
 	  this.mouseClick = function (evt) {
 	    var layer = this.layer();
@@ -23327,15 +23508,31 @@
 	 * When complete, polygons are rendered as polygons.  During creation they are
 	 * rendered as lines and polygons.
 	 *
-	 * Must specify:
-	 *   vertices: a list of vertices {x: x, y: y} in map gcs coordinates.
-	 * May specify:
-	 *   style.
-	 *     fill, fillColor, fillOpacity, stroke, strokeWidth, strokeColor,
-	 *     strokeOpacity
-	 *   editstyle.
-	 *     fill, fillColor, fillOpacity, stroke, strokeWidth, strokeColor,
-	 *     strokeOpacity
+	 * @class
+	 * @alias geo.polygonAnnotation
+	 * @extends geo.annotation
+	 *
+	 * @param {object?} [args] Options for the annotation.
+	 * @param {string} [args.name] A name for the annotation.  This defaults to
+	 *    the type with a unique ID suffixed to it.
+	 * @param {string} [args.state] initial annotation state.  One of the
+	 *    annotation.state values.
+	 * @param {boolean|string[]} [args.showLabel=true] `true` to show the
+	 *    annotation label on annotations in done or edit states.  Alternately, a
+	 *    list of states in which to show the label.  Falsy to not show the label.
+	 * @param {geo.geoPosition[]} [args.vertices] A list of vertices in map gcs
+	 *    coordinates.  These must be in order around the perimeter of the
+	 *    polygon (in either direction).
+	 * @param {geo.geoPosition[]} [args.coordinates] An alternate name for
+	 *    `args.vertices`.
+	 * @param {object} [args.style] The style to apply to a finished polygon.
+	 *    This uses styles for polygons, including `fill`, `fillColor`,
+	 *    `fillOpacity`, `stroke`, `strokeWidth`, `strokeColor`, and
+	 *    `strokeOpacity`.
+	 * @param {object} [args.editStyle] The style to apply to a polygon in edit
+	 *    mode.  This uses styles for polygons and lines, including `fill`,
+	 *    `fillColor`, `fillOpacity`, `stroke`, `strokeWidth`, `strokeColor`, and
+	 *    `strokeOpacity`.
 	 */
 	var polygonAnnotation = function (args) {
 	  'use strict';
@@ -23357,7 +23554,7 @@
 	      strokeWidth: 3,
 	      uniformPolygon: true
 	    },
-	    editstyle: {
+	    editStyle: {
 	      closed: false,
 	      fill: true,
 	      fillColor: {r: 0.3, g: 0.3, b: 0.3},
@@ -23388,7 +23585,7 @@
 	   * is done, this is just a single polygon.  During creation this can be a
 	   * polygon and line at z-levels 1 and 2.
 	   *
-	   * @returns {array} an array of features.
+	   * @returns {array} An array of features.
 	   */
 	  this.features = function () {
 	    var opt = this.options(),
@@ -23401,7 +23598,7 @@
 	          features[1] = {
 	            polygon: {
 	              polygon: opt.vertices,
-	              style: opt.editstyle
+	              style: opt.editStyle
 	            }
 	          };
 	        }
@@ -23409,7 +23606,7 @@
 	          features[2] = {
 	            line: {
 	              line: opt.vertices,
-	              style: opt.editstyle
+	              style: opt.editStyle
 	            }
 	          };
 	        }
@@ -23430,8 +23627,9 @@
 	   * Get coordinates associated with this annotation in the map gcs coordinate
 	   * system.
 	   *
-	   * @param {array} coordinates: an optional array of coordinates to set.
-	   * @returns {array} an array of coordinates.
+	   * @param {geo.geoPosition[]} [coordinates] An optional array of coordinates
+	   *  to set.
+	   * @returns {geo.geoPosition[]} The current array of coordinates.
 	   */
 	  this._coordinates = function (coordinates) {
 	    if (coordinates) {
@@ -23443,8 +23641,8 @@
 	  /**
 	   * Handle a mouse move on this annotation.
 	   *
-	   * @param {geo.event} evt the mouse move event.
-	   * @returns {boolean|string} true to update the annotation, falsy to not
+	   * @param {geo.event} evt The mouse move event.
+	   * @returns {boolean} Truthy to update the annotation, falsy to not
 	   *    update anything.
 	   */
 	  this.mouseMove = function (evt) {
@@ -23460,12 +23658,13 @@
 	
 	  /**
 	   * Handle a mouse click on this annotation.  If the event is processed,
-	   * evt.handled should be set to true to prevent further processing.
+	   * evt.handled should be set to `true` to prevent further processing.
 	   *
-	   * @param {geo.event} evt the mouse click event.
-	   * @returns {boolean|string} true to update the annotation, 'done' if the
-	   *    annotation was completed (changed from create to done state), 'remove'
-	   *    if the annotation should be removed, falsy to not update anything.
+	   * @param {geo.event} evt The mouse click event.
+	   * @returns {boolean|string} `true` to update the annotation, `'done'` if
+	   *    the annotation was completed (changed from create to done state),
+	   *    `'remove'` if the annotation should be removed, falsy to not update
+	   *    anything.
 	   */
 	  this.mouseClick = function (evt) {
 	    var layer = this.layer();
@@ -23518,12 +23717,12 @@
 	  };
 	
 	  /**
-	   * Return the coordinates to be stored in a geojson geometery object.
+	   * Return the coordinates to be stored in a geojson geometry object.
 	   *
-	   * @param {string|geo.transform} [gcs] undefined to use the interface gcs,
-	   *    null to use the map gcs, or any other transform.
-	   * @return {array} an array of flattened coordinates in the ingcs coordinate
-	   *    system.  Undefined if this annotation is incompelte.
+	   * @param {string|geo.transform|null} [gcs] `undefined` to use the interface
+	   *    gcs, `null` to use the map gcs, or any other transform.
+	   * @returns {array} An array of flattened coordinates in the interface gcs
+	   *    coordinate system.  `undefined` if this annotation is incomplete.
 	   */
 	  this._geojsonCoordinates = function (gcs) {
 	    var src = this.coordinates(gcs);
@@ -23541,7 +23740,7 @@
 	  /**
 	   * Return the geometry type that is used to store this annotation in geojson.
 	   *
-	   * @return {string} a geojson geometry type.
+	   * @returns {string} A geojson geometry type.
 	   */
 	  this._geojsonGeometryType = function () {
 	    return 'Polygon';
@@ -23551,7 +23750,7 @@
 	   * Return a list of styles that should be preserved in a geojson
 	   * representation of the annotation.
 	   *
-	   * @return {array} a list of style names to store.
+	   * @returns {string[]} A list of style names to store.
 	   */
 	  this._geojsonStyles = function () {
 	    return [
@@ -23567,17 +23766,31 @@
 	registerAnnotation('polygon', polygonAnnotation, polygonRequiredFeatures);
 	
 	/**
-	 * Line annotation class
+	 * Line annotation class.
 	 *
-	 * Must specify:
-	 *   vertices: a list of vertices {x: x, y: y} in map gcs coordinates.
-	 * May specify:
-	 *   style.
-	 *     strokeWidth, strokeColor, strokeOpacity, strokeOffset, closed, lineCap,
-	 *     lineJoin
-	 *   editstyle.
-	 *     strokeWidth, strokeColor, strokeOpacity, strokeOffset, closed, lineCap,
-	 *     lineJoin
+	 * @class
+	 * @alias geo.lineAnnotation
+	 * @extends geo.annotation
+	 *
+	 * @param {object?} [args] Options for the annotation.
+	 * @param {string} [args.name] A name for the annotation.  This defaults to
+	 *    the type with a unique ID suffixed to it.
+	 * @param {string} [args.state] initial annotation state.  One of the
+	 *    annotation.state values.
+	 * @param {boolean|string[]} [args.showLabel=true] `true` to show the
+	 *    annotation label on annotations in done or edit states.  Alternately, a
+	 *    list of states in which to show the label.  Falsy to not show the label.
+	 * @param {geo.geoPosition[]} [args.vertices] A list of vertices in map gcs
+	 *    coordinates.
+	 * @param {geo.geoPosition[]} [args.coordinates] An alternate name for
+	 *    `args.corners`.
+	 * @param {object} [args.style] The style to apply to a finished line.
+	 *    This uses styles for lines, including `strokeWidth`, `strokeColor`,
+	 *    `strokeOpacity`, `strokeOffset`, `closed`, `lineCap`, and `lineJoin`.
+	 * @param {object} [args.editStyle] The style to apply to a line in edit
+	 *    mode.  This uses styles for lines, including `strokeWidth`,
+	 *    `strokeColor`, `strokeOpacity`, `strokeOffset`, `closed`, `lineCap`,
+	 *    and `lineJoin`.
 	 */
 	var lineAnnotation = function (args) {
 	  'use strict';
@@ -23605,7 +23818,7 @@
 	      lineCap: 'butt',
 	      lineJoin: 'miter'
 	    },
-	    editstyle: {
+	    editStyle: {
 	      line: function (d) {
 	        /* Return an array that has the same number of items as we have
 	         * vertices. */
@@ -23630,7 +23843,7 @@
 	  /**
 	   * Get a list of renderable features for this annotation.
 	   *
-	   * @returns {array} an array of features.
+	   * @returns {array} An array of features.
 	   */
 	  this.features = function () {
 	    var opt = this.options(),
@@ -23641,7 +23854,7 @@
 	        features = [{
 	          line: {
 	            line: opt.vertices,
-	            style: opt.editstyle
+	            style: opt.editStyle
 	          }
 	        }];
 	        break;
@@ -23661,8 +23874,9 @@
 	   * Get coordinates associated with this annotation in the map gcs coordinate
 	   * system.
 	   *
-	   * @param {array} coordinates: an optional array of coordinates to set.
-	   * @returns {array} an array of coordinates.
+	   * @param {geo.geoPosition[]} [coordinates] An optional array of coordinates
+	   *  to set.
+	   * @returns {geo.geoPosition[]} The current array of coordinates.
 	   */
 	  this._coordinates = function (coordinates) {
 	    if (coordinates) {
@@ -23674,8 +23888,8 @@
 	  /**
 	   * Handle a mouse move on this annotation.
 	   *
-	   * @param {geo.event} evt the mouse move event.
-	   * @returns {boolean|string} true to update the annotation, falsy to not
+	   * @param {geo.event} evt The mouse move event.
+	   * @returns {boolean} Truthy to update the annotation, falsy to not
 	   *    update anything.
 	   */
 	  this.mouseMove = function (evt) {
@@ -23691,12 +23905,13 @@
 	
 	  /**
 	   * Handle a mouse click on this annotation.  If the event is processed,
-	   * evt.handled should be set to true to prevent further processing.
+	   * evt.handled should be set to `true` to prevent further processing.
 	   *
-	   * @param {geo.event} evt the mouse click event.
-	   * @returns {boolean|string} true to update the annotation, 'done' if the
-	   *    annotation was completed (changed from create to done state), 'remove'
-	   *    if the annotation should be removed, falsy to not update anything.
+	   * @param {geo.event} evt The mouse click event.
+	   * @returns {boolean|string} `true` to update the annotation, `'done'` if
+	   *    the annotation was completed (changed from create to done state),
+	   *    `'remove'` if the annotation should be removed, falsy to not update
+	   *    anything.
 	   */
 	  this.mouseClick = function (evt) {
 	    var layer = this.layer();
@@ -23752,9 +23967,9 @@
 	  /**
 	   * Return actions needed for the specified state of this annotation.
 	   *
-	   * @param {string} state: the state to return actions for.  Defaults to
+	   * @param {string} [state] The state to return actions for.  Defaults to
 	   *    the current state.
-	   * @returns {array}: a list of actions.
+	   * @returns {geo.actionRecord[]} A list of actions.
 	   */
 	  this.actions = function (state) {
 	    if (!state) {
@@ -23782,10 +23997,11 @@
 	  /**
 	   * Process any actions for this annotation.
 	   *
-	   * @param {object} evt: the action event.
-	   * @returns {boolean|string} true to update the annotation, 'done' if the
-	   *    annotation was completed (changed from create to done state), 'remove'
-	   *    if the annotation should be removed, falsy to not update anything.
+	   * @param {geo.event} evt The action event.
+	   * @returns {boolean|string} `true` to update the annotation, `'done'` if the
+	   *    annotation was completed (changed from create to done state),
+	   *    `'remove'` if the annotation should be removed, falsy to not update
+	   *    anything.
 	   */
 	  this.processAction = function (evt) {
 	    var layer = this.layer();
@@ -23813,12 +24029,12 @@
 	  };
 	
 	  /**
-	   * Return the coordinates to be stored in a geojson geometery object.
+	   * Return the coordinates to be stored in a geojson geometry object.
 	   *
-	   * @param {string|geo.transform} [gcs] undefined to use the interface gcs,
-	   *    null to use the map gcs, or any other transform.
-	   * @return {array} an array of flattened coordinates in the ingcs coordinate
-	   *    system.  Undefined if this annotation is incompelte.
+	   * @param {string|geo.transform|null} [gcs] `undefined` to use the interface
+	   *    gcs, `null` to use the map gcs, or any other transform.
+	   * @returns {array} An array of flattened coordinates in the interface gcs
+	   *    coordinate system.  `undefined` if this annotation is incomplete.
 	   */
 	  this._geojsonCoordinates = function (gcs) {
 	    var src = this.coordinates(gcs);
@@ -23835,7 +24051,7 @@
 	  /**
 	   * Return the geometry type that is used to store this annotation in geojson.
 	   *
-	   * @return {string} a geojson geometry type.
+	   * @returns {string} A geojson geometry type.
 	   */
 	  this._geojsonGeometryType = function () {
 	    return 'LineString';
@@ -23845,7 +24061,7 @@
 	   * Return a list of styles that should be preserved in a geojson
 	   * representation of the annotation.
 	   *
-	   * @return {array} a list of style names to store.
+	   * @returns {string[]} A list of style names to store.
 	   */
 	  this._geojsonStyles = function () {
 	    return [
@@ -23860,18 +24076,33 @@
 	registerAnnotation('line', lineAnnotation, lineRequiredFeatures);
 	
 	/**
-	 * Point annotation class
+	 * Point annotation class.
 	 *
-	 * Must specify:
-	 *   position: {x: x, y: y} in map gcs coordinates.
-	 * May specify:
-	 *   style.
-	 *     radius, fill, fillColor, fillOpacity, stroke, strokeWidth, strokeColor,
-	 *     strokeOpacity, scaled
+	 * @class
+	 * @alias geo.poinyAnnotation
+	 * @extends geo.annotation
 	 *
-	 * If scaled is false, the point is not scaled with zoom level.  If it is true,
-	 * the radius is based on the zoom level at first instantiation.  Otherwise, if
-	 * it is a number, the radius is used at that zoom level.
+	 * @param {object?} [args] Options for the annotation.
+	 * @param {string} [args.name] A name for the annotation.  This defaults to
+	 *    the type with a unique ID suffixed to it.
+	 * @param {string} [args.state] initial annotation state.  One of the
+	 *    annotation.state values.
+	 * @param {boolean|string[]} [args.showLabel=true] `true` to show the
+	 *    annotation label on annotations in done or edit states.  Alternately, a
+	 *    list of states in which to show the label.  Falsy to not show the label.
+	 * @param {geo.geoPosition} [args.position] A coordinate in map gcs
+	 *    coordinates.
+	 * @param {geo.geoPosition[]} [args.coordinates] An array with one coordinate
+	 *  to use in place of `args.position`.
+	 * @param {object} [args.style] The style to apply to a finished point.
+	 *    This uses styles for points, including `radius`, `fill`, `fillColor`,
+	 *    `fillOpacity`, `stroke`, `strokeWidth`, `strokeColor`, `strokeOpacity`,
+	 *    and `scaled`.  If `scaled` is `false`, the point is not scaled with
+	 *    zoom level.  If it is `true`, the radius is based on the zoom level at
+	 *    first instantiation.  Otherwise, if it is a number, the radius is used
+	 *    at that zoom level.
+	 * @param {object} [args.editStyle] The style to apply to a line in edit
+	 *    mode.  This uses styles for lines.
 	 */
 	var pointAnnotation = function (args) {
 	  'use strict';
@@ -23900,7 +24131,7 @@
 	  /**
 	   * Get a list of renderable features for this annotation.
 	   *
-	   * @returns {array} an array of features.
+	   * @returns {array} An array of features.
 	   */
 	  this.features = function () {
 	    var opt = this.options(),
@@ -23946,8 +24177,9 @@
 	   * Get coordinates associated with this annotation in the map gcs coordinate
 	   * system.
 	   *
-	   * @param {array} coordinates: an optional array of coordinates to set.
-	   * @returns {array} an array of coordinates.
+	   * @param {geo.geoPosition[]} [coordinates] An optional array of coordinates
+	   *  to set.
+	   * @returns {geo.geoPosition[]} The current array of coordinates.
 	   */
 	  this._coordinates = function (coordinates) {
 	    if (coordinates && coordinates.length >= 1) {
@@ -23961,12 +24193,13 @@
 	
 	  /**
 	   * Handle a mouse click on this annotation.  If the event is processed,
-	   * evt.handled should be set to true to prevent further processing.
+	   * evt.handled should be set to `true` to prevent further processing.
 	   *
-	   * @param {geo.event} evt the mouse click event.
-	   * @returns {boolean|string} true to update the annotation, 'done' if the
-	   *    annotation was completed (changed from create to done state), 'remove'
-	   *    if the annotation should be removed, falsy to not update anything.
+	   * @param {geo.event} evt The mouse click event.
+	   * @returns {boolean|string} `true` to update the annotation, `'done'` if
+	   *    the annotation was completed (changed from create to done state),
+	   *    `'remove'` if the annotation should be removed, falsy to not update
+	   *    anything.
 	   */
 	  this.mouseClick = function (evt) {
 	    if (this.state() !== annotationState.create) {
@@ -23985,7 +24218,7 @@
 	   * Return a list of styles that should be preserved in a geojson
 	   * representation of the annotation.
 	   *
-	   * @return {array} a list of style names to store.
+	   * @returns {string[]} A list of style names to store.
 	   */
 	  this._geojsonStyles = function () {
 	    return [
@@ -23994,12 +24227,12 @@
 	  };
 	
 	  /**
-	   * Return the coordinates to be stored in a geojson geometery object.
+	   * Return the coordinates to be stored in a geojson geometry object.
 	   *
-	   * @param {string|geo.transform} [gcs] undefined to use the interface gcs,
-	   *    null to use the map gcs, or any other transform.
-	   * @return {array} an array of flattened coordinates in the ingcs coordinate
-	   *    system.  Undefined if this annotation is incompelte.
+	   * @param {string|geo.transform|null} [gcs] `undefined` to use the interface
+	   *    gcs, `null` to use the map gcs, or any other transform.
+	   * @returns {array} An array of flattened coordinates in the interface gcs
+	   *    coordinate system.  `undefined` if this annotation is incomplete.
 	   */
 	  this._geojsonCoordinates = function (gcs) {
 	    var src = this.coordinates(gcs);
@@ -24012,7 +24245,7 @@
 	  /**
 	   * Return the geometry type that is used to store this annotation in geojson.
 	   *
-	   * @return {string} a geojson geometry type.
+	   * @returns {string} A geojson geometry type.
 	   */
 	  this._geojsonGeometryType = function () {
 	    return 'Point';
@@ -24237,7 +24470,6 @@
 	
 	geo_event.unzoomselect = 'geo_unzoomselect';
 	
-	//DWM::
 	/**
 	 * Triggered when an action is initiated with mouse down.
 	 *
@@ -24353,7 +24585,6 @@
 	 */
 	geo_event.transitioncancel = 'geo_transitioncancel';
 	
-	//DWM::
 	/**
 	 * Triggered when the parallel projection mode is changes.
 	 *
@@ -24451,7 +24682,6 @@
 	  ready: 'geo_screenshot_ready'
 	};
 	
-	//DWM::
 	/**
 	 * These events are triggered by the camera when it's internal state is
 	 * mutated.
@@ -24587,6 +24817,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 	var proj4 = __webpack_require__(18);
+	var util = __webpack_require__(89);
 	
 	/**
 	 * This purpose of this class is to provide a generic interface for computing
@@ -24653,7 +24884,12 @@
 	  }
 	
 	  /**
-	   * Get/Set the source projection
+	   * Get/Set the source projection.
+	   *
+	   * @param {string} [arg] The new source projection.  If `undefined`, return
+	   *    the current source projection.
+	   * @returns {string|this} The current source projection if it was queried,
+	   *    otherwise the current transform object.
 	   */
 	  this.source = function (arg) {
 	    if (arg === undefined) {
@@ -24665,7 +24901,12 @@
 	  };
 	
 	  /**
-	   * Get/Set the target projection
+	   * Get/Set the target projection.
+	   *
+	   * @param {string} [arg] The new target projection.  If `undefined`, return
+	   *    the current target projection.
+	   * @returns {string|this} The current target projection if it was queried,
+	   *    otherwise the current transform object.
 	   */
 	  this.target = function (arg) {
 	    if (arg === undefined) {
@@ -24677,15 +24918,11 @@
 	  };
 	
 	  /**
-	   * Perform a forward transformation (source -> target)
+	   * Perform a forward transformation (source -> target).
 	   * @protected
 	   *
-	   * @param {object}   point      The point coordinates
-	   * @param {number}   point.x    The x-coordinate (i.e. longitude)
-	   * @param {number}   point.y    The y-coordinate (i.e. latitude)
-	   * @param {number}  [point.z=0] The z-coordinate (i.e. elevation)
-	   *
-	   * @returns {object} A point object in the target coordinates
+	   * @param {geo.geoPosition} point The point in source coordinates.
+	   * @returns {geo.geoPosition} A point object in the target coordinates.
 	   */
 	  this._forward = function (point) {
 	    var pt = m_proj.forward(point);
@@ -24694,15 +24931,11 @@
 	  };
 	
 	  /**
-	   * Perform an inverse transformation (target -> source)
+	   * Perform an inverse transformation (target -> source).
 	   * @protected
 	   *
-	   * @param {object}   point     The point coordinates
-	   * @param {number}   point.x   The x-coordinate (i.e. longitude)
-	   * @param {number}   point.y   The y-coordinate (i.e. latitude)
-	   * @param {number}  [point.z=0] The z-coordinate (i.e. elevation)
-	   *
-	   * @returns {object} A point object in the source coordinates
+	   * @param {geo.geoPosition} point The point in target coordinates.
+	   * @returns {geo.geoPosition} A point object in the source coordinates.
 	   */
 	  this._inverse = function (point) {
 	    var pt = m_proj.inverse(point);
@@ -24711,14 +24944,13 @@
 	  };
 	
 	  /**
-	   * Perform a forward transformation (source -> target) in place
+	   * Perform a forward transformation (source -> target) in place.
+	   * @protected
 	   *
-	   * @param {object[]} point      The point coordinates or array of points
-	   * @param {number}   point.x    The x-coordinate (i.e. longitude)
-	   * @param {number}   point.y    The y-coordinate (i.e. latitude)
-	   * @param {number}  [point.z=0] The z-coordinate (i.e. elevation)
-	   *
-	   * @returns {object} A point object or array in the target coordinates
+	   * @param {geo.geoPosition|geo.geoPosition[]} point The point coordinates
+	   *    or array of points in source coordinates.
+	   * @returns {geo.geoPosition|geo.geoPosition[]} A point object or array in
+	   *    the target coordinates.
 	   */
 	  this.forward = function (point) {
 	    if (Array.isArray(point)) {
@@ -24728,15 +24960,13 @@
 	  };
 	
 	  /**
-	   * Perform an inverse transformation (target -> source) in place
+	   * Perform an inverse transformation (target -> source) in place.
 	   * @protected
 	   *
-	   * @param {object[]} point      The point coordinates or array of points
-	   * @param {number}   point.x    The x-coordinate (i.e. longitude)
-	   * @param {number}   point.y    The y-coordinate (i.e. latitude)
-	   * @param {number}  [point.z=0] The z-coordinate (i.e. elevation)
-	   *
-	   * @returns {object} A point object in the source coordinates
+	   * @param {geo.geoPosition|geo.geoPosition[]} point The point coordinates
+	   *    or array of points in target coordinates.
+	   * @returns {geo.geoPosition|geo.geoPosition[]} A point object or array in
+	   *    the source coordinates.
 	   */
 	  this.inverse = function (point) {
 	    if (Array.isArray(point)) {
@@ -24776,7 +25006,7 @@
 	transform.defs = proj4.defs;
 	
 	/**
-	 * Look up a projection definition from epsg.io
+	 * Look up a projection definition from epsg.io.
 	 * For the moment, we only handle `EPSG` codes.
 	 *
 	 * @param {string} projection A projection alias (e.g. EPSG:4326)
@@ -24784,7 +25014,7 @@
 	 */
 	transform.lookup = function (projection) {
 	  var $ = __webpack_require__(7);
-	  var code, defer = new $.Deferred(), parts;
+	  var code, defer = $.Deferred(), parts;
 	
 	  if (proj4.defs.hasOwnProperty(projection)) {
 	    return defer.resolve(proj4.defs[projection]);
@@ -24812,18 +25042,19 @@
 	/**
 	 * Transform an array of coordinates from one projection into another.  The
 	 * transformation may occur in place (modifying the input coordinate array),
-	 * depending on the input format.  The coordinates can be an object with x, y,
-	 * and (optionally z) or an array of 2 or 3 values, or an array of either of
-	 * those, or a single flat array with 2 or 3 components per coordinate.  Arrays
-	 * are always modified in place.  Individual point objects are not altered; new
-	 * point objects are returned unless no transform is needed.
+	 * depending on the input format.  The coordinates can be an object with x,
+	 * y, and (optionally z) or an array of 2 or 3 values, or an array of either
+	 * of those, or a single flat array with 2 or 3 components per coordinate.
+	 * Arrays are always modified in place.  Individual point objects are not
+	 * altered; new point objects are returned unless no transform is needed.
 	 *
-	 * @param {string}        srcPrj The source projection
-	 * @param {string}        tgtPrj The destination projection
-	 * @param {geoPosition[]} coordinates An array of coordinate objects
-	 * @param {number}        numberOfComponents for flat arrays, either 2 or 3.
-	 *
-	 * @returns {geoPosition[]} The transformed coordinates
+	 * @param {string} srcPrj The source projection.
+	 * @param {string} tgtPrj The destination projection.
+	 * @param {geoPosition|geoPosition[]|number[]} coordinates An array of
+	 *      coordinate objects.  These may be in object or array form, or a flat
+	 *      array.
+	 * @param {number} numberOfComponents For flat arrays, either 2 or 3.
+	 * @returns {geoPosition|geoPosition[]|number[]} The transformed coordinates.
 	 */
 	transform.transformCoordinates = function (
 	        srcPrj, tgtPrj, coordinates, numberOfComponents) {
@@ -24834,14 +25065,16 @@
 	  }
 	
 	  var trans = transform({source: srcPrj, target: tgtPrj}), output;
-	  if (coordinates instanceof Object && 'x' in coordinates && 'y' in coordinates) {
+	  if (util.isObject(coordinates) && 'x' in coordinates && 'y' in coordinates) {
 	    output = trans.forward({x: coordinates.x, y: coordinates.y, z: coordinates.z || 0});
 	    if ('z' in coordinates) {
 	      return output;
 	    }
 	    return {x: output.x, y: output.y};
 	  }
-	  if (coordinates instanceof Array && coordinates.length === 1 && coordinates[0] instanceof Object && 'x' in coordinates[0] && 'y' in coordinates[0]) {
+	  if (Array.isArray(coordinates) && coordinates.length === 1 &&
+	      util.isObject(coordinates[0]) && 'x' in coordinates[0] &&
+	      'y' in coordinates[0]) {
 	    output = trans.forward({x: coordinates[0].x, y: coordinates[0].y, z: coordinates[0].z || 0});
 	    if ('z' in coordinates[0]) {
 	      return [output];
@@ -24858,11 +25091,11 @@
 	 * values, or an array of either of those, or a single flat array with 2 or 3
 	 * components per coordinate.  The array is modified in place.
 	 *
-	 * @param {object} trans The transformation object.
-	 * @param {geoPosition[]} coordinates An array of coordinate objects
-	 * @param {number} numberOfComponents for flat arrays, either 2 or 3.
-	 *
-	 * @returns {geoPosition[]} The transformed coordinates
+	 * @param {transform} trans The transformation object.
+	 * @param {geoPosition[]|number[]} coordinates An array of coordinate
+	 *      objects or a flat array.
+	 * @param {number} numberOfComponents For flat arrays, either 2 or 3.
+	 * @returns {geoPosition[]|number[]} The transformed coordinates
 	 */
 	transform.transformCoordinatesArray = function (trans, coordinates, numberOfComponents) {
 	  var i, count, offset, xAcc, yAcc, zAcc, writer, output, projPoint;
@@ -24874,7 +25107,7 @@
 	
 	  // Helper methods
 	  function handleArrayCoordinates() {
-	    if (coordinates[0] instanceof Array) {
+	    if (Array.isArray(coordinates[0])) {
 	      if (coordinates[0].length === 2) {
 	        xAcc = function (index) {
 	          return coordinates[index][0];
@@ -24995,7 +25228,7 @@
 	    }
 	  }
 	
-	  if (coordinates instanceof Array) {
+	  if (Array.isArray(coordinates)) {
 	    output = [];
 	    output.length = coordinates.length;
 	    count = coordinates.length;
@@ -25003,13 +25236,12 @@
 	    if (!coordinates.length) {
 	      return output;
 	    }
-	    if (coordinates[0] instanceof Array ||
-	        coordinates[0] instanceof Object) {
+	    if (Array.isArray(coordinates[0]) || util.isObject(coordinates[0])) {
 	      offset = 1;
 	
-	      if (coordinates[0] instanceof Array) {
+	      if (Array.isArray(coordinates[0])) {
 	        handleArrayCoordinates();
-	      } else if (coordinates[0] instanceof Object) {
+	      } else if (util.isObject(coordinates[0])) {
 	        handleObjectCoordinates();
 	      }
 	    } else {
@@ -25027,19 +25259,16 @@
 	};
 	
 	/**
-	 * Apply an affine transformation consisting of a translation
-	 * then a scaling to the given coordinate array.  Note, the
-	 * transformation occurs in place so the input coordinate
-	 * object are mutated.
-	 *
-	 * (Possibly extend to support rotations as well)
+	 * Apply an affine transformation consisting of a translation then a scaling
+	 * to the given coordinate array.  Note, the transformation occurs in place
+	 * so the input coordinate object are mutated.
 	 *
 	 * @param {object} def
-	 * @param {object} def.origin The transformed origin
-	 * @param {object} def.scale The transformed scale factor
-	 * @param {object[]} coords An array of coordinate objects
-	 *
-	 * @returns {object[]} The transformed coordinates
+	 * @param {geo.geoPosition} def.origin The transformed origin
+	 * @param {object} def.scale The transformed scale factor.  This is an object
+	 *  with `x`, `y`, and `z` parameters.
+	 * @param {geo.geoPosition[]} coords An array of coordinate objects.
+	 * @returns {geo.geoPosition[]} The transformed coordinates.
 	 */
 	transform.affineForward = function (def, coords) {
 	  'use strict';
@@ -25053,19 +25282,16 @@
 	};
 	
 	/**
-	 * Apply an inverse affine transformation which is the
-	 * inverse to {@link geo.transform.affineForward}.  Note, the
-	 * transformation occurs in place so the input coordinate
-	 * object are mutated.
-	 *
-	 * (Possibly extend to support rotations as well)
+	 * Apply an inverse affine transformation which is the inverse to {@link
+	 * geo.transform.affineForward}.  Note, the transformation occurs in place so
+	 * the input coordinate object are mutated.
 	 *
 	 * @param {object} def
-	 * @param {object} def.origin The transformed origin
-	 * @param {object} def.scale The transformed scale factor
-	 * @param {object[]} coords An array of coordinate objects
-	 *
-	 * @returns {object[]} The transformed coordinates
+	 * @param {geo.geoPosition} def.origin The transformed origin
+	 * @param {object} def.scale The transformed scale factor.  This is an object
+	 *  with `x`, `y`, and `z` parameters.
+	 * @param {geo.geoPosition[]} coords An array of coordinate objects.
+	 * @returns {geo.geoPosition[]} The transformed coordinates.
 	 */
 	transform.affineInverse = function (def, coords) {
 	  'use strict';
@@ -30750,8 +30976,24 @@
 	    m_originalRequestAnimationFrame;
 	
 	/**
+	 * @typedef {object} geo.util.cssColorConversionRecord
+	 * @property {string} name The name of the color conversion.
+	 * @property {RegEx} regex A regex that, if it matches the color string, will
+	 *      cause the process function to be invoked.
+	 * @property {function} process A function that takes (`color`, `match`) with
+	 *      the original color string and the results of matching the regex using
+	 *      the regex's `exec` function.  It outputs a {@link geo.geoColorObject}
+	 *      color object or the original color string if there is still a parsing
+	 *      failure.
+	 */
+	
+	/**
 	 * Takes a variable number of arguments and returns the first numeric value
 	 * it finds.
+	 *
+	 * @param {...*} var_args Any number of arguments.
+	 * @returns {number} The first numeric argument, or `undefined` if there are no
+	 *      numeric arguments.
 	 * @private
 	 */
 	function setNumeric() {
@@ -30772,16 +31014,23 @@
 	  ClusterGroup: ClusterGroup,
 	
 	  /**
-	   * Returns true if the given point lies in the given polygon.
+	   * Check if a point is inside of a polygon.
 	   * Algorithm description:
 	   *   http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-	   * @param {geo.screenPosition} point The test point
-	   * @param {geo.screenPosition[]} outer The outer boundary of the polygon
-	   * @param {geo.screenPosition[][]} [inner] Inner boundaries (holes)
-	   * @param {Object} [range] If specified, range.min.x, range.min.y,
-	   *   range.max.x, and range.max.y specified the extents of the outer
-	   *   polygon and are used for early detection.
-	   * @returns {boolean} true if the point is inside the polygon.
+	   * The point and polygon must be in the same coordinate system.
+	   *
+	   * @param {geo.point2D} point The test point.
+	   * @param {geo.point2D[]} outer The outer boundary of the polygon.
+	   * @param {Array.<geo.point2D[]>} [inner] A list of inner boundaries
+	   *    (holes).
+	   * @param {object} [range] If specified, this is the extent of the outer
+	   *    polygon and is used for early detection.
+	   * @param {geo.point2D} range.min The minimum value of coordinates in
+	   *    the outer polygon.
+	   * @param {geo.point2D} range.max The maximum value of coordinates in
+	   *    the outer polygon.
+	   * @returns {boolean} `true` if the point is inside or on the border of the
+	   *    polygon.
 	   * @memberof geo.util
 	   */
 	  pointInPolygon: function (point, outer, inner, range) {
@@ -30818,16 +31067,17 @@
 	
 	  /**
 	   * Return a point in the basis of the triangle.  If the point is located on
-	   * a vertex of the triangle, it will be at vert0: (0, 0), vert1: (1, 0),
-	   * vert2: (0, 1).  If it is within the triangle, its coordinates will be
-	   * 0 <= x <= 1, 0 <= y <= 1, x + y <= 1.
+	   * a vertex of the triangle, it will be at `vert0`: (0, 0), `vert1`:
+	   * (1, 0), `vert2`: (0, 1).  If it is within the triangle, its coordinates
+	   * will be 0 <= x <= 1, 0 <= y <= 1, x + y <= 1.  The point and vertices
+	   * must be in the same coordinate system.
 	   *
-	   * @param {object} point: the point to convert.
-	   * @param {object} vert0: vertex 0 of the triangle
-	   * @param {object} vert1: vertex 1 (x direction) of the triangle
-	   * @param {object} vert2: vertex 2 (y direction) of the triangle
-	   * @returns {object} basisPoint: the point in the triangle basis, or
-	   *    undefined if the triangle is degenerate.
+	   * @param {geo.point2D} point The point to convert.
+	   * @param {geo.point2D} vert0 Vertex 0 of the triangle.
+	   * @param {geo.point2D} vert1 Vertex 1 (x direction) of the triangle.
+	   * @param {geo.point2D} vert2 Vertex 2 (y direction) of the triangle.
+	   * @returns {geo.point2D} The point in the triangle basis, or `undefined`
+	   *    if the triangle is degenerate.
 	   * @memberof geo.util
 	   */
 	  pointTo2DTriangleBasis: function (point, vert0, vert1, vert2) {
@@ -30844,14 +31094,13 @@
 	  },
 	
 	  /**
-	   * Returns true if the argument is an HTML Image element that is fully
-	   * loaded.
+	   * Check if an object an HTML Image element that is fully loaded.
 	   *
-	   * @param {object} img: an object that might be an HTML Image element.
-	   * @param {boolean} [allowFailedImage]: if true, an image element that has
+	   * @param {object} img an object that might be an HTML Image element.
+	   * @param {boolean} [allowFailedImage] If `true`, an image element that has
 	   *     a source and has failed to load is also considered 'ready' in the
 	   *     sense that it isn't expected to change to a better state.
-	   * @returns {boolean} true if this is an image that is ready.
+	   * @returns {boolean} `true` if this is an image that is ready.
 	   * @memberof geo.util
 	   */
 	  isReadyImage: function (img, allowFailedImage) {
@@ -30864,15 +31113,24 @@
 	  },
 	
 	  /**
-	   * Returns true if the argument is a function.
+	   * Test if an object is a function.
+	   *
+	   * @param {object} f An object that might be a function.
+	   * @returns {boolean} `true` if the object is a function.
+	   * @memberof geo.util
 	   */
 	  isFunction: function (f) {
 	    return typeof f === 'function';
 	  },
 	
 	  /**
-	   * Returns the argument if it is function, otherwise returns a function
-	   * that returns the argument.
+	   * Return a function.  If the supplied object is a function, return it.
+	   * Otherwise, return a function that returns the argument.
+	   *
+	   * @param {object} f An object that might be a function.
+	   * @returns {function} A function.  Either `f` or a function that returns
+	   *    `f`.
+	   * @memberof geo.util
 	   */
 	  ensureFunction: function (f) {
 	    if (util.isFunction(f)) {
@@ -30883,7 +31141,23 @@
 	  },
 	
 	  /**
-	   * Return a random string of length n || 8.
+	   * Check if a value coerces to a number that is finite, not a NaN, and not
+	   * `null`, `false`, or the empty string.
+	   *
+	   * @param {object} val The value to check.
+	   * @returns {boolean} True if `val` is a non-null, non-false, finite number.
+	   */
+	  isNonNullFinite: function (val) {
+	    return isFinite(val) && val !== null && val !== false && val !== '';
+	  },
+	
+	  /**
+	   * Return a random string of length n || 8.  The string consists of
+	   * mixed-case ASCII alphanumerics.
+	   *
+	   * @param {number} [n=8] The length of the string to return.
+	   * @returns {string} A string of random characters.
+	   * @memberof geo.util
 	   */
 	  randomString: function (n) {
 	    var s, i, r;
@@ -30895,86 +31169,6 @@
 	    }
 	    return s;
 	  },
-	
-	  /* This is a list of regex and processing functions for color conversions
-	   * to rgb objects.  Each entry contains:
-	   *   name: a name of the color conversion.
-	   *   regex: a regex that, if it matches the color string, will cause the
-	   *      process function to be invoked.
-	   *   process: a function that takes (color, match) with the original color
-	   *      string and the results of matching the regex.  It outputs an rgb
-	   *      color object or the original color string if there is still a
-	   *      parsing failure.
-	   * In general, these conversions are somewhat more forgiving than the css
-	   * specification (see https://drafts.csswg.org/css-color/) in that
-	   * percentages may be mixed with numbers, and that floating point values
-	   * are accepted for all numbers.  Commas are optional.  As per the latest
-	   * draft standard, rgb and rgba are aliases of each other, as are hsl and
-	   * hsla.
-	   * @memberof geo.util
-	   */
-	  cssColorConversions: [{
-	    name: 'rgb',
-	    regex: new RegExp(
-	      '^\\s*rgba?' +
-	      '\\(\\s*(\\d+\\.?\\d*|\\.\\d?)\\s*(%?)\\s*' +
-	      ',?\\s*(\\d+\\.?\\d*|\\.\\d?)\\s*(%?)\\s*' +
-	      ',?\\s*(\\d+\\.?\\d*|\\.\\d?)\\s*(%?)\\s*' +
-	      '(,?\\s*(\\d+\\.?\\d*|\\.\\d?)\\s*(%?)\\s*)?' +
-	      '\\)\\s*$'),
-	    process: function (color, match) {
-	      color = {
-	        r: Math.min(1, Math.max(0, +match[1] / (match[2] ? 100 : 255))),
-	        g: Math.min(1, Math.max(0, +match[3] / (match[4] ? 100 : 255))),
-	        b: Math.min(1, Math.max(0, +match[5] / (match[6] ? 100 : 255)))
-	      };
-	      if (match[7]) {
-	        color.a = Math.min(1, Math.max(0, +match[8] / (match[9] ? 100 : 1)));
-	      }
-	      return color;
-	    }
-	  }, {
-	    name: 'hsl',
-	    regex: new RegExp(
-	      '^\\s*hsla?' +
-	      '\\(\\s*(\\d+\\.?\\d*|\\.\\d?)\\s*(deg)?\\s*' +
-	      ',?\\s*(\\d+\\.?\\d*|\\.\\d?)\\s*%\\s*' +
-	      ',?\\s*(\\d+\\.?\\d*|\\.\\d?)\\s*%\\s*' +
-	      '(,?\\s*(\\d+\\.?\\d*|\\.\\d?)\\s*(%?)\\s*)?' +
-	      '\\)\\s*$'),
-	    process: function (color, match) {
-	      /* Conversion from https://www.w3.org/TR/2011/REC-css3-color-20110607
-	       */
-	      var hue_to_rgb = function (m1, m2, h) {
-	        h = h - Math.floor(h);
-	        if (h * 6 < 1) {
-	          return m1 + (m2 - m1) * h * 6;
-	        }
-	        if (h * 6 < 3) {
-	          return m2;
-	        }
-	        if (h * 6 < 4) {
-	          return m1 + (m2 - m1) * (2 / 3 - h) * 6;
-	        }
-	        return m1;
-	      };
-	
-	      var h = +match[1] / 360,
-	          s = Math.min(1, Math.max(0, +match[3] / 100)),
-	          l = Math.min(1, Math.max(0, +match[4] / 100)),
-	          m2 = l <= 0.5 ? l * (s + 1) : l + s - l * s,
-	          m1 = l * 2 - m2;
-	      color = {
-	        r: hue_to_rgb(m1, m2, h + 1 / 3),
-	        g: hue_to_rgb(m1, m2, h),
-	        b: hue_to_rgb(m1, m2, h - 1 / 3)
-	      };
-	      if (match[5]) {
-	        color.a = Math.min(1, Math.max(0, +match[6] / (match[7] ? 100 : 1)));
-	      }
-	      return color;
-	    }
-	  }],
 	
 	  /**
 	   * Convert a color to a standard rgb object.  Allowed inputs:
@@ -30989,21 +31183,22 @@
 	   * sure that all parameters are in the range of [0-1], but string inputs
 	   * are so validated.
 	   *
-	   * @param {object|string} color: one of the various input formats.
-	   * @returns {object} an rgb color object, possibly with an 'a' value.  If
-	   *    the input cannot be converted to a valid color, the input value is
-	   *    returned.
+	   * @param {geo.geoColor} color Any valid color input.
+	   * @returns {geo.geoColorObject} An rgb color object, possibly with an 'a'
+	   *    value.  If the input cannot be converted to a valid color, the input
+	   *    value is returned.
 	   * @memberof geo.util
 	   */
 	  convertColor: function (color) {
-	    if (color === undefined || (color.r !== undefined &&
+	    if (color === undefined || color === null || (color.r !== undefined &&
 	        color.g !== undefined && color.b !== undefined)) {
 	      return color;
 	    }
 	    var opacity;
 	    if (typeof color === 'string') {
-	      if (util.cssColors.hasOwnProperty(color)) {
-	        color = util.cssColors[color];
+	      var lowerColor = color.toLowerCase();
+	      if (util.cssColors.hasOwnProperty(lowerColor)) {
+	        color = util.cssColors[lowerColor];
 	      } else if (color.charAt(0) === '#') {
 	        if (color.length === 4 || color.length === 5) {
 	          /* interpret values of the form #rgb as #rrggbb and #rgba as
@@ -31019,13 +31214,13 @@
 	          }
 	          color = parseInt(color.slice(1, 7), 16);
 	        }
-	      } else if (color === 'transparent') {
+	      } else if (lowerColor === 'transparent') {
 	        opacity = color = 0;
-	      } else if (color.indexOf('(') >= 0) {
+	      } else if (lowerColor.indexOf('(') >= 0) {
 	        for (var idx = 0; idx < util.cssColorConversions.length; idx += 1) {
-	          var match = util.cssColorConversions[idx].regex.exec(color);
+	          var match = util.cssColorConversions[idx].regex.exec(lowerColor);
 	          if (match) {
-	            return util.cssColorConversions[idx].process(color, match);
+	            return util.cssColorConversions[idx].process(lowerColor, match);
 	          }
 	        }
 	      }
@@ -31037,14 +31232,54 @@
 	        b: ((color & 0xff)) / 255
 	      };
 	    }
-	    if (opacity !== undefined) {
+	    if (opacity !== undefined && color && color.r !== undefined) {
 	      color.a = opacity;
 	    }
 	    return color;
 	  },
 	
 	  /**
+	   * Convert a color (possibly with opacity) and an optional opacity value to
+	   * a color object that always has opacity.  The opacity is guaranteed to be
+	   * within [0-1].  A valid color object is always returned.
+	   *
+	   * @param {geo.geoColor} [color] Any valid color input.  If an invalid value
+	   *    or no value is supplied, the `defaultColor` is used.
+	   * @param {number} [opacity=1] A value from [0-1].  This is multipled with
+	   *    the opacity from `color`.
+	   * @param {geo.geoColorObject} [defaultColor={r: 0, g: 0, b: 0}] The color
+	   *    to use if an invalid color is supplied.
+	   * @returns {geo.geoColorObject} An rgba color object.
+	   * @memberof geo.util
+	   */
+	  convertColorAndOpacity: function (color, opacity, defaultColor) {
+	    color = util.convertColor(color);
+	    if (!color || color.r === undefined || color.g === undefined || color.b === undefined) {
+	      color = util.convertColor(defaultColor || {r: 0, g: 0, b: 0});
+	    }
+	    if (!color || color.r === undefined || color.g === undefined || color.b === undefined) {
+	      color = {r: 0, g: 0, b: 0};
+	    }
+	    color = {
+	      r: isFinite(color.r) && color.r >= 0 ? (color.r <= 1 ? +color.r : 1) : 0,
+	      g: isFinite(color.g) && color.g >= 0 ? (color.g <= 1 ? +color.g : 1) : 0,
+	      b: isFinite(color.b) && color.b >= 0 ? (color.b <= 1 ? +color.b : 1) : 0,
+	      a: util.isNonNullFinite(color.a) && color.a >= 0 && color.a < 1 ? +color.a : 1
+	    };
+	    if (util.isNonNullFinite(opacity) && opacity < 1) {
+	      color.a = opacity <= 0 ? 0 : color.a * opacity;
+	    }
+	    return color;
+	  },
+	
+	  /**
 	   * Convert a color to a six or eight digit hex value prefixed with #.
+	   *
+	   * @param {geo.geoColorObject} color The color object to convert.
+	   * @param {boolean} [allowAlpha] If truthy and `color` has a defined `a`
+	   *    value, include the alpha channel in the output.  If `'needed'`, only
+	   *    include the alpha channel if it is set and not 1.
+	   * @returns {string} A color string.
 	   * @memberof geo.util
 	   */
 	  convertColorToHex: function (color, allowAlpha) {
@@ -31056,17 +31291,38 @@
 	                     (Math.round(rgb.g * 255) << 8) +
 	                      Math.round(rgb.b * 255)).toString(16).slice(1);
 	    }
-	    if (rgb.a !== undefined && allowAlpha) {
+	    if (rgb.a !== undefined && allowAlpha && (rgb.a < 1 || allowAlpha !== 'needed')) {
 	      value += (256 + Math.round(rgb.a * 255)).toString(16).slice(1);
 	    }
 	    return value;
 	  },
+	  /**
+	   * Convert a color to a css rgba() value.
+	   *
+	   * @param {geo.geoColorObject} color The color object to convert.
+	   * @returns {string} A color string.
+	   * @memberof geo.util
+	   */
+	  convertColorToRGBA: function (color) {
+	    var rgb = util.convertColor(color);
+	    if (!rgb) {
+	      rgb = {r: 0, g: 0, b: 0};
+	    }
+	    if (!util.isNonNullFinite(rgb.a) || rgb.a > 1) {
+	      rgb.a = 1;
+	    }
+	    return 'rgba(' + Math.round(rgb.r * 255) + ', ' + Math.round(rgb.g * 255) +
+	           ', ' + Math.round(rgb.b * 255) + ', ' + +((+rgb.a).toFixed(5)) + ')';
+	  },
 	
 	  /**
-	   * Normalize a coordinate object into {x: ..., y: ..., z: ... } form.
-	   * Accepts 2-3d arrays,
-	   * latitude -> lat -> y
-	   * longitude -> lon -> lng -> x
+	   * Normalize a coordinate object into {@link geo.geoPosition} form.  The
+	   * input can be a 2 or 3 element array or an object with a variety of
+	   * properties.
+	   *
+	   * @param {object|array} p The point to convert.
+	   * @returns {geo.geoPosition} The point as an object with `x`, `y`, and `z`
+	   *    properties.
 	   * @memberof geo.util
 	   */
 	  normalizeCoordinates: function (p) {
@@ -31103,16 +31359,10 @@
 	  },
 	
 	  /**
-	   * Radius of the earth in meters, from the equatorial radius of SRID 4326.
-	   * @memberof geo.util
-	   */
-	  radiusEarth: 6378137,
-	
-	  /**
 	   * Compare two arrays and return if their contents are equal.
-	   * @param {array} a1 first array to compare
-	   * @param {array} a2 second array to compare
-	   * @returns {boolean} true if the contents of the arrays are equal.
+	   * @param {array} a1 First array to compare.
+	   * @param {array} a2 Second array to compare.
+	   * @returns {boolean} `true` if the contents of the arrays are equal.
 	   * @memberof geo.util
 	   */
 	  compareArrays: function (a1, a2) {
@@ -31122,11 +31372,11 @@
 	  },
 	
 	  /**
-	   * Create a vec3 that is always an array.  This should only be used if it
+	   * Create a `vec3` that is always an array.  This should only be used if it
 	   * will not be used in a WebGL context.  Plain arrays usually use 64-bit
-	   * float values, whereas vec3 defaults to 32-bit floats.
+	   * float values, whereas `vec3` defaults to 32-bit floats.
 	   *
-	   * @returns {Array} zeroed-out vec3 compatible array.
+	   * @returns {array} Zeroed-out vec3 compatible array.
 	   * @memberof geo.util
 	   */
 	  vec3AsArray: function () {
@@ -31134,11 +31384,27 @@
 	  },
 	
 	  /**
-	   * Create a mat4 that is always an array.  This should only be used if it
+	   * Create a `mat3` that is always an array.  This should only be used if it
 	   * will not be used in a WebGL context.  Plain arrays usually use 64-bit
-	   * float values, whereas mat4 defaults to 32-bit floats.
+	   * float values, whereas `mat3` defaults to 32-bit floats.
 	   *
-	   * @returns {Array} identity mat4 compatible array.
+	   * @returns {array} Identity `mat3` compatible array.
+	   * @memberof geo.util
+	   */
+	  mat3AsArray: function () {
+	    return [
+	      1, 0, 0,
+	      0, 1, 0,
+	      0, 0, 1
+	    ];
+	  },
+	
+	  /**
+	   * Create a `mat4` that is always an array.  This should only be used if it
+	   * will not be used in a WebGL context.  Plain arrays usually use 64-bit
+	   * float values, whereas `mat4` defaults to 32-bit floats.
+	   *
+	   * @returns {array} Identity `mat4` compatible array.
 	   * @memberof geo.util
 	   */
 	  mat4AsArray: function () {
@@ -31155,10 +31421,10 @@
 	   * is the correct size, return it.  Otherwise, allocate a new buffer; any
 	   * data in an old buffer is discarded.
 	   *
-	   * @param geom: the geometry to reference and modify.
-	   * @param srcName: the name of the source.
-	   * @param len: the number of elements for the array.
-	   * @returns {Float32Array}
+	   * @param {vgl.geometryData} geom The geometry to reference and modify.
+	   * @param {string} srcName The name of the source.
+	   * @param {number} len The number of elements for the array.
+	   * @returns {Float32Array} A buffer for the named source.
 	   * @memberof geo.util
 	   */
 	  getGeomBuffer: function (geom, srcName, len) {
@@ -31177,7 +31443,8 @@
 	   * Ensure that the input and modifiers properties of all actions are
 	   * objects, not plain strings.
 	   *
-	   * @param {Array} actions: an array of actions to adjust as needed.
+	   * @param {geo.actionRecord[]} actions An array of actions to adjust as
+	   *    needed.
 	   * @memberof geo.util
 	   */
 	  adjustActions: function (actions) {
@@ -31203,13 +31470,13 @@
 	  /**
 	   * Add an action to the list of handled actions.
 	   *
-	   * @param {Array} actions: an array of actions to adjust as needed.
-	   * @param {object} action: an object defining the action.  This must have
-	   *    action and event properties, and may have modifiers, name, and owner.
-	   *    Use action, name, and owner to make this entry distinct if it will
+	   * @param {geo.actionRecord[]} actions An array of actions to adjust as
+	   *    needed.
+	   * @param {geo.actionRecord} action An object defining the action.  Use
+	   *    `action`, `name`, and `owner` to make this entry distinct if it will
 	   *    need to be removed later.
-	   * @param {boolean} toEnd: the action is added at the beginning of the
-	   *    actions list unless toEnd is true.  Earlier actions prevent later
+	   * @param {boolean} toEnd The action is added at the beginning of the
+	   *    actions list unless `toEnd` is `true`.  Earlier actions prevent later
 	   *    actions with the similar input and modifiers.
 	   * @memberof geo.util
 	   */
@@ -31224,16 +31491,16 @@
 	
 	  /**
 	   * Check if an action is in the actions list.  An action matches if the
-	   * action, name, and owner match.  A null or undefined value will match all
-	   * actions.  If using an action object, this is the same as passing
-	   * (action.action, action.name, action.owner).
+	   * `action`, `name`, and `owner` match.  A `null` or `undefined` value will
+	   * match all actions.  If using a {@link geo.actionRecord} object, this is
+	   * the same as passing (`action.action`, `action.name`, `action.owner`).
 	   *
-	   * @param {Array} actions: an array of actions to search.
-	   * @param {object|string} action Either an action object or the name of an
-	   *    action.
-	   * @param {string} name Optional name associated with the action.
-	   * @param {string} owner Optional owner associated with the action.
-	   * @return action the first matching action or null.
+	   * @param {geo.actionRecord[]} actions An array of actions to search.
+	   * @param {geo.actionRecord|string} action Either an action object or the
+	   *    name of an action.
+	   * @param {string} [name] Optional name associated with the action.
+	   * @param {string} [owner] Optional owner associated with the action.
+	   * @returns {geo.actionRecord?} The first matching action or `null`.
 	   * @memberof geo.util
 	   */
 	  hasAction: function (actions, action, name, owner) {
@@ -31253,14 +31520,15 @@
 	  },
 	
 	  /**
-	   * Remove all matching actions.  Actions are matched as with hasAction.
+	   * Remove all matching actions.  Actions are matched as with `hasAction`.
 	   *
-	   * @param {Array} actions: an array of actions to adjust as needed.
-	   * @param {object|string} action Either an action object or the name of an
-	   *    action.
-	   * @param {string} name Optional name associated with the action.
-	   * @param {string} owner Optional owner associated with the action.
-	   * @return numRemoved the number of actions that were removed.
+	   * @param {geo.actionRecord[]} actions An array of actions to adjust as
+	   *    needed.
+	   * @param {geo.actionRecord|string} action Either an action object or the
+	   *    name of an action.
+	   * @param {string} [name] Optional name associated with the action.
+	   * @param {string} [owner] Optional owner associated with the action.
+	   * @returns {number} The number of actions that were removed.
 	   * @memberof geo.util
 	   */
 	  removeAction: function (actions, action, name, owner) {
@@ -31279,13 +31547,16 @@
 	  /**
 	   * Determine if the current inputs and modifiers match a known action.
 	   *
-	   * @param {object} inputs: an object where each input that is currently
-	   *    active is truthy.  Common inputs are left, right, middle, wheel.
-	   * @param {object} modifiers: an object where each currently applied
-	   *    modifier is truthy.  Common modifiers are shift, ctrl, alt, meta.
-	   * @param {Array} actions: a list of actions to compare to the inputs and
-	   *    modifiers.  The first action that matches will be returned.
-	   * @returns {object} action A matching action or undefined.
+	   * @param {object} inputs Aan object where each input that is currently
+	   *    active is truthy.  Common inputs are `left`, `right`, `middle`,
+	   *    `wheel`, `pan`, `rotate`.
+	   * @param {object} modifiers An object where each currently applied
+	   *    modifier is truthy.  Common modifiers are `shift`, `ctrl`, `alt`,
+	   *    `meta`.
+	   * @param {geo.actionRecord[]} actions A list of actions to compare to the
+	   *    inputs and modifiers.  The first action that matches will be
+	   *    returned.
+	   * @returns {geo.actionRecord} A matching action or `undefined`.
 	   * @memberof geo.util
 	   */
 	  actionMatch: function (inputs, modifiers, actions) {
@@ -31319,18 +31590,24 @@
 	  /**
 	   * Return recommended defaults for map parameters and osm or tile layer
 	   * paramaters where the expected intent is to use the map in pixel
-	   * coordinates (upper left is (0, 0), lower right is (width, height).  The
-	   * returned objects can be modified or extended.  For instance,
-	   *   var results = pixelCoordinateParams('#map', 10000, 9000);
-	   *   geo.map($.extend(results.map, {clampZoom: false}));
+	   * coordinates (upper left is (0, 0), lower right is (`width`, `height`).
 	   *
-	   * @param {string} [node] DOM selector for the map container
-	   * @param {number} width width of the whole map contents in pixels
-	   * @param {number} height height of the whole map contents in pixels
-	   * @param {number} tileWidth if an osm or tile layer is going to be used,
-	   *     the width of a tile.
-	   * @param {number} tileHeight if an osm or tile layer is going to be used,
-	   *     the height of a tile.
+	   * @example <caption>The returned objects can be modified or
+	   *    extended.</caption>
+	   * var results = pixelCoordinateParams('#map', 10000, 9000);
+	   * var map = geo.map($.extend(results.map, {clampZoom: false}));
+	   * map.createLayer('osm', results.layer);
+	   *
+	   * @param {string} [node] DOM selector for the map container.
+	   * @param {number} width Width of the whole map contents in pixels.
+	   * @param {number} height Height of the whole map contents in pixels.
+	   * @param {number} [tileWidth] If an osm or tile layer is going to be used,
+	   *    the width of a tile.
+	   * @param {number} [tileHeight] If an osm or tile layer is going to be used,
+	   *    the height of a tile.
+	   * @returns {object} An object with `map` and `layer` properties.  `map` is
+	   *    an object that can be passed to {@link geo.map}, and `layer` is an
+	   *    object that can be passed to `map.createLayer`.
 	   * @memberof geo.util
 	   */
 	  pixelCoordinateParams: function (node, width, height, tileWidth, tileHeight) {
@@ -31395,8 +31672,8 @@
 	  /**
 	   * Escape any character in a string that has a code point >= 127.
 	   *
-	   * @param {string} text: the string to escape.
-	   * @returns {string}: the escaped string.
+	   * @param {string} text The string to escape.
+	   * @returns {string} The escaped string.
 	   * @memberof geo.util
 	   */
 	  escapeUnicodeHTML: function (text) {
@@ -31413,9 +31690,10 @@
 	   * Check svg image and html img tags.  If the source is set, load images
 	   * explicitly and convert them to local data:image references.
 	   *
-	   * @param {selector} elem: a jquery selector that may contain images.
-	   * @returns {array}: a list of deferred objects that resolve when images
-	   *      are dereferences.
+	   * @param {jQuery.selector} elem A jQuery selector or element set that may
+	   *    contain images.
+	   * @returns {jQuery.Deferred[]} A list of deferred objects that resolve
+	   *    when images are dereferenced.
 	   * @memberof geo.util
 	   */
 	  dereferenceElements: function (elem) {
@@ -31457,13 +31735,13 @@
 	   * images within the element.  If there are other external references, the
 	   * image may not work due to security considerations.
 	   *
-	   * @param {object} elem: either a jquery selector or an html element.  This
-	   *      may contain multiple elements.  The direct parent and grandparent
-	   *      of the element are used for class information.
-	   * @param {number} parents: number of layers up to travel to get class
-	   *      information.
-	   * @returns {deferred}: a jquery deferred object which receives an HTML
-	   *      Image element when resolved.
+	   * @param {jQuery.selector} elem Either a jquery selector or an HTML
+	   *    element.  This may contain multiple elements.  The direct parent and
+	   *    grandparent of the element are used for class information.
+	   * @param {number} [parents] Number of layers up to travel to get class
+	   *    information.
+	   * @returns {jQuery.Deferred} A jquery deferred object which receives an
+	   *    HTML Image element when resolved.
 	   * @memberof geo.util
 	   */
 	  htmlToImage: function (elem, parents) {
@@ -31555,7 +31833,10 @@
 	  /**
 	   * Report on one or all of the tracked timings.
 	   *
-	   * @param {string} name name to report on, or undefined to report all.
+	   * @param {string} [name] A name to report on, or `undefined` to report all.
+	   * @returns {object} An object with timing information, or an object with
+	   *    properties for all tracked timings, each of which contains timing
+	   *    information.
 	   * @memberof geo.util
 	   */
 	  timeReport: function (name) {
@@ -31578,11 +31859,12 @@
 	
 	  /**
 	   * Note the start time of a function (or any other section of code).  This
-	   * should be paired with timeFunctionStop, which will collect statistics on
+	   * should be paired with `timeFunctionStop`, which will collect statistics on
 	   * the amount of time spent in a function.
 	   *
-	   * @param {string} name name to use for tracking the timing.
-	   * @param {boolean} reset if true, clear old tracking data.
+	   * @param {string} name Name to use for tracking the timing.
+	   * @param {boolean} reset If `true`, clear old tracking data for this named
+	   *    tracker.
 	   * @memberof geo.util
 	   */
 	  timeFunctionStart: function (name, reset) {
@@ -31596,9 +31878,9 @@
 	
 	  /**
 	   * Note the stop time of a function (or any other section of code).  This
-	   * should be paired with timeFunctionStart.
+	   * should be paired with `timeFunctionStart`.
 	   *
-	   * @param {string} name name to use for tracking the timing.
+	   * @param {string} name Name to use for tracking the timing.
 	   * @memberof geo.util
 	   */
 	  timeFunctionStop: function (name) {
@@ -31620,23 +31902,28 @@
 	  },
 	
 	  /**
-	   * Start or stop tracking the time spent in requestAnimationFrame.  If
+	   * Start or stop tracking the time spent in `requestAnimationFrame`.  If
 	   * tracked, the results can be fetched via
-	   * timeFunctionReport('requestAnimationFrame').
+	   * `timeFunctionReport('requestAnimationFrame')`.
 	   *
-	   * @param {boolean} stop falsy to start tracking, truthy to start tracking.
-	   * @param {boolean} reset if true, reset the statistics.
-	   * @param {number} threshold if present, set the threshold used in tracking
-	   *   slow callbacks.
-	   * @param {number} keep if present, set the number of recent frame times
-	   *   to track.
+	   * @param {boolean} [stop] Falsy to start tracking, truthy to start tracking.
+	   * @param {boolean} [reset] If truthy, reset the statistics.
+	   * @param {number} [threshold=15] If present, set the threshold in
+	   *    milliseconds used in tracking slow callbacks.
+	   * @param {number} [keep=200] If present, set the number of recent frame
+	   *    times to track.
 	   * @memberof geo.util
 	   */
 	  timeRequestAnimationFrame: function (stop, reset, threshold, keep) {
 	    if (!m_timingData.requestAnimationFrame || reset) {
 	      m_timingData.requestAnimationFrame = {
-	        count: 0, sum: 0, sum2: 0, max: 0, above_threshold: 0,
-	        recent: [], recentsub: []
+	        count: 0,
+	        sum: 0,
+	        sum2: 0,
+	        max: 0,
+	        above_threshold: 0,
+	        recent: [],
+	        recentsub: []
 	      };
 	    }
 	    if (threshold) {
@@ -31704,6 +31991,46 @@
 	  },
 	
 	  /**
+	   * Test if an item is an object.  This uses typeof not instanceof, since
+	   * instanceof will return false for some things that we expect to be objects.
+	   *
+	   * @param {*} value The item to test.
+	   * @returns {boolean} True if the tested item is an object.
+	   */
+	  isObject: function (value) {
+	    var type = typeof value;
+	    return value !== null && value !== undefined && (type === 'object' || type === 'function');
+	  },
+	
+	  ///////////////////////////////////////////////////////////////////////////
+	  /*
+	   * Utility member properties.
+	   */
+	  ///////////////////////////////////////////////////////////////////////////
+	
+	  /**
+	   * Radius of the earth in meters, from the equatorial radius of SRID 4326.
+	   * @memberof geo.util
+	   */
+	  radiusEarth: 6378137,
+	
+	  /**
+	   * A regular expression string that will parse a number (integer or floating
+	   * point) for CSS properties.
+	   * @memberof geo.util
+	   */
+	  cssNumberRegex: '[+-]?(?:\\d+\\.?\\d*|\\.\\d+)(?:[eE][+-]?\\d+)?',
+	
+	  /**
+	   * A dictionary of conversion factors for angular CSS measurements.
+	   * @memberof geo.util
+	   */
+	  cssAngleUnitsBase: {deg: 360, grad: 400, rad: 2 * Math.PI, turn: 1},
+	
+	  /**
+	   * The predefined CSS colors.  See
+	   * {@link https://drafts.csswg.org/css-color}.
+	   *
 	   * @memberof geo.util
 	   */
 	  cssColors: {
@@ -31858,6 +32185,89 @@
 	  }
 	};
 	
+	///////////////////////////////////////////////////////////////////////////
+	/*
+	 * Utility member properties that need to refer to util functions and
+	 * properties.
+	 */
+	///////////////////////////////////////////////////////////////////////////
+	
+	/**
+	 * A list of regex and processing functions for color conversions to rgb
+	 * objects.  Each entry is a {@link geo.util.cssColorConversionRecord}.  In
+	 * general, these conversions are somewhat more forgiving than the css
+	 * specification (see https://drafts.csswg.org/css-color/) in that
+	 * percentages may be mixed with numbers, and that floating point values are
+	 * accepted for all numbers.  Commas are optional.  As per the latest draft
+	 * standard, `rgb` and `rgba` are aliases of each other, as are `hsl` and
+	 * `hsla`.
+	 * @alias cssColorConversions
+	 * @memberof geo.util
+	 */
+	util.cssColorConversions = [{
+	  name: 'rgb',
+	  regex: new RegExp(
+	    '^\\s*rgba?' +
+	    '\\(\\s*(' + util.cssNumberRegex + ')\\s*(%?)\\s*' +
+	    ',?\\s*(' + util.cssNumberRegex + ')\\s*(%?)\\s*' +
+	    ',?\\s*(' + util.cssNumberRegex + ')\\s*(%?)\\s*' +
+	    '([/,]?\\s*(' + util.cssNumberRegex + ')\\s*(%?)\\s*)?' +
+	    '\\)\\s*$'),
+	  process: function (color, match) {
+	    color = {
+	      r: Math.min(1, Math.max(0, +match[1] / (match[2] ? 100 : 255))),
+	      g: Math.min(1, Math.max(0, +match[3] / (match[4] ? 100 : 255))),
+	      b: Math.min(1, Math.max(0, +match[5] / (match[6] ? 100 : 255)))
+	    };
+	    if (match[7]) {
+	      color.a = Math.min(1, Math.max(0, +match[8] / (match[9] ? 100 : 1)));
+	    }
+	    return color;
+	  }
+	}, {
+	  name: 'hsl',
+	  regex: new RegExp(
+	    '^\\s*hsla?' +
+	    '\\(\\s*(' + util.cssNumberRegex + ')\\s*(deg|grad|rad|turn)?\\s*' +
+	    ',?\\s*(' + util.cssNumberRegex + ')\\s*%\\s*' +
+	    ',?\\s*(' + util.cssNumberRegex + ')\\s*%\\s*' +
+	    '([/,]?\\s*(' + util.cssNumberRegex + ')\\s*(%?)\\s*)?' +
+	    '\\)\\s*$'),
+	  process: function (color, match) {
+	    /* Conversion from https://www.w3.org/TR/2011/REC-css3-color-20110607
+	     */
+	    var hue_to_rgb = function (m1, m2, h) {
+	      h = h - Math.floor(h);
+	      if (h * 6 < 1) {
+	        return m1 + (m2 - m1) * h * 6;
+	      }
+	      if (h * 6 < 3) {
+	        return m2;
+	      }
+	      if (h * 6 < 4) {
+	        return m1 + (m2 - m1) * (2 / 3 - h) * 6;
+	      }
+	      return m1;
+	    };
+	
+	    var h = +match[1] / (util.cssAngleUnitsBase[match[2]] || 360),
+	        s = Math.min(1, Math.max(0, +match[3] / 100)),
+	        l = Math.min(1, Math.max(0, +match[4] / 100)),
+	        m2 = l <= 0.5 ? l * (s + 1) : l + s - l * s,
+	        m1 = l * 2 - m2;
+	    color = {
+	      r: hue_to_rgb(m1, m2, h + 1 / 3),
+	      g: hue_to_rgb(m1, m2, h),
+	      b: hue_to_rgb(m1, m2, h - 1 / 3)
+	    };
+	    if (match[5]) {
+	      color.a = Math.min(1, Math.max(0, +match[6] / (match[7] ? 100 : 1)));
+	    }
+	    return color;
+	  }
+	}];
+	
+	/* Add additional utilities to the main object. */
 	$.extend(util, throttle, mockVGL);
 
 
@@ -50331,10 +50741,87 @@
 	var geo_event = __webpack_require__(15);
 	
 	/**
-	 * Create a new instance of class feature
+	 * General specification for features.
 	 *
-	 * @class geo.feature
+	 * @typedef {object} geo.feature.spec
+	 * @property {geo.layer} [layer] the parent layer associated with the feature.
+	 * @property {boolean} [selectionAPI=false] If truthy, enable selection events
+	 *      on the feature.  Selection events are those in `geo.event.feature`.
+	 *      They can be bound via a call like
+	 *      <pre><code>
+	 *      feature.geoOn(geo.event.feature.mousemove, function (evt) {
+	 *        // do something with the feature
+	 *      });
+	 *      </code></pre>
+	 *      where the handler is passed a `geo.feature.event` object.
+	 * @property {boolean} [visible=true] If truthy, show the feature.  If falsy,
+	 *      hide the feature and do not allow interaction with it.
+	 * @property {string} [gcs] The interface gcs for this feature.  If `undefined`
+	 *      or `null`, this uses the layer's interface gcs.  This is a string used
+	 *      by {@linkcode geo.transform}.
+	 * @property {number} [bin=0] The bin number is used to determine the order
+	 *      of multiple features on the same layer.  It has no effect except on the
+	 *      vgl renderer.  A negative value hides the feature without stopping
+	 *      interaction with it.  Otherwise, more features with higher bin numbers
+	 *      are drawn above those with lower bin numbers.  If two features have the
+	 *      same bin number, their order relative to one another is indeterminate
+	 *      and may be unstable.
+	 * @property {geo.renderer?} [renderer] A reference to the renderer used for
+	 *      the feature.
+	 * @property {object} [style] An object that contains style values for the
+	 *      feature.
+	 * @property {function|number} [style.opacity=1] The opacity on a scale of 0 to
+	 *      1.
+	 */
+	
+	/**
+	 * @typedef {geo.feature.spec} geo.feature.createSpec
+	 * @property {string} type A supported feature type.
+	 * @property {object[]} [data=[]] An array of arbitrary objects used to
+	 *  construct the feature.  These objects (and their associated indices in the
+	 *  array) will be passed back to style and attribute accessors provided by the
+	 *  user.
+	 */
+	
+	/**
+	 * @typedef {geo.event} geo.feature.event
+	 * @property {number} index The index of the feature within the data array.
+	 * @property {object} data The data element associated with the indexed
+	 *      feature.
+	 * @property {geo.mouseState} mouse The mouse information during the event.
+	 * @property {object} [extra] Additional information about the feature.  This
+	 *      is sometimes used to identify a subsection of the feature.
+	 * @property {number} [eventID] A monotonically increasing number identifying
+	 *      this feature event loop.  This is provided on
+	 *      `geo.event.feature.mousemove`, `geo.event.feature.mouseclick`,
+	 *      `geo.event.feature.mouseover`, `geo.event.feature.mouseout`,
+	 *      `geo.event.feature.brush`, and `geo.event.feature.brushend`
+	 *      events, since each of those can trigger multiple events for one mouse
+	 *      action (all events triggered by the same mouse action will have the
+	 *      same `eventID`).
+	 * @property {boolean} [top] `true` if this is the top-most feature that the
+	 *      mouse is over.  Only the top-most feature gets
+	 *      `geo.event.feature.mouseon` events, whereas multiple features can get
+	 *      other events.
+	 */
+	
+	/**
+	 * @typedef {object} geo.feature.searchResult
+	 * @property {object[]} found A list of elements from the data array that were
+	 *      found by the search.
+	 * @property {number[]} index A list of the indices of the elements that were
+	 *      found by the search.
+	 * @property {object[]} [extra] A list of additional information per found
+	 *      element.  The information is passed to events without change.
+	 */
+	
+	/**
+	 * Create a new instance of class feature.
+	 *
+	 * @class
+	 * @alias geo.feature
 	 * @extends geo.sceneObject
+	 * @param {geo.feature.spec} [arg] A feature specification.
 	 * @returns {geo.feature}
 	 */
 	var feature = function (arg) {
@@ -50371,7 +50858,9 @@
 	  this._subfeatureStyles = {};
 	
 	  /**
-	   * Private method to bind mouse handlers on the map element.
+	   * Private method to bind mouse handlers on the map element.  This does
+	   * nothing if the selectionAPI is turned off.  Otherwise, it first unbinds
+	   * any existing handlers and then binds handlers.
 	   */
 	  this._bindMouseHandlers = function () {
 	
@@ -50401,36 +50890,14 @@
 	  };
 	
 	  /**
-	   * For binding mouse events, use functions with
-	   * the following call signatures:
+	   * Search for features containing the given point.  This should be defined in
+	   * relevant subclasses.
 	   *
-	   * function handler(arg) {
-	   *   // arg.data - the data object of the feature
-	   *   // arg.index - the index inside the data array of the featue
-	   *   // arg.mouse - mouse information object (see src/core/mapInteractor.js)
-	   * }
-	   *
-	   * i.e.
-	   *
-	   * feature.geoOn(geo.event.feature.mousemove, function (arg) {
-	   *   // do something with the feature marker.
-	   * });
+	   * @param {geo.geoPosition} geo Coordinate in interface gcs.
+	   * @returns {geo.feature.searchResult} An object with a list of features and
+	   *    feature indices that are located at the specified point.
 	   */
-	
-	  /**
-	   * Search for features containing the given point.
-	   *
-	   * Returns an object: ::
-	   *
-	   *   {
-	   *     data: [...] // an array of data objects for matching features
-	   *     index: [...] // an array of indices of the matching features
-	   *   }
-	   *
-	   * @argument {Object} coordinate
-	   * @returns {Object}
-	   */
-	  this.pointSearch = function () {
+	  this.pointSearch = function (geo) {
 	    // base class method does nothing
 	    return {
 	      index: [],
@@ -50439,7 +50906,16 @@
 	  };
 	
 	  /**
-	   * Returns an array of line indices that are contained in the given box.
+	   * Search for features contained within a rectangilar region.  This should be
+	   * defined in relevant subclasses.
+	   *
+	   * @param {geo.geoPosition} lowerLeft Lower-left corner in gcs coordinates.
+	   * @param {geo.geoPosition} upperRight Upper-right corner in gcs coordinates.
+	   * @param {object} [opts] Additional search options.
+	   * @param {boolean} [opts.partial=false] If truthy, include features that are
+	   *    partially in the box, otherwise only include features that are fully
+	   *    within the region.
+	   * @returns {number[]} A list of features indices that are in the box region.
 	   */
 	  this.boxSearch = function (lowerLeft, upperRight, opts) {
 	    // base class method does nothing
@@ -50447,7 +50923,14 @@
 	  };
 	
 	  /**
-	   * Private mousemove handler
+	   * Private mousemove handler.  This uses `pointSearch` to determine which
+	   * features the mouse is over, then fires appropriate events.
+	   *
+	   * @fires geo.event.feature.mouseover
+	   * @fires geo.event.feature.mouseout
+	   * @fires geo.event.feature.mousemove
+	   * @fires geo.event.feature.mouseoff
+	   * @fires geo.event.feature.mouseon
 	   */
 	  this._handleMousemove = function () {
 	    var mouse = m_this.layer().map().interactor().mouse(),
@@ -50541,7 +51024,12 @@
 	  };
 	
 	  /**
-	   * Private mouseclick handler
+	   * Private mouseclick handler.  This uses `pointSearch` to determine which
+	   * features the mouse is over, then fires a click event for each such
+	   * feature.
+	   *
+	   * @param {geo.event} evt The event that triggered this handler.
+	   * @fires geo.event.feature.mouseclick
 	   */
 	  this._handleMouseclick = function (evt) {
 	    var mouse = m_this.layer().map().interactor().mouse(),
@@ -50564,7 +51052,11 @@
 	  };
 	
 	  /**
-	   * Private brush handler.
+	   * Private brush handler.  This uses `boxSearch` to determine which features
+	   * the brush includes, then fires appropriate events.
+	   *
+	   * @param {geo.brushSelection} brush The current brush selection.
+	   * @fires geo.event.feature.brush
 	   */
 	  this._handleBrush = function (brush) {
 	    var idx = m_this.boxSearch(brush.gcs.lowerLeft, brush.gcs.upperRight),
@@ -50584,7 +51076,11 @@
 	  };
 	
 	  /**
-	   * Private brushend handler.
+	   * Private brushend handler.  This uses `boxSearch` to determine which
+	   * features the brush includes, then fires appropriate events.
+	   *
+	   * @param {geo.brushSelection} brush The current brush selection.
+	   * @fires geo.event.feature.brushend
 	   */
 	  this._handleBrushend = function (brush) {
 	    var idx = m_this.boxSearch(brush.gcs.lowerLeft, brush.gcs.upperRight),
@@ -50604,7 +51100,16 @@
 	  };
 	
 	  /**
-	   * Get/Set style used by the feature
+	   * Get/Set style used by the feature.
+	   *
+	   * @param {string|object} [arg1] If `undefined`, return the current style
+	   *    object.  If a string and `arg2` is undefined, return the style
+	   *    associated with the specified key.  If a string and `arg2` is defined,
+	   *    set the named style to the specified value.  Otherwise, extend the
+	   *    current style with the values in the specified object.
+	   * @param {*} [arg2] If `arg1` is a string, the new value for that style.
+	   * @returns {object|this} Either the entire style object, the value of a
+	   *    specific style, or the current class instance.
 	   */
 	  this.style = function (arg1, arg2) {
 	    if (arg1 === undefined) {
@@ -50624,11 +51129,12 @@
 	
 	  /**
 	   * A uniform getter that always returns a function even for constant styles.
-	   * Maybe extend later to support accessor-like objects.  If undefined input,
-	   * return all the styles as an object.
+	   * This can also return all defined styles as functions in a single object.
 	   *
-	   * @param {string|undefined} key
-	   * @return {function}
+	   * @param {string} [key] If defined, return a function for the named style.
+	   *    Otherwise, return an object with a function for all defined styles.
+	   * @returns {function|object} Either a function for the named style or an
+	   *    object with functions for all defined styles.
 	   */
 	  this.style.get = function (key) {
 	    var out;
@@ -50661,22 +51167,22 @@
 	  /**
 	   * Set style(s) from array(s).  For each style, the array should have one
 	   * value per data item.  The values are not converted or validated.  Color
-	   * values should be objects with r, g, b values on a scale of [0, 1].  If
-	   * invalidate values are given the behavior is undefined.
+	   * values should be `geo.geoColorObject`s.  If invalid values are given the
+	   * behavior is undefined.
 	   *   For some feature styles, if the first entry of an array is itself an
 	   * array, then each entry of the array is expected to be an array, and values
 	   * are used from these subarrays.  This allows a style to apply, for
 	   * instance, per vertex of a data item rather than per data item.
 	   *
-	   * @param {string|object} keyOrObject: either the name of a single style or
+	   * @param {string|object} keyOrObject Either the name of a single style or
 	   *    an object where the keys are the names of styles and the values are
 	   *    each arrays.
-	   * @param {array} styleArray: if keyOrObject is a string, an array of values
+	   * @param {array} styleArray If keyOrObject is a string, an array of values
 	   *    for the style.  If keyOrObject is an object, this parameter is ignored.
-	   * @param {boolean} refresh: true to redraw the feature when it has been
-	   *    updated.  If an object with styles is passed, the redraw is only done
-	   *    once.
-	   * @returns {object} the feature
+	   * @param {boolean} [refresh=false] `true` to redraw the feature when it has
+	   *    been updated.  If an object with styles is passed, the redraw is only
+	   *    done once.
+	   * @returns {this} The feature instance.
 	   */
 	  this.updateStyleFromArray = function (keyOrObject, styleArray, refresh) {
 	    if (typeof keyOrObject !== 'string') {
@@ -50684,7 +51190,7 @@
 	        m_this.updateStyleFromArray(key, value);
 	      });
 	    } else {
-	      /* colors area lways expected to be objects with r, g, b values, so for
+	      /* colors are always expected to be objects with r, g, b values, so for
 	       * any color, make sure we don't have undefined entries. */
 	      var fallback;
 	      if (keyOrObject.toLowerCase().match(/color$/)) {
@@ -50719,25 +51225,36 @@
 	  };
 	
 	  /**
-	   * Get layer referenced by the feature
+	   * Get the layer referenced by the feature.
+	   *
+	   * @returns {geo.layer} The layer associated with the feature.
 	   */
 	  this.layer = function () {
 	    return m_layer;
 	  };
 	
 	  /**
-	   * Get renderer used by the feature
+	   * Get the renderer used by the feature.
+	   *
+	   * @returns {geo.renderer} The renderer used to render the feature.
 	   */
 	  this.renderer = function () {
 	    return m_renderer;
 	  };
 	
 	  /**
-	   * Get/Set projection of the feature
+	   * Get/Set the projection of the feature.
+	   *
+	   * @param {string?} [val] If `undefined`, return the current gcs.  If
+	   *    `null`, use the map's interface gcs.  Otherwise, set a new value for
+	   *    the gcs.
+	   * @returns {string|this} A string used by {@linkcode geo.transform}.  If the
+	   *    map interface gcs is in use, that value will be returned.  If the gcs
+	   *    is set, return the current class instance.
 	   */
 	  this.gcs = function (val) {
 	    if (val === undefined) {
-	      if (m_gcs === undefined && m_renderer) {
+	      if ((m_gcs === undefined || m_gcs === null) && m_renderer) {
 	        return m_renderer.layer().map().ingcs();
 	      }
 	      return m_gcs;
@@ -50749,14 +51266,12 @@
 	  };
 	
 	  /**
-	   * Convert from the renderer's input gcs coordinates to display coordinates.
+	   * Convert from the feature's gcs coordinates to display coordinates.
 	   *
-	   * @param {object} c The input coordinate to convert
-	   * @param {object} c.x
-	   * @param {object} c.y
-	   * @param {object} [c.z=0]
-	   * @return {object} Display space coordinates
+	   * @param {geo.geoPosition} c The input coordinate to convert.
+	   * @returns {geo.screenPosition} Display space coordinates.
 	   */
+	  ////////////////////////////////////////////////////////////////////////////
 	  this.featureGcsToDisplay = function (c) {
 	    var map = m_renderer.layer().map();
 	    c = map.gcsToWorld(c, m_this.gcs());
@@ -50768,14 +51283,16 @@
 	  };
 	
 	  /**
-	   * Get/Set visibility of the feature
+	   * Get/Set the visibility of the feature.
 	   *
-	   * @param {boolean|undefined} val: undefined to return the visibility, a
-	   *    boolean to change the visibility.
-	   * @param {boolean} direct: if true, when getting the visibility, disregard
-	   *    the visibility of the parent layer, and when setting, refresh the state
-	   *    regardless of whether it has changed or not.
-	   * @return {boolean|object} either the visibility (if getting) or the feature
+	   * @param {boolean} [val] A boolean to change the visibility, or `undefined`
+	   *    to return the visibility.
+	   * @param {boolean} [direct] If `true`, when getting the visibility,
+	   *    disregard the visibility of the parent layer, and when setting, refresh
+	   *    the state regardless of whether it has changed or not.  Otherwise, the
+	   *    functional visibility is returned, where both the feature and the layer
+	   *    must be visible for a `true` result.
+	   * @returns {boolean|this} Either the visibility (if getting) or the feature
 	   *    (if setting).
 	   */
 	  this.visible = function (val, direct) {
@@ -50807,6 +51324,11 @@
 	  /**
 	   * Get/Set a list of dependent features.  Dependent features have their
 	   * visibility changed at the same time as the feature.
+	   *
+	   * @param {geo.feature[]} [arg] If specified, the new list of dependent
+	   *    features.  Otherwise, return the current list of dependent features.
+	   * @returns {geo.feature[]|this} The current list of dependent features or
+	   *    a reference to `this`.
 	   */
 	  this.dependentFeatures = function (arg) {
 	    if (arg === undefined) {
@@ -50817,9 +51339,17 @@
 	  };
 	
 	  /**
-	   * Get/Set bin of the feature
+	   * Get/Set bin of the feature.  The bin number is used to determine the order
+	   * of multiple features on the same layer.  It has no effect except on the
+	   * vgl renderer.  A negative value hides the feature without stopping
+	   * interaction with it.  Otherwise, more features with higher bin numbers are
+	   * drawn above those with lower bin numbers.  If two features have the same
+	   * bin number, their order relative to one another is indeterminate and may
+	   * be unstable.
 	   *
-	   * Bin number is typically used for sorting the order of rendering
+	   * @param {number} [val] The new bin number.  If `undefined`, return the
+	   *    current bin number.
+	   * @returns {number|this} The current bin number or a reference to `this`.
 	   */
 	  this.bin = function (val) {
 	    if (val === undefined) {
@@ -50832,7 +51362,11 @@
 	  };
 	
 	  /**
-	   * Get/Set timestamp of data change
+	   * Get/Set timestamp of data change.
+	   *
+	   * @param {geo.timestamp} [val] The new data timestamp object or `undefined`
+	   *    to get the current data timestamp object.
+	   * @returns {geo.timestamp|this}
 	   */
 	  this.dataTime = function (val) {
 	    if (val === undefined) {
@@ -50845,7 +51379,11 @@
 	  };
 	
 	  /**
-	   * Get/Set timestamp of last time build happened
+	   * Get/Set timestamp of last time a build happened.
+	   *
+	   * @param {geo.timestamp} [val] The new build timestamp object or `undefined`
+	   *    to get the current build timestamp object.
+	   * @returns {geo.timestamp|this}
 	   */
 	  this.buildTime = function (val) {
 	    if (val === undefined) {
@@ -50858,7 +51396,11 @@
 	  };
 	
 	  /**
-	   * Get/Set timestamp of last time update happened
+	   * Get/Set timestamp of last time an update happened.
+	   *
+	   * @param {geo.timestamp} [val] The new update timestamp object or
+	   *    `undefined` to get the current update timestamp object.
+	   * @returns {geo.timestamp|this}
 	   */
 	  this.updateTime = function (val) {
 	    if (val === undefined) {
@@ -50871,9 +51413,14 @@
 	  };
 	
 	  /**
-	   * Get/Set the data array for the feature.
+	   * Get/Set the data array for the feature.  This is equivalent to getting or
+	   * setting the `data` style, except that setting the data array via this
+	   * method updates the data timestamp, whereas setting it via the style does
+	   * not.
 	   *
-	   * @returns {Array|this}
+	   * @param {array} [data] A new data array or `undefined` to return the
+	   *    existing array.
+	   * @returns {array|this}
 	   */
 	  this.data = function (data) {
 	    if (data === undefined) {
@@ -50889,12 +51436,12 @@
 	  /**
 	   * Get/Set if the selection API is enabled for this feature.
 	   *
-	   * @param {boolean|undefined} val: undefined to return the selectionAPI
-	   *    state, or a boolean to change the state.
-	   * @param {boolean} direct: if true, when getting the selectionAPI state,
+	   * @param {boolean} [arg] `undefined` to return the selectionAPI state, or a
+	   *    boolean to change the state.
+	   * @param {boolean} [direct] If `true`, when getting the selectionAPI state,
 	   *    disregard the state of the parent layer, and when setting, refresh the
 	   *    state regardless of whether it has changed or not.
-	   * @return {boolean|object} either the selectionAPI state (if getting) or the
+	   * @returns {boolean|this} Either the selectionAPI state (if getting) or the
 	   *    feature (if setting).
 	   */
 	  this.selectionAPI = function (arg, direct) {
@@ -50914,9 +51461,9 @@
 	  };
 	
 	  /**
-	   * Initialize
+	   * Initialize the class instance.  Derived classes should implement this.
 	   *
-	   * Derived class should implement this
+	   * @param {geo.feature.spec} arg The feature specification.
 	   */
 	  this._init = function (arg) {
 	    if (!m_layer) {
@@ -50929,25 +51476,26 @@
 	  };
 	
 	  /**
-	   * Build
+	   * Build.
 	   *
-	   * Derived class should implement this
+	   * Derived classes should implement this.
 	   */
 	  this._build = function () {
 	  };
 	
 	  /**
-	   * Update
+	   * Update.
 	   *
-	   * Derived class should implement this
+	   * Derived classes should implement this.
 	   */
 	  this._update = function () {
 	  };
 	
 	  /**
-	   * Destroy
+	   * Destroy.  Unbind mouse handlers, clear internal variables, and call the
+	   * parent destroy method.
 	   *
-	   * Derived class should implement this
+	   * Derived classes should implement this.
 	   */
 	  this._exit = function () {
 	    m_this._unbindMouseHandlers();
@@ -50961,32 +51509,19 @@
 	};
 	
 	/**
-	 * The most recent feature event triggered.
+	 * The most recent `geo.feature.event` triggered.
 	 * @type {number}
 	 */
 	feature.eventID = 0;
 	
 	/**
-	 * General object specification for feature types.
-	 * @typedef geo.feature.spec
-	 * @type {object}
-	 * @property {string} type A supported feature type.
-	 * @property {object[]} [data=[]] An array of arbitrary objects used to
-	 * construct the feature.  These objects (and their associated
-	 * indices in the array) will be passed back to style and attribute
-	 * accessors provided by the user.  In general the number of
-	 * 'markers' drawn will be equal to the length of this array.
-	 */
-	
-	/**
-	 * Create a feature from an object.  The implementation here is
-	 * meant to define the general interface of creating features
-	 * from a javascript object.  See documentation from individual
-	 * feature types for specific details.  In case of an error in
-	 * the arguments this method will return null;
-	 * @param {geo.layer} layer The layer to add the feature to
-	 * @param {geo.feature.spec} [spec={}] The object specification
-	 * @returns {geo.feature|null}
+	 * Create a feature.  This defines a general interface; see individual feature
+	 * types for specific details.
+	 *
+	 * @param {geo.layer} layer The layer to add the feature to.
+	 * @param {geo.feature.spec} spec The feature specification.  At least the
+	 *      `type` must be specified.
+	 * @returns {geo.feature|null} The created feature or `null` for a failure.
 	 */
 	feature.create = function (layer, spec) {
 	  'use strict';
@@ -51001,7 +51536,7 @@
 	    return null;
 	  }
 	  var type = spec.type;
-	  var feature = layer.createFeature(type);
+	  var feature = layer.createFeature(type, spec);
 	  if (!feature) {
 	    console.warn('Could not create feature type "' + type + '"');
 	    return null;
@@ -53332,41 +53867,47 @@
 	var feature = __webpack_require__(213);
 	
 	/**
-	 * Create a new instance of class polygonFeature
+	 * Polygon feature specification.
 	 *
-	 * @class geo.polygonFeature
-	 * @extends geo.feature
-	 * @param {Object} arg Options object
-	 * @param {Object|Function} [arg.position] Position of the data.  Default is
+	 * @typedef {geo.feature.spec} geo.polygonFeature.spec
+	 * @param {object|Function} [position] Position of the data.  Default is
 	 *   (data).
-	 * @param {Object|Function} [arg.polygon] Polygons from the data.  Default is
-	 *   (data).  Typically, the data is an array of polygons, each of which is
-	 *   of the form {outer: [(coordinates)], inner: [[(coordinates of first
-	 *   hole)], [(coordinates of second hole)], ...]}.  The inner record is
-	 *   optional.  Alternately, if there are no holes, a polygon can just be an
-	 *   array of coordinates.  Coordinates are in the form {x: (x), y: (y),
-	 *   z: (z)}, with z being optional.  The first and last point of each polygon
-	 *   must be the same.
-	 * @param {Object} [arg.style] Style object with default style options.
-	 * @param {boolean|Function} [arg.style.fill] True to fill polygon.  Defaults
-	 *   to true.
-	 * @param {Object|Function} [arg.style.fillColor] Color to fill each polygon.
+	 * @param {object|Function} [polygon] Polygons from the data.  Default is
+	 *   (data).  Typically, the data is an array of polygons, each of which is of
+	 *   the form {outer: [(coordinates)], inner: [[(coordinates of first hole)],
+	 *   [(coordinates of second hole)], ...]}.  The inner record is optional.
+	 *   Alternately, if there are no holes, a polygon can just be an array of
+	 *   coordinates in the form of geo.geoPosition.  The first and last point of
+	 *   each polygon may be the same.
+	 * @param {object} [style] Style object with default style options.
+	 * @param {boolean|Function} [style.fill] True to fill polygon.  Defaults to
+	 *   true.
+	 * @param {object|Function} [style.fillColor] Color to fill each polygon.  The
+	 *   color can vary by vertex.  Colors can be css names or hex values, or an
+	 *   object with r, g, b on a [0-1] scale.
+	 * @param {number|Function} [style.fillOpacity] Opacity for each polygon.  The
+	 *   opacity can vary by vertex.  Opacity is on a [0-1] scale.
+	 * @param {boolean|Function} [style.stroke] True to stroke polygon.  Defaults
+	 *   to false.
+	 * @param {object|Function} [style.strokeColor] Color to stroke each polygon.
 	 *   The color can vary by vertex.  Colors can be css names or hex values, or
 	 *   an object with r, g, b on a [0-1] scale.
-	 * @param {number|Function} [arg.style.fillOpacity] Opacity for each polygon.
-	 *   The opacity can vary by vertex.  Opacity is on a [0-1] scale.
-	 * @param {boolean|Function} [arg.style.stroke] True to stroke polygon.
-	 *   Defaults to false.
-	 * @param {Object|Function} [arg.style.strokeColor] Color to stroke each
-	 *   polygon.  The color can vary by vertex.  Colors can be css names or hex
-	 *   values, or an object with r, g, b on a [0-1] scale.
-	 * @param {number|Function} [arg.style.strokeOpacity] Opacity for each polygon
+	 * @param {number|Function} [style.strokeOpacity] Opacity for each polygon
 	 *   stroke.  The opacity can vary by vertex.  Opacity is on a [0-1] scale.
-	 * @param {number|Function} [arg.style.strokeWidth] The weight of the polygon
+	 * @param {number|Function} [style.strokeWidth] The weight of the polygon
 	 *   stroke in pixels.  The width can vary by vertex.
-	 * @param {boolean|Function} [arg.style.uniformPolygon] Boolean indicating if
-	 *   each polygon has a uniform style (uniform fill color, fill opacity, stroke
+	 * @param {boolean|Function} [style.uniformPolygon] Boolean indicating if each
+	 *   polygon has a uniform style (uniform fill color, fill opacity, stroke
 	 *   color, and stroke opacity).   Defaults to false.  Can vary by polygon.
+	 */
+	
+	/**
+	 * Create a new instance of class polygonFeature.
+	 *
+	 * @class
+	 * @alias geo.polygonFeature
+	 * @extends geo.feature
+	 * @param {geo.polygonFeature.spec} arg
 	 * @returns {geo.polygonFeature}
 	 */
 	var polygonFeature = function (arg) {
@@ -53407,10 +53948,9 @@
 	  /**
 	   * Get/set data.
 	   *
-	   * @memberof geo.polygonFeature
-	   * @param {Object} [data] if specified, use this for the data and return the
+	   * @param {object} [arg] if specified, use this for the data and return the
 	   *    feature.  If not specified, return the current data.
-	   * @returns {geo.polygonFeature|Object}
+	   * @returns {geo.polygonFeature|object}
 	   */
 	  this.data = function (arg) {
 	    var ret = s_data(arg);
@@ -53426,7 +53966,6 @@
 	   * the computation in world coordinates, but we will need to work in GCS
 	   * for other projections.  Also compute the extents of the outside of each
 	   * polygon for faster checking if points are in the polygon.
-	   * @memberof geo.polygonFeature
 	   * @private
 	   */
 	  function getCoordinates() {
@@ -53439,7 +53978,7 @@
 	      }
 	      var outer, inner, range, coord, j, x, y;
 	
-	      coord = poly.outer || (poly instanceof Array ? poly : []);
+	      coord = poly.outer || (Array.isArray(poly) ? poly : []);
 	      outer = new Array(coord.length);
 	      for (j = 0; j < coord.length; j += 1) {
 	        outer[j] = posFunc.call(m_this, coord[j], j, d, i);
@@ -53497,10 +54036,9 @@
 	  /**
 	   * Get/set polygon accessor.
 	   *
-	   * @memberof geo.polygonFeature
-	   * @param {Object} [polygon] if specified, use this for the polygon accessor
+	   * @param {object} [val] if specified, use this for the polygon accessor
 	   *    and return the feature.  If not specified, return the current polygon.
-	   * @returns {geo.polygonFeature|Object}
+	   * @returns {object|this} The current polygon or this feature.
 	   */
 	  this.polygon = function (val) {
 	    if (val === undefined) {
@@ -53517,11 +54055,10 @@
 	  /**
 	   * Get/Set position accessor.
 	   *
-	   * @memberof geo.polygonFeature
-	   * @param {Object} [position] if specified, use this for the position
-	   *    accessor and return the feature.  If not specified, return the current
+	   * @param {object} [val] if specified, use this for the position accessor
+	   *    and return the feature.  If not specified, return the current
 	   *    position.
-	   * @returns {geo.polygonFeature|Object}
+	   * @returns {object|this} The current position or this feature.
 	   */
 	  this.position = function (val) {
 	    if (val === undefined) {
@@ -53539,7 +54076,6 @@
 	   * Point search method for selection api.  Returns markers containing the
 	   * given point.
 	   *
-	   * @memberof geo.polygonFeature
 	   * @argument {object} coordinate
 	   * @returns {object}
 	   */
@@ -53566,6 +54102,15 @@
 	  /**
 	   * Get/Set style used by the feature.  This calls the super function, then
 	   * checks if strokes are required.
+	   *
+	   * @param {string|object} [arg1] If `undefined`, return the current style
+	   *    object.  If a string and `arg2` is undefined, return the style
+	   *    associated with the specified key.  If a string and `arg2` is defined,
+	   *    set the named style to the specified value.  Otherwise, extend the
+	   *    current style with the values in the specified object.
+	   * @param {*} [arg2] If `arg1` is a string, the new value for that style.
+	   * @returns {object|this} Either the entire style object, the value of a
+	   *    specific style, or the current class instance.
 	   */
 	  this.style = function (arg1, arg2) {
 	    var result = s_style.apply(this, arguments);
@@ -53646,7 +54191,7 @@
 	        if (!polygon) {
 	          continue;
 	        }
-	        loop = polygon.outer || (polygon instanceof Array ? polygon : []);
+	        loop = polygon.outer || (Array.isArray(polygon) ? polygon : []);
 	        lineData.push(m_this._getLoopData(data[i], i, loop));
 	        if (polygon.inner) {
 	          polygon.inner.forEach(function (loop) {
@@ -53664,8 +54209,10 @@
 	  };
 	
 	  /**
-	  * Redraw the object.
-	  */
+	   * Redraw the object.
+	   *
+	   * @returns {object} The results of the superclass draw function.
+	   */
 	  this.draw = function () {
 	    var result = s_draw();
 	    if (m_lineFeature) {
@@ -53675,9 +54222,11 @@
 	  };
 	
 	  /**
-	  * When the feature is marked as modified, mark our sub-feature as modified,
-	  * too.
-	  */
+	   * When the feature is marked as modified, mark our sub-feature as
+	   * modified, too.
+	   *
+	   * @returns {object} The results of the superclass modified function.
+	   */
 	  this.modified = function () {
 	    var result = s_modified();
 	    if (m_lineFeature) {
@@ -53687,8 +54236,7 @@
 	  };
 	
 	  /**
-	   * Destroy
-	   * @memberof geo.polygonFeature
+	   * Destroy.
 	   */
 	  this._exit = function () {
 	    if (m_lineFeature && m_this.layer()) {
@@ -53700,8 +54248,10 @@
 	  };
 	
 	  /**
-	   * Initialize
-	   * @memberof geo.polygonFeature
+	   * Initialize.
+	   *
+	   * @param {geo.polygonFeature.spec} arg An object with options for the
+	   *    feature.
 	   */
 	  this._init = function (arg) {
 	    arg = arg || {};
@@ -53770,32 +54320,261 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
-	var featureLayer = __webpack_require__(225);
+	var feature = __webpack_require__(213);
+	
+	/**
+	 * Object specification for a text feature.
+	 *
+	 * @typedef {geo.feature.spec} geo.textFeature.spec
+	 * @property {geo.geoPosition[]|function} [position] The position of each data
+	 *      element.  Defaults to the `x`, `y`, and `z` properties of the data
+	 *      element.
+	 * @property {string[]|function} [text] The text of each data element.
+	 *      Defaults to the `text` property of the data element.
+	 * @property {object} [style] The style to apply to each data element.
+	 * @property {boolean|function} [style.visible=true] If falsy, don't show this
+	 *      data element.
+	 * @property {string|function} [style.font] A css font specification.  This
+	 *      is of the form `[style] [variant] [weight] [stretch] size[/line-height]
+	 *      family`.  Individual font styles override this value if a style is
+	 *      specified in each.  See the individual font styles for details.
+	 * @property {string|function} [style.fontStyle='normal'] The font style.  One
+	 *      of `normal`, `italic`, or `oblique`.
+	 * @property {string|function} [style.fontVariant='normal'] The font variant.
+	 *      This can have values such as `small-caps` or `slashed-zero`.
+	 * @property {string|function} [style.fontWeight='normal'] The font weight.
+	 *      This may be a numeric value where 400 is normal and 700 is bold, or a
+	 *      string such as `bold` or `lighter`.
+	 * @property {string|function} [style.fontStretch='normal'] The font stretch,
+	 *      such as `condensed`.
+	 * @property {string|function} [style.fontSize='medium'] The font size.
+	 * @property {string|function} [style.lineHeight='normal'] The font line
+	 *      height.
+	 * @property {string|function} [style.fontFamily] The font family.
+	 * @property {string|function} [style.textAlign='center'] The horizontal text
+	 *      alignment.  One of `start`, `end`, `left`, `right`, or `center`.
+	 * @property {string|function} [style.textBaseline='middle'] The vertical text
+	 *      alignment.  One of `top`, `hanging`, `middle`, `alphabetic`,
+	 *      `ideographic`, or `bottom`.
+	 * @property {geo.geoColor|function} [style.color='black'] Text color.  May
+	 *      include opacity.
+	 * @property {number|function} [style.textOpacity=1] The opacity of the text.
+	 *      If the color includes opacity, this is combined with that value.
+	 * @property {number|function} [style.rotation=0] Text rotation in radians.
+	 * @property {boolean|function} [style.rotateWithMap=false] If truthy, rotate
+	 *      the text when the map rotates.  Otherwise, the text is always in the
+	 *      same orientation.
+	 * @property {number|function} [style.scale=4] The zoom basis value used when
+	 *      `scaleWithMap` is truthy.
+	 * @property {boolean|function} [style.scaleWithMap=false] If truthy, use the
+	 *      `scale` style as the basis of the map zoom value for the font size.
+	 *      The size is scaled from this point.
+	 * @property {geo.screenPosition|function} [style.offset] Offset from the
+	 *      default position for the text.  This is applied before rotation.
+	 * @property {geo.geoColor|function} [style.shadowColor='black'] Text shadow
+	 *      color.  May include opacity.
+	 * @property {geo.screenPosition|function} [style.shadowOffset] Offset for a
+	 *      text shadow.  This is applied before rotation.
+	 * @property {number|null|function} [style.shadowBlur] If not null, add a text
+	 *      shadow with this much blur.
+	 * @property {boolean|function} [style.shadowRotate=false] If truthy, rotate
+	 *      the shadow offset based on the text rotation (the `shadowOffset` is
+	 *      the offset if the text has a 0 rotation).
+	 * @property {geo.geoColor|function} [style.textStrokeColor='transparent'] Text
+	 *      stroke color.  May include opacity.
+	 * @property {geo.geoColor|function} [style.textStrokeWidth=0] Text stroke
+	 *      width in pixels.
+	 */
+	
+	/**
+	 * Create a new instance of class textFeature.
+	 *
+	 * @class
+	 * @alias geo.textFeature
+	 * @extends geo.feature
+	 *
+	 * @param {geo.textFeature.spec} [arg] Options for the feature.
+	 * @returns {geo.textFeature} The created feature.
+	 */
+	var textFeature = function (arg) {
+	  'use strict';
+	  if (!(this instanceof textFeature)) {
+	    return new textFeature(arg);
+	  }
+	  arg = arg || {};
+	  feature.call(this, arg);
+	
+	  var $ = __webpack_require__(7);
+	
+	  /**
+	   * @private
+	   */
+	  var m_this = this,
+	      s_init = this._init;
+	
+	  this.featureType = 'text';
+	
+	  /**
+	   * Get/Set position.
+	   *
+	   * @param {array|function} [val] If `undefined`, return the current position
+	   *    setting.  Otherwise, modify the current position setting.
+	   * @returns {array|function|this} The current position or this feature.
+	   */
+	  this.position = function (val) {
+	    if (val === undefined) {
+	      return m_this.style('position');
+	    } else if (val !== m_this.style('position')) {
+	      m_this.style('position', val);
+	      m_this.dataTime().modified();
+	      m_this.modified();
+	    }
+	    return m_this;
+	  };
+	
+	  /**
+	   * Get/Set text.
+	   *
+	   * @param {array|function} [val] If `undefined`, return the current text
+	   *    setting.  Otherwise, modify the current text setting.
+	   * @returns {array|function|this} The current text or this feature.
+	   */
+	  this.text = function (val) {
+	    if (val === undefined) {
+	      return m_this.style('text');
+	    } else if (val !== m_this.style('text')) {
+	      m_this.style('text', val);
+	      m_this.dataTime().modified();
+	      m_this.modified();
+	    }
+	    return m_this;
+	  };
+	
+	  /**
+	   * Initialize.
+	   *
+	   * @param {geo.textFeature.spec} [arg] The feature specification.
+	   */
+	  this._init = function (arg) {
+	    arg = arg || {};
+	    s_init.call(m_this, arg);
+	
+	    var style = $.extend(
+	      {},
+	      {
+	        font: 'bold 16px sans-serif',
+	        textAlign: 'center',
+	        textBaseline: 'middle',
+	        color: { r: 0, g: 0, b: 0 },
+	        rotation: 0,  /* in radians */
+	        rotateWithMap: false,
+	        textScaled: false,
+	        position: function (d) { return d; },
+	        text: function (d) { return d.text; }
+	      },
+	      arg.style === undefined ? {} : arg.style
+	    );
+	
+	    if (arg.position !== undefined) {
+	      style.position = arg.position;
+	    }
+	    if (arg.text !== undefined) {
+	      style.text = arg.text;
+	    }
+	
+	    m_this.style(style);
+	    if (style.position) {
+	      m_this.position(style.position);
+	    }
+	    if (style.text) {
+	      m_this.text(style.text);
+	    }
+	    m_this.dataTime().modified();
+	  };
+	
+	  this._init(arg);
+	  return m_this;
+	};
+	
+	textFeature.usedStyles = [
+	  'visible', 'font', 'fontStyle', 'fontVariant', 'fontWeight', 'fontStretch',
+	  'fontSize', 'lineHeight', 'fontFamily', 'textAlign', 'textBaseline', 'color',
+	  'textOpacity', 'rotation', 'rotateWithMap', 'textScaled', 'offset',
+	  'shadowColor', 'shadowOffset', 'shadowBlur', 'shadowRotate',
+	  'textStrokeColor', 'textStrokeWidth'
+	];
+	
+	/**
+	 * Create a textFeature from an object.
+	 * @see {@link geo.feature.create}
+	 * @param {geo.layer} layer The layer to add the feature to
+	 * @param {geo.textFeature.spec} spec The object specification
+	 * @returns {geo.textFeature|null}
+	 */
+	textFeature.create = function (layer, spec) {
+	  'use strict';
+	
+	  spec = spec || {};
+	  spec.type = 'text';
+	  return feature.create(layer, spec);
+	};
+	
+	textFeature.capabilities = {
+	  /* core feature name -- support in any manner */
+	  feature: 'text'
+	};
+	
+	inherit(textFeature, feature);
+	module.exports = textFeature;
+
+
+/***/ }),
+/* 225 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var inherit = __webpack_require__(14);
+	var featureLayer = __webpack_require__(226);
 	var geo_annotation = __webpack_require__(13);
 	var geo_event = __webpack_require__(15);
 	var registry = __webpack_require__(207);
 	var transform = __webpack_require__(17);
 	var $ = __webpack_require__(7);
-	var Mousetrap = __webpack_require__(226);
+	var Mousetrap = __webpack_require__(227);
+	var textFeature = __webpack_require__(224);
+	
+	/**
+	 * @typedef {object} geo.annotationLayer.labelRecord
+	 * @property {string} text The text of the label
+	 * @property {geo.geoPosition} position The position of the label in map gcs
+	 *      coordinates.
+	 * @property {object} [style] A `geo.textFeature` style object.
+	 */
 	
 	/**
 	 * Layer to handle direct interactions with different features.  Annotations
 	 * (features) can be created by calling mode(<name of feature>) or cancelled
 	 * with mode(null).
 	 *
-	 * @class geo.annotationLayer
+	 * @class
+	 * @alias geo.annotationLayer
 	 * @extends geo.featureLayer
-	 * @param {object?} options
-	 * @param {number} [options.dblClickTime=300]  The delay in milliseconds that
-	 *    is treated as a double-click when working with annotations.
-	 * @param {number} [options.adjacentPointProximity=5]  The minimum distance in
+	 * @param {object} [args] Layer options.
+	 * @param {number} [args.dblClickTime=300] The delay in milliseconds that is
+	 *    treated as a double-click when working with annotations.
+	 * @param {number} [args.adjacentPointProximity=5] The minimum distance in
 	 *    display coordinates (pixels) between two adjacent points when creating a
-	 *    polygon.  A value of 0 requires an exact match.
-	 * @param {number} [options.finalPointProximity=10]  The maximum distance in
+	 *    polygon or line.  A value of 0 requires an exact match.
+	 * @param {number} [args.continousPointProximity=5] The minimum distance in
+	 *    display coordinates (pixels) between two adjacent points when dragging
+	 *    to create an annotation.  `false` disables continuous drawing mode.
+	 * @param {number} [args.finalPointProximity=10] The maximum distance in
 	 *    display coordinates (pixels) between the starting point and the mouse
 	 *    coordinates to signal closing a polygon.  A value of 0 requires an exact
 	 *    match.  A negative value disables closing a polygon by clicking on the
 	 *    start point.
+	 * @param {boolean} [args.showLabels=true] Truthy to show feature labels that
+	 *    are allowed by the associated feature to be shown.
+	 * @param {object} [args.defaultLabelStyle] Default styles for labels.
 	 * @returns {geo.annotationLayer}
 	 */
 	var annotationLayer = function (args) {
@@ -53805,19 +54584,22 @@
 	  }
 	  featureLayer.call(this, args);
 	
-	  var mapInteractor = __webpack_require__(227);
+	  var mapInteractor = __webpack_require__(228);
 	  var timestamp = __webpack_require__(215);
 	  var util = __webpack_require__(89);
 	
 	  var m_this = this,
 	      s_init = this._init,
 	      s_exit = this._exit,
+	      s_draw = this.draw,
 	      s_update = this._update,
 	      m_buildTime = timestamp(),
 	      m_options,
 	      m_mode = null,
 	      m_annotations = [],
-	      m_features = [];
+	      m_features = [],
+	      m_labelFeature,
+	      m_labelLayer;
 	
 	  var geojsonStyleProperties = {
 	    'closed': {dataType: 'boolean', keys: ['closed', 'close']},
@@ -53834,6 +54616,22 @@
 	    'strokeOpacity': {dataType: 'opacity', keys: ['strokeOpacity', 'stroke-opacity']},
 	    'strokeWidth': {dataType: 'positive', keys: ['strokeWidth', 'stroke-width']}
 	  };
+	  textFeature.usedStyles.forEach(function (key) {
+	    geojsonStyleProperties[key] = {
+	      option: 'labelStyle',
+	      dataType: ['visible', 'rotateWithMap', 'scaleWithMap'].indexOf(key) >= 0 ? 'boolean' : (
+	        ['scale'].indexOf(key) >= 0 ? 'booleanOrNumber' : (
+	        ['rotation'].indexOf(key) >= 0 ? 'angle' : (
+	        ['offset', 'shadowOffset'].indexOf(key) >= 0 ? 'coordinate2' : (
+	        ['shadowBlur, strokeWidth'].indexOf(key) >= 0 ? 'numberOrBlank' :
+	        'text')))),
+	      keys: [
+	        key,
+	        'label' + key.charAt(0).toUpperCase() + key.slice(1),
+	        key.replace(/([A-Z])/g, '-$1').toLowerCase(),
+	        'label-' + key.replace(/([A-Z])/g, '-$1').toLowerCase()]
+	    };
+	  });
 	
 	  m_options = $.extend(true, {}, {
 	    dblClickTime: 300,
@@ -53841,14 +54639,15 @@
 	    // in pixels; set to continuousPointProximity to false to disable
 	    // continuous drawing modes.
 	    continuousPointProximity: 5,
-	    finalPointProximity: 10  // in pixels, 0 is exact
+	    finalPointProximity: 10,  // in pixels, 0 is exact
+	    showLabels: true
 	  }, args);
 	
 	  /**
 	   * Process an action event.  If we are in rectangle-creation mode, this
 	   * creates a rectangle.
 	   *
-	   * @param {geo.event} evt the selection event.
+	   * @param {geo.event} evt The selection event.
 	   */
 	  this._processAction = function (evt) {
 	    var update;
@@ -53863,10 +54662,10 @@
 	  /**
 	   * Handle updating the current annotation based on an update state.
 	   *
-	   * @param {string|undefined} update: truthy to update.  'done' if the
-	   *    annotation was completed and the mode should return to null.  'remove'
-	   *    to remove the current annotation and set the mode to null.  Falsy to do
-	   *    nothing.
+	   * @param {string|undefined} update Truthy to update.  `'done'` if the
+	   *    annotation was completed and the mode should return to `null`.
+	   *    `'remove'` to remove the current annotation and set the mode to `null`.
+	   *    Falsy to do nothing.
 	   */
 	  this._updateFromEvent = function (update) {
 	    switch (update) {
@@ -53880,7 +54679,6 @@
 	    }
 	    if (update) {
 	      m_this.modified();
-	      m_this._update();
 	      m_this.draw();
 	    }
 	  };
@@ -53889,14 +54687,13 @@
 	   * Handle mouse movement.  If there is a current annotation, the movement
 	   * event is sent to it.
 	   *
-	   * @param {geo.event} evt the mouse move event.
+	   * @param {geo.event} evt The mouse move event.
 	   */
 	  this._handleMouseMove = function (evt) {
 	    if (this.mode() && this.currentAnnotation) {
 	      var update = this.currentAnnotation.mouseMove(evt);
 	      if (update) {
 	        m_this.modified();
-	        m_this._update();
 	        m_this.draw();
 	      }
 	    }
@@ -53906,7 +54703,7 @@
 	   * Handle mouse clicks.  If there is a current annotation, the click event is
 	   * sent to it.
 	   *
-	   * @param {geo.event} evt the mouse click event.
+	   * @param {geo.event} evt The mouse click event.
 	   */
 	  this._handleMouseClick = function (evt) {
 	    if (this.mode() && this.currentAnnotation) {
@@ -53918,13 +54715,13 @@
 	  /**
 	   * Set or get options.
 	   *
-	   * @param {string|object} arg1 if undefined, return the options object.  If
-	   *    a string, either set or return the option of that name.  If an object,
-	   *    update the options with the object's values.
-	   * @param {object} arg2 if arg1 is a string and this is defined, set the
-	   *    option to this value.
-	   * @returns {object|this} if options are set, return the layer, otherwise
-	   *    return the requested option or the set of options.
+	   * @param {string|object} [arg1] If `undefined`, return the options object.
+	   *    If a string, either set or return the option of that name.  If an
+	   *    object, update the options with the object's values.
+	   * @param {object} [arg2] If `arg1` is a string and this is defined, set
+	   *    the option to this value.
+	   * @returns {object|this} If options are set, return the annotation,
+	   *    otherwise return the requested option or the set of options.
 	   */
 	  this.options = function (arg1, arg2) {
 	    if (arg1 === undefined) {
@@ -53945,14 +54742,14 @@
 	  /**
 	   * Calculate the display distance for two coordinate in the current map.
 	   *
-	   * @param {object} coord1 the first coordinates.
-	   * @param {string|geo.transform} [gcs1] undefined to use the interface gcs,
-	   *    null to use the map gcs, 'display' if the coordinates are already in
-	   *    display coordinates, or any other transform.
-	   * @param {object} coord2 the second coordinates.
-	   * @param {string|geo.transform} [gcs2] undefined to use the interface gcs,
-	   *    null to use the map gcs, 'display' if the coordinates are already in
-	   *    display coordinates, or any other transform.
+	   * @param {geo.geoPosition|geo.screenPosition} coord1 The first coordinates.
+	   * @param {string|geo.transform|null} gcs1 `undefined` to use the interface
+	   *    gcs, `null` to use the map gcs, `'display`' if the coordinates are
+	   *    already in display coordinates, or any other transform.
+	   * @param {geo.geoPosition|geo.screenPosition} coord2 the second coordinates.
+	   * @param {string|geo.transform|null} [gcs2] `undefined` to use the interface
+	   *    gcs, `null` to use the map gcs, `'display`' if the coordinates are
+	   *    already in display coordinates, or any other transform.
 	   * @returns {number} the Euclidian distance between the two coordinates.
 	   */
 	  this.displayDistance = function (coord1, gcs1, coord2, gcs2) {
@@ -53975,9 +54772,10 @@
 	  /**
 	   * Add an annotation to the layer.  The annotation could be in any state.
 	   *
-	   * @param {object} annotation the annotation to add.
-	   * @param {string|geo.transform} [gcs] undefined to use the interface gcs,
-	   *    null to use the map gcs, or any other transform
+	   * @param {geo.annotation} annotation Te annotation to add.
+	   * @param {string|geo.transform|null} [gcs] `undefined` to use the interface
+	   *    gcs, `null` to use the map gcs, or any other transform.
+	   * @returns {this} The current layer.
 	   */
 	  this.addAnnotation = function (annotation, gcs) {
 	    var pos = $.inArray(annotation, m_annotations);
@@ -53995,7 +54793,6 @@
 	            gcs, map.gcs(), annotation._coordinates()));
 	      }
 	      this.modified();
-	      this._update();
 	      this.draw();
 	      m_this.geoTrigger(geo_event.annotation.add, {
 	        annotation: annotation
@@ -54007,10 +54804,10 @@
 	  /**
 	   * Remove an annotation from the layer.
 	   *
-	   * @param {object} annotation the annotation to remove.
-	   * @param {boolean} update if false, don't update the layer after removing
+	   * @param {geo.annoation} annotation The annotation to remove.
+	   * @param {boolean} update If `false`, don't update the layer after removing
 	   *    the annotation.
-	   * @returns {boolean} true if an annotation was removed.
+	   * @returns {boolean} `true` if an annotation was removed.
 	   */
 	  this.removeAnnotation = function (annotation, update) {
 	    var pos = $.inArray(annotation, m_annotations);
@@ -54022,7 +54819,6 @@
 	      m_annotations.splice(pos, 1);
 	      if (update !== false) {
 	        this.modified();
-	        this._update();
 	        this.draw();
 	      }
 	      m_this.geoTrigger(geo_event.annotation.remove, {
@@ -54035,11 +54831,11 @@
 	  /**
 	   * Remove all annotations from the layer.
 	   *
-	   * @param {boolean} skipCreating: if true, don't remove annotations that are
-	   *    in the create state.
-	   * @param {boolean} update if false, don't update the layer after removing
-	   *    the annotation.
-	   * @returns {number} the number of annotations that were removed.
+	   * @param {boolean} [skipCreating] If truthy, don't remove annotations that
+	   *    are in the create state.
+	   * @param {boolean} [update] If `false`, don't update the layer after
+	   *    removing the annotation.
+	   * @returns {number} The number of annotations that were removed.
 	   */
 	  this.removeAllAnnotations = function (skipCreating, update) {
 	    var removed = 0, annotation, pos = 0;
@@ -54054,7 +54850,6 @@
 	    }
 	    if (removed && update !== false) {
 	      this.modified();
-	      this._update();
 	      this.draw();
 	    }
 	    return removed;
@@ -54063,7 +54858,7 @@
 	  /**
 	   * Get the list of annotations on the layer.
 	   *
-	   * @returns {array} An array of annotations.
+	   * @returns {geo.annoation[]} An array of annotations.
 	   */
 	  this.annotations = function () {
 	    return m_annotations.slice();
@@ -54072,7 +54867,9 @@
 	  /**
 	   * Get an annotation by its id.
 	   *
-	   * @returns {geo.annotation} The selected annotation or undefined.
+	   * @param {number} id The annotation ID.
+	   * @returns {geo.annotation} The selected annotation or `undefined` if none
+	   *    matches the id.
 	   */
 	  this.annotationById = function (id) {
 	    if (id !== undefined && id !== null) {
@@ -54087,10 +54884,10 @@
 	  };
 	
 	  /**
-	   * Get or set the current mode.  The mode is either null for nothing being
+	   * Get or set the current mode.  The mode is either `null` for nothing being
 	   * created, or the name of the type of annotation that is being created.
 	   *
-	   * @param {string|null} arg the new mode or undefined to get the current
+	   * @param {string|null} [arg] The new mode or `undefined` to get the current
 	   *    mode.
 	   * @returns {string|null|this} The current mode or the layer.
 	   */
@@ -54153,23 +54950,23 @@
 	   * Return the current set of annotations as a geojson object.  Alternately,
 	   * add a set of annotations from a geojson object.
 	   *
-	   * @param {object} geojson: if present, add annotations based on the given
-	   *    geojson object.  If undefined, return the current annotations as
-	   *    geojson.  This may be a JSON string, a javascript object, or a File
-	   *    object.
-	   * @param {boolean} clear: if true, when adding annotations, first remove all
-	   *    existing objects.  If 'update', update existing annotations and remove
-	   *    annotations that no longer exit,  If false, update existing
+	   * @param {string|objectFile} [geojson] If present, add annotations based on
+	   *    the given geojson object.  If `undefined`, return the current
+	   *    annotations as geojson.  This may be a JSON string, a javascript
+	   *    object, or a File object.
+	   * @param {boolean} [clear] If `true`, when adding annotations, first remove
+	   *    all existing objects.  If `'update'`, update existing annotations and
+	   *    remove annotations that no longer exit,  If falsy, update existing
 	   *    annotations and leave unchanged annotations.
-	   * @param {string|geo.transform} [gcs] undefined to use the interface gcs,
-	   *    null to use the map gcs, or any other transform.
-	   * @param {boolean} includeCrs: if true, include the coordinate system in the
-	   *    output.
-	   * @return {object|number|undefined} if geojson was undefined, the current
+	   * @param {string|geo.transform|null} [gcs] `undefined` to use the interface
+	   *    gcs, `null` to use the map gcs, or any other transform.
+	   * @param {boolean} [includeCrs] If truthy, include the coordinate system in
+	   *    the output.
+	   * @returns {object|number|undefined} If `geojson` was undefined, the current
 	   *    annotations as a javascript object that can be converted to geojson
-	   *    using JSON.stringify.  If geojson is specified, either the number of
-	   *    annotations now present upon success, or undefined if the value in
-	   *    geojson was not able to be parsed.
+	   *    using JSON.stringify.  If `geojson` is specified, either the number of
+	   *    annotations now present upon success, or `undefined` if the value in
+	   *    `geojson` was not able to be parsed.
 	   */
 	  this.geojson = function (geojson, clear, gcs, includeCrs) {
 	    if (geojson !== undefined) {
@@ -54200,7 +54997,6 @@
 	        });
 	      }
 	      this.modified();
-	      this._update();
 	      this.draw();
 	      return m_annotations.length;
 	    }
@@ -54225,9 +55021,9 @@
 	   * Convert a feature as parsed by the geojson reader into one or more
 	   * annotations.
 	   *
-	   * @param {geo.feature} feature: the feature to convert.
-	   * @param {string|geo.transform} [gcs] undefined to use the interface gcs,
-	   *    null to use the map gcs, or any other transform.
+	   * @param {geo.feature} feature The feature to convert.
+	   * @param {string|geo.transform|null} [gcs] `undefined` to use the interface
+	   *    gcs, `null` to use the map gcs, or any other transform.
 	   */
 	  this._geojsonFeatureToAnnotation = function (feature, gcs) {
 	    var dataList = feature.data(),
@@ -54239,9 +55035,8 @@
 	      if ($.inArray(type, annotationList) < 0) {
 	        return;
 	      }
-	      if (!options.style) {
-	        options.style = {};
-	      }
+	      options.style = options.style || {};
+	      options.labelStyle = options.labelStyle || {};
 	      delete options.annotationType;
 	      // the geoJSON reader can only emit line, polygon, and point
 	      switch (feature.featureType) {
@@ -54287,7 +55082,6 @@
 	        $.each(prop.keys, function (idx, altkey) {
 	          if (value === undefined) {
 	            value = m_this.validateAttribute(options[altkey], prop.dataType);
-	            return;
 	          }
 	        });
 	        if (value === undefined) {
@@ -54295,7 +55089,7 @@
 	            feature.style.get(key)(data, data_idx), prop.dataType);
 	        }
 	        if (value !== undefined) {
-	          options.style[key] = value;
+	          options[prop.option || 'style'][key] = value;
 	        }
 	      });
 	      /* Delete property keys we have used */
@@ -54329,43 +55123,90 @@
 	
 	  /**
 	   * Validate a value for an attribute based on a specified data type.  This
-	   * returns a sanitized value or undefined if the value was invalid.  Data
+	   * returns a sanitized value or `undefined` if the value was invalid.  Data
 	   * types include:
-	   *   color: a css string, #rrggbb hex string, #rgb hex string, number, or
-	   *     object with r, g, b properties in the range of [0-1].
-	   *   opacity: a floating point number in the range [0, 1].
-	   *   positive: a floating point number greater than zero.
-	   *   boolean: a string whose lowercase value is 'false', 'off', or 'no', and
-	   *     falsy values are false, all else is true.  null and undefined are
-	   *     still considered invalid values.
-	   *   booleanOrNumber: a string whose lowercase value is 'false', 'off', no',
-	   *     'true', 'on', or 'yes', falsy values that aren't 0, and true are
-	   *     handled as booleans.  Otherwise, a floating point number that isn't
-	   *     NaN or an infinity.
-	   *   number: a floating point number that isn't NaN or an infinity.
-	   *   text: any text string.
-	   * @param {number|string|object|boolean} value: the value to validate.
-	   * @param {string} dataType: the data type for validation.
-	   * @returns {number|string|object|boolean|undefined} the sanitized value or
-	   *    undefined.
+	   * - `color`: a css string, `#rrggbb` hex string, `#rgb` hex string, number,
+	   *   or object with r, g, b properties in the range of [0-1].
+	   * - `opacity`: a floating point number in the range [0, 1].
+	   * - `positive`: a floating point number greater than zero.
+	   * - `boolean`: a string whose lowercase value is `'false'`, `'off'`, or
+	   *   `'no'`, and falsy values are false, all else is true.  `null` and
+	   *   `undefined` are still considered invalid values.
+	   * - `booleanOrNumber`: a string whose lowercase value is `'false'`, `'off'`,
+	   *   `'no'`, `'true'`, `'on'`, or `'yes'`, falsy values that aren't 0, and
+	   *   `true` are handled as booleans.  Otherwise, a floating point number that
+	   *   isn't NaN or an infinity.
+	   * - `coordinate2`: either an object with x and y properties that are
+	   *   numbers, or a string of the form <x>[,]<y> with optional whitespace, or
+	   *   a JSON encoded object with x and y values, or a JSON encoded list of at
+	   *   leasst two numbers.
+	   * - `number`: a floating point number that isn't NaN or an infinity.
+	   * - `angle`: a number that represents radians.  If followed by one of `deg`,
+	   *   `grad`, or `turn`, it is converted to radians.  An empty string is also
+	   *   allowed.
+	   * - `text`: any text string.
+	   * @param {number|string|object|boolean} value The value to validate.
+	   * @param {string} dataType The data type for validation.
+	   * @returns {number|string|object|boolean|undefined} The sanitized value or
+	   *    `undefined`.
 	   */
 	  this.validateAttribute = function (value, dataType) {
+	    var parts;
+	
 	    if (value === undefined || value === null) {
 	      return;
 	    }
 	    switch (dataType) {
-	      case 'booleanOrNumber':
-	        if ((!value && value !== 0) || ['true', 'false', 'off', 'on', 'no', 'yes'].indexOf(('' + value).toLowerCase()) >= 0) {
-	          value = !!value && ['false', 'no', 'off'].indexOf(('' + value).toLowerCase()) < 0;
-	        } else {
-	          value = +value;
-	          if (isNaN(value) || !isFinite(value)) {
-	            return;
-	          }
+	      case 'angle':
+	        if (value === '') {
+	          break;
 	        }
+	        parts = /^\s*([-.0-9eE]+)\s*(deg|rad|grad|turn)?\s*$/.exec(('' + value).toLowerCase());
+	        if (!parts || !isFinite(parts[1])) {
+	          return;
+	        }
+	        var factor = (parts[2] === 'grad' ? Math.PI / 200 :
+	            (parts[2] === 'deg' ? Math.PI / 180 :
+	            (parts[2] === 'turn' ? 2 * Math.PI : 1)));
+	        value = +parts[1] * factor;
 	        break;
 	      case 'boolean':
 	        value = !!value && ['false', 'no', 'off'].indexOf(('' + value).toLowerCase()) < 0;
+	        break;
+	      case 'booleanOrNumber':
+	        if ((!value && value !== 0 && value !== '') || ['true', 'false', 'off', 'on', 'no', 'yes'].indexOf(('' + value).toLowerCase()) >= 0) {
+	          value = !!value && ['false', 'no', 'off'].indexOf(('' + value).toLowerCase()) < 0;
+	        } else {
+	          if (!util.isNonNullFinite(value)) {
+	            return;
+	          }
+	          value = +value;
+	        }
+	        break;
+	      case 'coordinate2':
+	        if (value === '') {
+	          break;
+	        }
+	        if (value && util.isNonNullFinite(value.x) && util.isNonNullFinite(value.y)) {
+	          value.x = +value.x;
+	          value.y = +value.y;
+	          break;
+	        }
+	        try { value = JSON.parse(value); } catch (err) { }
+	        if (value && util.isNonNullFinite(value.x) && util.isNonNullFinite(value.y)) {
+	          value.x = +value.x;
+	          value.y = +value.y;
+	          break;
+	        }
+	        if (Array.isArray(value) && util.isNonNullFinite(value[0]) && util.isNonNullFinite(value[1])) {
+	          value = {x: +value[0], y: +value[1]};
+	          break;
+	        }
+	        parts = /^\s*([-.0-9eE]+)(?:\s+|\s*,)\s*([-.0-9eE]+)\s*$/.exec('' + value);
+	        if (!parts || !isFinite(parts[1]) || !isFinite(parts[2])) {
+	          return;
+	        }
+	        value = {x: +parts[1], y: +parts[2]};
 	        break;
 	      case 'color':
 	        value = util.convertColor(value);
@@ -54374,12 +55215,24 @@
 	        }
 	        break;
 	      case 'number':
-	        value = +value;
-	        if (isNaN(value) || !isFinite(value)) {
+	        if (!util.isNonNullFinite(value)) {
 	          return;
 	        }
+	        value = +value;
+	        break;
+	      case 'numberOrBlank':
+	        if (value === '') {
+	          break;
+	        }
+	        if (!util.isNonNullFinite(value)) {
+	          return;
+	        }
+	        value = +value;
 	        break;
 	      case 'opacity':
+	        if (value === undefined || value === null || value === '') {
+	          return;
+	        }
 	        value = +value;
 	        if (isNaN(value) || value < 0 || value > 1) {
 	          return;
@@ -54387,7 +55240,7 @@
 	        break;
 	      case 'positive':
 	        value = +value;
-	        if (isNaN(value) || !isFinite(value) || value <= 0) {
+	        if (!isFinite(value) || value <= 0) {
 	          return;
 	        }
 	        break;
@@ -54399,10 +55252,13 @@
 	  };
 	
 	  /**
-	   * Update layer
+	   * Update layer.
+	   *
+	   * @returns {this} The current layer.
 	   */
-	  this._update = function (request) {
+	  this._update = function () {
 	    if (m_this.getMTime() > m_buildTime.getMTime()) {
+	      var labels = this.options('showLabels') ? [] : null;
 	      /* Interally, we have a set of feature levels (to provide z-index
 	       * support), each of which can have data from multiple annotations.  We
 	       * clear the data on each of these features, then build it up from each
@@ -54417,6 +55273,12 @@
 	      });
 	      $.each(m_annotations, function (annotation_idx, annotation) {
 	        var features = annotation.features();
+	        if (labels) {
+	          var annotationLabel = annotation.labelRecord();
+	          if (annotationLabel) {
+	            labels.push(annotationLabel);
+	          }
+	        }
 	        $.each(features, function (idx, featureLevel) {
 	          if (m_features[idx] === undefined) {
 	            m_features[idx] = {};
@@ -54490,9 +55352,56 @@
 	          feature.feature.data(feature.data);
 	        });
 	      });
+	      m_this._updateLabels(labels);
 	      m_buildTime.modified();
 	    }
-	    s_update.call(m_this, request);
+	    s_update.call(m_this, arguments);
+	    return this;
+	  };
+	
+	  /**
+	   * Show or hide annotation labels.  Create or destroy a child layer or a
+	   * feature as needed.
+	   *
+	   * @param {object[]|null} labels The list of labels to display of `null` for
+	   *    no labels.
+	   * @returns {this} The class instance.
+	   */
+	  this._updateLabels = function (labels) {
+	    if (!labels || !labels.length) {
+	      m_this._removeLabelFeature();
+	      return m_this;
+	    }
+	    if (!m_labelFeature) {
+	      var renderer = registry.rendererForFeatures(['text']);
+	      if (renderer !== m_this.renderer().api()) {
+	        m_labelLayer = registry.createLayer('feature', m_this.map(), {renderer: renderer});
+	        m_this.addChild(m_labelLayer);
+	        m_labelLayer._update();
+	        m_this.geoTrigger(geo_event.layerAdd, {
+	          target: m_this,
+	          layer: m_labelLayer
+	        });
+	      }
+	      var style = {};
+	      textFeature.usedStyles.forEach(function (key) {
+	        style[key] = function (d, i) {
+	          if (d.style && d.style[key] !== undefined) {
+	            return d.style[key];
+	          }
+	          return (m_this.options('defaultLabelStyle') || {})[key];
+	        };
+	      });
+	      m_labelFeature = (m_labelLayer || m_this).createFeature('text', {
+	        style: style,
+	        gcs: m_this.map().gcs(),
+	        position: function (d) {
+	          return d.position;
+	        }
+	      });
+	    }
+	    m_labelFeature.data(labels);
+	    return m_this;
 	  };
 	
 	  /**
@@ -54509,7 +55418,42 @@
 	  };
 	
 	  /**
-	   * Initialize
+	   * Remove the label feature if it exists.
+	   *
+	   * @returns {this} The current layer.
+	   */
+	  this._removeLabelFeature = function () {
+	    if (m_labelLayer) {
+	      m_labelLayer._exit();
+	      m_this.removeChild(m_labelLayer);
+	      m_this.geoTrigger(geo_event.layerRemove, {
+	        target: m_this,
+	        layer: m_labelLayer
+	      });
+	      m_labelLayer = m_labelFeature = null;
+	    }
+	    if (m_labelFeature) {
+	      m_this.removeFeature(m_labelFeature);
+	      m_labelFeature = null;
+	    }
+	    return m_this;
+	  };
+	
+	  /**
+	   * Update if necessary and draw the layer.
+	   *
+	   * @returns {this} The current layer.
+	   */
+	  this.draw = function () {
+	    m_this._update();
+	    s_draw.call(m_this);
+	    return m_this;
+	  };
+	
+	  /**
+	   * Initialize.
+	   *
+	   * @returns {this} The current layer.
 	   */
 	  this._init = function () {
 	    // Call super class init
@@ -54530,9 +55474,12 @@
 	  };
 	
 	  /**
-	   * Free all resources
+	   * Free all resources.
+	   *
+	   * @returns {this} The current layer.
 	   */
 	  this._exit = function () {
+	    m_this._removeLabelFeature();
 	    // Call super class exit
 	    s_exit.call(m_this);
 	    m_annotations = [];
@@ -54549,7 +55496,7 @@
 
 
 /***/ }),
-/* 225 */
+/* 226 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
@@ -54850,7 +55797,7 @@
 
 
 /***/ }),
-/* 226 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*global define:false */
@@ -55900,13 +56847,13 @@
 
 
 /***/ }),
-/* 227 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
 	var object = __webpack_require__(209);
 	var util = __webpack_require__(89);
-	var Mousetrap = __webpack_require__(226);
+	var Mousetrap = __webpack_require__(227);
 	
 	/**
 	 * The mapInteractor class is responsible for handling raw events from the
@@ -55931,7 +56878,7 @@
 	  var throttle = __webpack_require__(89).throttle;
 	  var debounce = __webpack_require__(89).debounce;
 	  var actionMatch = __webpack_require__(89).actionMatch;
-	  var quadFeature = __webpack_require__(228);
+	  var quadFeature = __webpack_require__(229);
 	
 	  var m_options,
 	      m_this = this,
@@ -57880,7 +58827,7 @@
 
 
 /***/ }),
-/* 228 */
+/* 229 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var $ = __webpack_require__(7);
@@ -58410,7 +59357,7 @@
 
 
 /***/ }),
-/* 229 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
@@ -58719,19 +59666,139 @@
 
 
 /***/ }),
-/* 230 */
+/* 231 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
 	var feature = __webpack_require__(213);
 	
 	/**
-	 * Create a new instance of class contourFeature
+	 * Contour feature specification.
 	 *
-	 * @class geo.contourFeature
+	 * @typedef {geo.feature.spec} geo.contourFeature.spec
+	 * @property {object[]} [data=[]] An array of arbitrary objects used to
+	 *  construct the feature.
+	 * @property {object} [style] An object that contains style values for the
+	 *      feature.
+	 * @property {function|number} [style.opacity=1] The opacity on a scale of 0 to
+	 *      1.
+	 * @property {function|geo.geoPosition} [style.position=data] The position of
+	 *      each data element.  This defaults to just using `x`, `y`, and `z`
+	 *      properties of the data element itself.  The position is in the
+	 *      feature's gcs coordinates.
+	 * @property {function|number} [style.value=data.z] The contour value of each
+	 *      data element.  This defaults `z` properties of the data element.  If
+	 *      the value of a grid point is `null` or `undefined`, that point will not
+	 *      be included in the contour display.  Since the values are on a grid, if
+	 *      this point is in the interior of the grid, this can remove up to four
+	 *      squares.
+	 * @property {geo.contourFeature.contourSpec} [contour] The contour
+	 *      specification for the feature.
+	 */
+	
+	/**
+	 * Contour specification.
+	 *
+	 * @typedef {object} geo.contourFeature.contourSpec
+	 * @property {function|number} [gridWidth] The number of data columns in the
+	 *      grid.  If this is not specified and `gridHeight` is given, this is the
+	 *      number of data elements divided by `gridHeight`.  If neither
+	 *      `gridWidth` not `gridHeight` are specified,  the square root of the
+	 *      number of data elements is used.  If both are specified, some data
+	 *      could be unused.
+	 * @property {function|number} [gridHeight] The number of data rows in the
+	 *      grid.  If this is not specified and `gridWidth` is given, this is the
+	 *      number of data elements divided by `gridWidth`.  If neither
+	 *      `gridWidth` not `gridHeight` are specified,  the square root of the
+	 *      number of data elements is used.  If both are specified, some data
+	 *      could be unused.
+	 * @property {function|number} [x0] The x coordinate of the 0th point in the
+	 *      `value` array.  If `null` or `undefined`, the coordinate is taken from
+	 *      the `position` style.
+	 * @property {function|number} [y0] The y coordinate of the 0th point in the
+	 *      `value` array.  If `null` or `undefined`, the coordinate is taken from
+	 *      the `position` style.
+	 * @property {function|number} [dx] The distance in the x direction between the
+	 *      0th and 1st point in the `value` array.  This may be positive or
+	 *      negative.  If 0, `null`, or `undefined`, the coordinate is taken from
+	 *      the `position` style.
+	 * @property {function|number} [dy] The distance in the y direction between the
+	 *      0th and `gridWidth`th point in the `value` array.  This may be positive
+	 *      or negative.  If 0, `null`, or `undefined`, the coordinate is taken
+	 *      from the `position` style.
+	 * @property {function|boolean} [wrapLongitude] If truthy and `position` is not
+	 *      used (`x0`, `y0`, `dx`, and `dy` are all set appropriately), assume the
+	 *      x coordinates is longitude and should be adjusted to be within -180 to
+	 *      180.  If the data spans 180 degrees, the points or squares that
+	 *      straddle the meridian will be duplicated to ensure that
+	 *      the map is covered from -180 to 180 as appropriate.  Set this to
+	 *      `false` if using a non-longitude x coordinate.  This is ignored if
+	 *      `position` is used.
+	 * @property {function|number} [min] Minimum contour value.  If unspecified,
+	 *      taken from the computed minimum of the `value` style.
+	 * @property {function|number} [max] Maximum contour value.  If unspecified,
+	 *      taken from the computed maxi,um of the `value` style.
+	 * @property {function|geo.geoColor} [minColor='black'] Color used for any
+	 *      value below the minimum.
+	 * @property {function|number} [minOpacity=0] Opacity used for any value below
+	 *      the minimum.
+	 * @property {function|geo.geoColor} [maxColor='black'] Color used for any
+	 *      value above the maximum.
+	 * @property {function|number} [maxOpacity=0] Opacity used for any value above
+	 *      the maximum.
+	 * @property {function|boolean} [stepped] If falsy but not `undefined`, smooth
+	 *      transitions between colors.
+	 * @property {function|geo.geoColor[]} [colorRange=<color table>] An array of
+	 *      colors used to show the range of values.  The default is a 9-step color
+	 *      table.
+	 * @property {function|number[]} [opacityRange] An array of opacities used to
+	 *      show the range of values.  If unspecified, the opacity is 1.  If this
+	 *      is a shorter list than the `colorRange`, an opacity of 1 is used for
+	 *      the entries near the end of the color range.
+	 * @property {function|number[]} [rangeValues] An array used to map values to
+	 *      the `colorRange`.  By default, values are spaced linearly.  If
+	 *      specified, the entries must be increasing weakly monotonic, and there
+	 *      must be one more entry then the length of `colorRange`.
+	 */
+	
+	/**
+	 * Computed contour information.
+	 *
+	 * @typedef {object} geo.contourFeature.contourInfo
+	 * @property {number[]} elements An array of 0-based indices into the values
+	 *    array.  Each set of the three values forms a triangle that should be
+	 *    rendered.  If no contour data can be used, this will be a zero-length
+	 *    array and other properties may not be set.
+	 * @property {number[]} pos An flat array of coordinates for the vertices in
+	 *    the triangular mesh.  The array is in the order x0, y0, z0, x1, y1, z1,
+	 *    x2, ..., and is always three times as long as the number of vertices.
+	 * @property {number[]} value An array of values that have been normalized to a
+	 *    range of [0, steps].  There is one value per vertex.
+	 * @property {number[]} opacity An array of opacities per vertex.
+	 * @property {number} minValue the minimum value used for the contour.  If
+	 *    `rangeValues` was specified, this is the first entry of that array.
+	 * @property {number} maxValue the maximum value used for the contour.  If
+	 *    `rangeValues` was specified, this is the last entry of that array.
+	 * @property {number} factor If linear value scaling is used, this is the
+	 *    number of color values divided by the difference between the maximum and
+	 *    minimum values.  It is ignored if non-linear value scaling is used.
+	 * @property {geo.geoColorObject} minColor The color used for values below
+	 *    minValue.  Includes opacity.
+	 * @property {geo.geoColorObject} maxColor The color used for values above
+	 *    maxValue.  Includes opacity.
+	 * @property {geo.geoColorObject[]} colorMap The specified `colorRange` and
+	 *    `opacityRange` converted into objects that include opacity.
+	 */
+	
+	/**
+	 * Create a new instance of class contourFeature.
+	 *
+	 * @class
+	 * @alias geo.contourFeature
 	 * @extends geo.feature
-	 * @returns {geo.contourFeature}
 	 *
+	 * @param {geo.contourFeature.spec} arg
+	 * @returns {geo.contourFeature}
 	 */
 	var contourFeature = function (arg) {
 	  'use strict';
@@ -58750,8 +59817,7 @@
 	   */
 	  var m_this = this,
 	      m_contour = {},
-	      s_init = this._init,
-	      s_data = this.data;
+	      s_init = this._init;
 	
 	  if (arg.contour === undefined) {
 	    m_contour = function (d) {
@@ -58762,39 +59828,40 @@
 	  }
 	
 	  /**
-	   * Override the parent data method to keep track of changes to the
-	   * internal coordinates.
-	   */
-	  this.data = function (arg) {
-	    var ret = s_data(arg);
-	    return ret;
-	  };
-	
-	  /**
-	   * Get/Set contour accessor
+	   * Get/Set contour accessor.
 	   *
-	   * @returns {geo.pointFeature}
+	   * @param {string|geo.contourFeature.contourSpec} [specOrProperty] If
+	   *    `undefined`, return the current contour specification.  If a string is
+	   *    specified, either get or set the named contour property.  If an object
+	   *    is given, set or update the contour specification with the specified
+	   *    parameters.
+	   * @param {object} [value] If `specOrProperty` is a string, set that property
+	   *    to `value`.  If `undefined`, return the current value of the named
+	   *    property.
+	   * @returns {geo.contourFeature.contourSpec|object|this} The current contour
+	   *    specification, the value of a named contour property, or this contour
+	   *    feature.
 	   */
-	  this.contour = function (arg1, arg2) {
-	    if (arg1 === undefined) {
+	  this.contour = function (specOrProperty, value) {
+	    if (specOrProperty === undefined) {
 	      return m_contour;
 	    }
-	    if (typeof arg1 === 'string' && arg2 === undefined) {
-	      return m_contour[arg1];
+	    if (typeof specOrProperty === 'string' && value === undefined) {
+	      return m_contour[specOrProperty];
 	    }
-	    if (arg2 === undefined) {
+	    if (value === undefined) {
 	      var contour = $.extend(
 	        {},
 	        {
 	          gridWidth: function () {
-	            if (arg1.gridHeight) {
-	              return Math.floor(m_this.data().length / arg1.gridHeight);
+	            if (specOrProperty.gridHeight) {
+	              return Math.floor(m_this.data().length / specOrProperty.gridHeight);
 	            }
 	            return Math.floor(Math.sqrt(m_this.data().length));
 	          },
 	          gridHeight: function () {
-	            if (arg1.gridWidth) {
-	              return Math.floor(m_this.data().length / arg1.gridWidth);
+	            if (specOrProperty.gridWidth) {
+	              return Math.floor(m_this.data().length / specOrProperty.gridWidth);
 	            }
 	            return Math.floor(Math.sqrt(m_this.data().length));
 	          },
@@ -58802,7 +59869,7 @@
 	          minOpacity: 0,
 	          maxColor: 'black',
 	          maxOpacity: 0,
-	        /* 9-step based on paraview bwr colortable */
+	          /* 9-step based on paraview bwr colortable */
 	          colorRange: [
 	            {r: 0.07514311, g: 0.468049805, b: 1},
 	            {r: 0.468487184, g: 0.588057293, b: 1},
@@ -58816,11 +59883,11 @@
 	          ]
 	        },
 	        m_contour,
-	        arg1
+	        specOrProperty
 	      );
 	      m_contour = contour;
 	    } else {
-	      m_contour[arg1] = arg2;
+	      m_contour[specOrProperty] = value;
 	    }
 	    m_this.modified();
 	    return m_this;
@@ -58830,8 +59897,10 @@
 	   * A uniform getter that always returns a function even for constant values.
 	   * If undefined input, return all the contour values as an object.
 	   *
-	   * @param {string|undefined} key
-	   * @return {function}
+	   * @param {string|undefined} key The name of the contour key or `undefined`
+	   *    to return an object with all keys as functions.
+	   * @returns {function|object} A function related to the key, or an object
+	   *    with all contour keys, each of which is a function.
 	   */
 	  this.contour.get = function (key) {
 	    if (key === undefined) {
@@ -58847,9 +59916,12 @@
 	  };
 	
 	  /**
-	   * Get/Set position accessor
+	   * Get/Set position accessor.  This is identical to getting or setting the
+	   * `position` style.
 	   *
-	   * @returns {geo.pointFeature}
+	   * @param {function|array} [val] If specified, set the position style.  If
+	   *    `undefined`, return the current value.
+	   * @returns {function|array|this} Either the position style or this.
 	   */
 	  this.position = function (val) {
 	    if (val === undefined) {
@@ -58867,10 +59939,8 @@
 	   * vertices.  Create a set of triangles of indices into the vertex array.
 	   * Create a color and opacity map corresponding to the values.
 	   *
-	   * @returns: an object with pos, value, opacity, elements, minValue,
-	   *           maxValue, minColor, maxColor, colorMap, factor.  If there is no
-	   *           contour data that can be used, only elements is guaranteed to
-	   *           exist, and it will be a zero-length array.
+	   * @returns {geo.contourFeature.contourInfo} An object with the contour
+	   *    information.
 	   */
 	  this.createContours = function () {
 	    var i, i3, j, idx, k, val, numPts, usedPts = 0, usePos, item,
@@ -59068,7 +60138,9 @@
 	  };
 	
 	  /**
-	   * Initialize
+	   * Initialize.
+	   *
+	   * @param {geo.contourFeature.spec} arg The contour feature specification.
 	   */
 	  this._init = function (arg) {
 	    s_init.call(m_this, arg);
@@ -59078,7 +60150,10 @@
 	      {
 	        opacity: 1.0,
 	        position: function (d) {
-	          return {x: d.x, y: d.y, z: d.z};
+	          /* We could construct a new object and return
+	           *  {x: d.x, y: d.y, z: d.z};
+	           * but that isn't necessary. */
+	          return d;
 	        },
 	        value: function (d) {
 	          return m_this.position()(d).z;
@@ -59147,23 +60222,11 @@
 	    spacing.  Must be increasing monotonic and one value longer than the length
 	    of colorRange>]
 	})
-	
-	Notes:
-	* The position array is only used for position if not all of x0, y0, dx, and dy
-	    are specified (not null or undefined).  If a value array is not specified,
-	    the position array could still be used for the value.
-	* If the value() of a grid point is null or undefined, that point will not be
-	    included in the contour display.  Since the values are on a grid, if this
-	    point is in the interior of the grid, this can remove up to four squares.
-	* Only one of gridWidth and gridHeight needs to be specified.  If both are
-	    specified and gridWidth * gridHeight < data().length, not all the data will
-	    be used.  If neither are specified, floor(sqrt(data().length)) is used for
-	    both.
 	 */
 
 
 /***/ }),
-/* 231 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
@@ -59211,7 +60274,7 @@
 
 
 /***/ }),
-/* 232 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = (function () {
@@ -59310,8 +60373,8 @@
 	          return defer;
 	        }
 	      }
-	      var wait = new $.Deferred();
-	      var process = new $.Deferred();
+	      var wait = $.Deferred();
+	      var process = $.Deferred();
 	      wait.then(function () {
 	        $.when(callback.call(defer)).always(process.resolve);
 	      }, process.resolve);
@@ -59440,11 +60503,11 @@
 
 
 /***/ }),
-/* 233 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
-	var featureLayer = __webpack_require__(225);
+	var featureLayer = __webpack_require__(226);
 	var object = __webpack_require__(209);
 	
 	/**
@@ -59540,7 +60603,7 @@
 
 
 /***/ }),
-/* 234 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
@@ -59755,7 +60818,7 @@
 
 
 /***/ }),
-/* 235 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var $ = __webpack_require__(7);
@@ -60023,11 +61086,11 @@
 
 
 /***/ }),
-/* 236 */
+/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
-	var tile = __webpack_require__(237);
+	var tile = __webpack_require__(238);
 	
 	module.exports = (function () {
 	  'use strict';
@@ -60071,8 +61134,7 @@
 	    spec.size = spec.size || {x: 256, y: 256};
 	    this._image = null;
 	
-	    // Cache the coordinate scaling
-	    this._cors = spec.crossDomain || 'anonymous';
+	    this._cors = (spec.crossDomain || spec.crossDomain === null) ? spec.crossDomain : 'anonymous';
 	
 	    // Call superclass constructor
 	    tile.call(this, spec);
@@ -60090,17 +61152,19 @@
 	
 	    /**
 	     * Initiate the image request.
+	     *
+	     * @returns {this} The current tile class instance.
 	     */
 	    this.fetch = function () {
 	      var defer;
 	      if (!this._image) {
 	        this._image = new Image(this.size.x, this.size.y);
 	        // Only set the crossOrigin parameter if this is going across origins.
-	        if (this._url.indexOf(':') >= 0 &&
+	        if (this._cors && this._url.indexOf(':') >= 0 &&
 	            this._url.indexOf('/') === this._url.indexOf(':') + 1) {
 	          this._image.crossOrigin = this._cors;
 	        }
-	        defer = new $.Deferred();
+	        defer = $.Deferred();
 	        this._image.onload = defer.resolve;
 	        this._image.onerror = defer.reject;
 	        this._image.src = this._url;
@@ -60121,7 +61185,7 @@
 	     * @returns {this} chainable
 	     */
 	    this.fadeIn = function (duration) {
-	      var promise = this.fetch(), defer = new $.Deferred();
+	      var promise = this.fetch(), defer = $.Deferred();
 	      $(this._image).css('display', 'none');
 	      promise.then(function () {
 	        $(this._image).fadeIn(duration, function () {
@@ -60140,7 +61204,7 @@
 
 
 /***/ }),
-/* 237 */
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = (function () {
@@ -60367,12 +61431,12 @@
 
 
 /***/ }),
-/* 238 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
 	var registerFileReader = __webpack_require__(207).registerFileReader;
-	var fileReader = __webpack_require__(233);
+	var fileReader = __webpack_require__(234);
 	
 	/**
 	* Create a new instance of class jsonReader
@@ -60675,7 +61739,7 @@
 
 
 /***/ }),
-/* 239 */
+/* 240 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var $ = __webpack_require__(7);
@@ -60684,7 +61748,7 @@
 	var sceneObject = __webpack_require__(214);
 	
 	/**
-	 * Creates a new map object
+	 * Creates a new map object.
 	 *
 	 * @class
 	 * @alias geo.map
@@ -60764,8 +61828,8 @@
 	  var util = __webpack_require__(89);
 	  var registry = __webpack_require__(207);
 	  var geo_event = __webpack_require__(15);
-	  var mapInteractor = __webpack_require__(227);
-	  var uiLayer = __webpack_require__(240);
+	  var mapInteractor = __webpack_require__(228);
+	  var uiLayer = __webpack_require__(241);
 	
 	  /**
 	   * Private member variables
@@ -60998,7 +62062,7 @@
 	  };
 	
 	  /**
-	   * Get the camera
+	   * Get the camera.
 	   *
 	   * @returns {geo.camera}
 	   */
@@ -61007,9 +62071,12 @@
 	  };
 	
 	  /**
-	   * Get map gcs.  This is the coordinate system used in drawing the map.
+	   * Get or set the map gcs.  This is the coordinate system used in drawing the
+	   * map.
 	   *
-	   * @returns {string} A string used by {@linkcode geo.transform}.
+	   * @param {string} [arg] If `undefined`, return the current gcs.  Otherwise,
+	   *    a new value for the gcs.
+	   * @returns {string|this} A string used by {@linkcode geo.transform}.
 	   */
 	  this.gcs = function (arg) {
 	    if (arg === undefined) {
@@ -61029,10 +62096,12 @@
 	  };
 	
 	  /**
-	   * Get map interface gcs.  This is the coordinate system used when getting or
-	   * setting map bounds, center, and other values.
+	   * Get or set the map interface gcs.  This is the coordinate system used when
+	   * getting or setting map bounds, center, and other values.
 	   *
-	   * @returns {string} A string used by {@linkcode geo.transform}.
+	   * @param {string} [arg] If `undefined`, returtn the current interface gcs.
+	   *    Otherwise, a new value for the interface gcs.
+	   * @returns {string|this} A string used by {@linkcode geo.transform}.
 	   */
 	  this.ingcs = function (arg) {
 	    if (arg === undefined) {
@@ -61271,7 +62340,7 @@
 	   *
 	   * @param {string} layerName The type of layer to add to the map.
 	   * @param {object} arg Parameters for the new layer.
-	   * @return {geo.layer}
+	   * @returns {geo.layer}
 	   * @fires geo.event.layerAdd
 	   */
 	  this.createLayer = function (layerName, arg) {
@@ -61302,7 +62371,7 @@
 	   * Remove a layer from the map.
 	   *
 	   * @param {geo.layer?} layer Layer to remove from the map.
-	   * @return {geo.layer}
+	   * @returns {geo.layer}
 	   * @fires geo.event.layerRemove
 	   */
 	  this.deleteLayer = function (layer) {
@@ -61357,7 +62426,6 @@
 	    m_this.center(oldCenter);
 	
 	    m_this.geoTrigger(geo_event.resize, {
-	      type: geo_event.resize,
 	      target: m_this,
 	      width: m_width,
 	      height: m_height
@@ -61394,7 +62462,7 @@
 	   * @param {geo.geoPosition} c The input coordinate to convert.
 	   * @param {string|geo.transform|null} [gcs] Input gcs.  `undefined` to use
 	   *    the interface gcs, `null` to use the map gcs, or any other transform.
-	   * @return {geo.worldPosition} World space coordinates.
+	   * @returns {geo.worldPosition} World space coordinates.
 	   */
 	  this.gcsToWorld = function (c, gcs) {
 	    gcs = (gcs === null ? m_gcs : (gcs === undefined ? m_ingcs : gcs));
@@ -61418,7 +62486,7 @@
 	   * @param {geo.worldPosition} c The input coordinate to convert.
 	   * @param {string|geo.transform|null} [gcs] output gcs.  `undefined` to use
 	   *    the interface gcs, `null` to use the map gcs, or any other transform.
-	   * @return {geo.geoPosition} GCS space coordinates.
+	   * @returns {geo.geoPosition} GCS space coordinates.
 	   */
 	  this.worldToGcs = function (c, gcs) {
 	    if (m_origin.x || m_origin.y || m_origin.z) {
@@ -61443,7 +62511,7 @@
 	   * @param {geo.geoPosition} c The input coordinate to convert.
 	   * @param {string|geo.transform|null} [gcs] Input gcs.  `undefined` to use
 	   *    the interface gcs, `null` to use the map gcs, or any other transform.
-	   * @return {geo.screenPosition} Display space coordinates.
+	   * @returns {geo.screenPosition} Display space coordinates.
 	   */
 	  this.gcsToDisplay = function (c, gcs) {
 	    c = m_this.gcsToWorld(c, gcs);
@@ -61455,7 +62523,7 @@
 	   * camera.
 	   *
 	   * @param {geo.worldPosition} c The input coordinate to convert.
-	   * @return {geo.screenPosition} Display space coordinates.
+	   * @returns {geo.screenPosition} Display space coordinates.
 	   */
 	  this.worldToDisplay = function (c) {
 	    return m_camera.worldToDisplay(c);
@@ -61468,7 +62536,7 @@
 	   * @param {geo.screenPosition} c The input display coordinate to convert.
 	   * @param {string|geo.transform|null} [gcs] Output gcs.  `undefined` to use
 	   *    the interface gcs, `null` to use the map gcs, or any other transform.
-	   * @return {geo.geoPosition} GCS space coordinates.
+	   * @returns {geo.geoPosition} GCS space coordinates.
 	   */
 	  this.displayToGcs = function (c, gcs) {
 	    c = m_this.displayToWorld(c); // done via camera
@@ -61480,7 +62548,7 @@
 	   * camera.
 	   *
 	   * @param {geo.screenPosition} c The input coordinate to convert.
-	   * @return {geo.worldPosition} World space coordinates.
+	   * @returns {geo.worldPosition} World space coordinates.
 	   */
 	  this.displayToWorld = function (c) {
 	    return m_camera.displayToWorld(c);
@@ -61489,6 +62557,7 @@
 	  /**
 	   * Redraw the map and all its layers.
 	   *
+	   * @returns {this} The map object.
 	   * @fires geo.event.draw
 	   * @fires geo.event.drawEnd
 	   */
@@ -61543,6 +62612,8 @@
 	
 	  /**
 	   * Initialize the map.
+	   *
+	   * @returns {this} The map object.
 	   */
 	  this._init = function () {
 	
@@ -61560,6 +62631,11 @@
 	
 	  /**
 	   * Update map.  This updates all layers of the map.
+	   *
+	   * @param {object} [request] Optional information about the source of this
+	   *    update request.  This could be an event, for instance.  It is passed
+	   *    to individual layer's `_update` function.
+	   * @returns {this} The map object.
 	   */
 	  this._update = function (request) {
 	    var i, layers = m_this.children();
@@ -61931,7 +63007,7 @@
 	   *    gcs, `null` to use the map gcs, or any other transform.  If setting the
 	   *    bounds, they are converted from this gcs to the map projection.  The
 	   *    returned bounds are converted from the map projection to this gcs.
-	   * @return {geo.geoBounds} The actual new map bounds.
+	   * @returns {geo.geoBounds} The actual new map bounds.
 	   */
 	  this.bounds = function (bds, gcs) {
 	    var nav;
@@ -61965,12 +63041,12 @@
 	   * Get/set the maximum view area of the map.  If the map wraps, this is the
 	   * unwrapped area.
 	   *
-	   * @param {geo.geoBounds} [bds] The map bounds.
+	   * @param {geo.geoBounds} [bounds] The map bounds.
 	   * @param {string|geo.transform|null} [gcs] `undefined` to use the interface
 	   *    gcs, `null` to use the map gcs, or any other transform.  If setting the
 	   *    bounds, they are converted from this gcs to the map projection.  The
 	   *    returned bounds are converted from the map projection to this gcs.
-	   * @return {geo.geoBounds|this} The map maximum bounds or the map object.
+	   * @returns {geo.geoBounds|this} The map maximum bounds or the map object.
 	   */
 	  this.maxBounds = function (bounds, gcs) {
 	    gcs = (gcs === null ? m_gcs : (gcs === undefined ? m_ingcs : gcs));
@@ -62019,7 +63095,7 @@
 	   * @param {number} rotation Rotation in clockwise radians.
 	   * @param {string|geo.transform|null} [gcs] `undefined` to use the interface
 	   *    gcs, `null` to use the map gcs, or any other transform.
-	   * @return {geo.zoomAndCenter}
+	   * @returns {geo.zoomAndCenter}
 	   */
 	  this.zoomAndCenterFromBounds = function (bounds, rotation, gcs) {
 	    var center, zoom;
@@ -62078,7 +63154,7 @@
 	   *    `clampBoundsY` is set, allow the bounds to be less clamped.
 	   *    The map's `maxBounds` can be shifted so that they lie no further than
 	   *    the center of the bounds (rather than being forced to be at the edge).
-	   * @return {geo.geoBounds}
+	   * @returns {geo.geoBounds}
 	   */
 	  this.boundsFromZoomAndCenter = function (zoom, center, rotation, gcs,
 	        ignoreDiscreteZoom, ignoreClampBounds) {
@@ -62138,7 +63214,7 @@
 	   * zoom levels.
 	   *
 	   * @param {boolean} [discreteZoom] If specified, the new discrete zoom flag.
-	   * @return {boolean|this} The current discrete zoom flag or the map object.
+	   * @returns {boolean|this} The current discrete zoom flag or the map object.
 	   */
 	  this.discreteZoom = function (discreteZoom) {
 	    if (discreteZoom === undefined) {
@@ -62924,7 +64000,7 @@
 
 
 /***/ }),
-/* 240 */
+/* 241 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
@@ -63001,7 +64077,7 @@
 
 
 /***/ }),
-/* 241 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = (function () {
@@ -63009,12 +64085,12 @@
 	
 	  var $ = __webpack_require__(7);
 	  var inherit = __webpack_require__(14);
-	  var tileLayer = __webpack_require__(242);
+	  var tileLayer = __webpack_require__(243);
 	  var registry = __webpack_require__(207);
-	  var quadFeature = __webpack_require__(228);
+	  var quadFeature = __webpack_require__(229);
 	
 	  /**
-	   * Create a new instance of osmLayer
+	   * Create a new instance of osmLayer.
 	   *
 	   * @class geo.osmLayer
 	   * @extends geo.featureLayer
@@ -63025,7 +64101,7 @@
 	   */
 	  var osmLayer = function (arg) {
 	
-	    var imageTile = __webpack_require__(236);
+	    var imageTile = __webpack_require__(237);
 	
 	    if (!(this instanceof osmLayer)) {
 	      return new osmLayer(arg);
@@ -63062,7 +64138,8 @@
 	        scale: this._options.tileScale,
 	        url: this._options.url.call(
 	            this, urlParams.x, urlParams.y, urlParams.level || 0,
-	            this._options.subdomains)
+	            this._options.subdomains),
+	        crossDomain: this._options.crossDomain
 	      });
 	    }.bind(this);
 	  };
@@ -63097,14 +64174,14 @@
 
 
 /***/ }),
-/* 242 */
+/* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = (function () {
 	  'use strict';
 	
 	  var inherit = __webpack_require__(14);
-	  var featureLayer = __webpack_require__(225);
+	  var featureLayer = __webpack_require__(226);
 	
 	  /**
 	   * Standard modulo operator where the output is in [0, b) for all inputs.
@@ -63281,10 +64358,10 @@
 	    var $ = __webpack_require__(7);
 	    var geo_event = __webpack_require__(15);
 	    var transform = __webpack_require__(17);
-	    var tileCache = __webpack_require__(243);
-	    var fetchQueue = __webpack_require__(232);
+	    var tileCache = __webpack_require__(244);
+	    var fetchQueue = __webpack_require__(233);
 	    var adjustLayerForRenderer = __webpack_require__(207).adjustLayerForRenderer;
-	    var Tile = __webpack_require__(237);
+	    var Tile = __webpack_require__(238);
 	
 	    options = $.extend(true, {}, this.constructor.defaults, options || {});
 	    if (!options.cacheSize) {
@@ -64656,7 +65733,7 @@
 
 
 /***/ }),
-/* 243 */
+/* 244 */
 /***/ (function(module, exports) {
 
 	module.exports = (function () {
@@ -64808,7 +65885,7 @@
 
 
 /***/ }),
-/* 244 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var $ = __webpack_require__(7);
@@ -64884,7 +65961,7 @@
 
 
 /***/ }),
-/* 245 */
+/* 246 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var $ = __webpack_require__(7);
@@ -65053,7 +66130,7 @@
 	        m_srcImage = src;
 	        this._computePixelmap();
 	      } else if (src) {
-	        var defer = new $.Deferred(), prev_onload, prev_onerror;
+	        var defer = $.Deferred(), prev_onload, prev_onerror;
 	        if (src instanceof Image) {
 	          /* we have an unloaded image.  Hook to the load and error callbacks
 	           * so that when it is loaded we can use it. */
@@ -65321,7 +66398,7 @@
 
 
 /***/ }),
-/* 246 */
+/* 247 */
 /***/ (function(module, exports) {
 
 	/*
@@ -65392,6 +66469,15 @@
 	 */
 	
 	/**
+	 * General represention of a two-dimensional point in any coordinate system.
+	 *
+	 * @typedef geo.point2D
+	 * @type {object}
+	 * @property {number} x Horizontal coordinate.
+	 * @property {number} y Vertical coordinate.
+	 */
+	
+	/**
 	 * Represention of a point on the map.  The coordinates are in the map's
 	 * reference system, possibly with an affine transformation.
 	 *
@@ -65439,8 +66525,12 @@
 	 *
 	 * @typedef geo.mouseState
 	 * @type {object}
-	 * @property {geo.screenPosition} page Mouse location in pixel space.
-	 * @property {geo.geoPosition} map Mouse location in gcs space.
+	 * @property {geo.screenPosition} page Mouse location in pixel space relative
+	 *      to the entire browser window.
+	 * @property {geo.screenPosition} map Mouse location in pixel space relative to
+	 *      the map DOM node.
+	 * @property {geo.geoPosition} geo Mouse location in interface gcs space.
+	 * @property {geo.geoPosition} mapgcs Mouse location in gcs space.
 	 * @property {geo.mouseButtons} buttons The current state of the mouse buttons.
 	 * @property {geo.modifierKeys} modifiers The current state of all modifier
 	 *      keys.
@@ -65534,10 +66624,60 @@
 	 * @property {geo.geoPosition} [initialEventGeo] The position of the mouse
 	 *      when significant movement first occurred.
 	 */
+	
+	/**
+	 * A color value.  Although opacity can be specified, it is not always used.
+	 * When a string is specified, any of the following forms can be used:
+	 *   - CSS color name
+	 *   - `#rrggbb` The color specified in hexadecmial with each channel on a
+	 *     scale between 0 and 255 (`ff`).  Case insensitive.
+	 *   - `#rrggbbaa` The color and opacity specified in hexadecmial with each
+	 *     channel on a scale between 0 and 255 (`ff`).  Case insensitive.
+	 *   - `#rgb` The color specified in hexadecmial with each channel on a scale
+	 *     between 0 and 15 (`f`).  Case insensitive.
+	 *   - `#rgba` The color and opacity specified in hexadecmial with each channel
+	 *      on a scale between 0 and 15 (`f`).  Case insensitive.
+	 *   - `rgb(R, G, B)`, `rgb(R, G, B, A)`, `rgba(R, G, B)`, `rgba(R, G, B, A)`
+	 *     The color with the values of each color channel specified as numeric
+	 *     values between 0 and 255 or as percent (between 0 and 100) if a percent
+	 *     `%` follows the number.  The alpha (opacity) channel is optional and can
+	 *     either be a number between 0 and 1 or a percent.  White space may appear
+	 *     before and after numbers, and between the number and a percent symbol.
+	 *     Commas are not required.  A slash may be used as a separator before the
+	 *     alpha value instead of a comma.  The numbers conform to the CSS number
+	 *     specification, and can be signed floating-point values, possibly with
+	 *     exponents.
+	 *   - `hsl(H, S, L)`, `hsl(H, S, L, A)`, `hsla(H, S, L)`, `hsla(H, S, L, A)`
+	 *     Hue, saturation, and lightness with optional alpha (opacity).  Hue is a
+	 *     number between 0 and 360 and is interpretted as degrees unless an angle
+	 *     unit is specified.  CSS units of `deg`, `grad`, `rad`, and `turn` are
+	 *     supported.  Saturation and lightness are percentages between 0 and 100
+	 *     and *must* be followed by a percent `%` symbol.  The alpha (opacity)
+	 *     channel is optional and is specified as with `rgba(R, G, B, A)`.
+	 *   - `transparent` Black with 0 opacity.
+	 *
+	 * See {@link https://developer.mozilla.org/en-US/docs/Web/CSS/color_value} for
+	 * more details on CSS color values.
+	 *
+	 * @typedef geo.geoColor
+	 * @type {geo.geoColorObject|string}
+	 */
+	
+	/**
+	 * A color value represented as an object.  Although opacity can be specified,
+	 * it is not always used.
+	 *
+	 * @typedef {object} geo.geoColorObject
+	 * @property {number} r The red intensity on a scale of [0-1].
+	 * @property {number} g The green intensity on a scale of [0-1].
+	 * @property {number} b The blue intensity on a scale of [0-1].
+	 * @property {number} [a] The opacity on a scale of [0-1].  If unspecified and
+	 *      used, it should be treated as 1.
+	 */
 
 
 /***/ }),
-/* 247 */
+/* 248 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
@@ -65635,59 +66775,59 @@
 
 
 /***/ }),
-/* 248 */
+/* 249 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = ("0.12.2");
 
 
 /***/ }),
-/* 249 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = ("e1684f44e6502f40ad8dd99d3e61896200a9206f");
+	module.exports = ("d3228d08f73b10c420565ef7f2b8896f39347f01");
 
 
 /***/ }),
-/* 250 */
+/* 251 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var geo_event = __webpack_require__(15);
 	geo_event.d3 = {
-	  rescale: __webpack_require__(251)
+	  rescale: __webpack_require__(252)
 	};
 	
 	/**
 	 * @namespace geo.d3
 	 */
 	module.exports = {
-	  graphFeature: __webpack_require__(252),
-	  lineFeature: __webpack_require__(253),
-	  object: __webpack_require__(254),
-	  pathFeature: __webpack_require__(256),
-	  pointFeature: __webpack_require__(257),
-	  quadFeature: __webpack_require__(258),
-	  renderer: __webpack_require__(259),
-	  tileLayer: __webpack_require__(260),
-	  uniqueID: __webpack_require__(255),
-	  vectorFeature: __webpack_require__(261)
+	  graphFeature: __webpack_require__(253),
+	  lineFeature: __webpack_require__(254),
+	  object: __webpack_require__(255),
+	  pathFeature: __webpack_require__(257),
+	  pointFeature: __webpack_require__(258),
+	  quadFeature: __webpack_require__(259),
+	  renderer: __webpack_require__(260),
+	  tileLayer: __webpack_require__(261),
+	  uniqueID: __webpack_require__(256),
+	  vectorFeature: __webpack_require__(262)
 	};
 
 
 /***/ }),
-/* 251 */
+/* 252 */
 /***/ (function(module, exports) {
 
 	module.exports = 'geo_d3_rescale';
 
 
 /***/ }),
-/* 252 */
+/* 253 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
 	var registerFeature = __webpack_require__(207).registerFeature;
-	var graphFeature = __webpack_require__(234);
+	var graphFeature = __webpack_require__(235);
 	
 	/**
 	 * @class geo.d3.graphFeature
@@ -65729,7 +66869,7 @@
 
 
 /***/ }),
-/* 253 */
+/* 254 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
@@ -65751,7 +66891,7 @@
 	  }
 	
 	  var d3 = __webpack_require__(2);
-	  var object = __webpack_require__(254);
+	  var object = __webpack_require__(255);
 	  var timestamp = __webpack_require__(215);
 	  var util = __webpack_require__(89);
 	
@@ -65874,7 +67014,7 @@
 
 
 /***/ }),
-/* 254 */
+/* 255 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
@@ -65891,7 +67031,7 @@
 	  'use strict';
 	
 	  var object = __webpack_require__(209);
-	  var uniqueID = __webpack_require__(255);
+	  var uniqueID = __webpack_require__(256);
 	
 	  // this is used to extend other geojs classes, so only generate
 	  // a new object when that is not the case... like if this === window
@@ -65941,7 +67081,7 @@
 
 
 /***/ }),
-/* 255 */
+/* 256 */
 /***/ (function(module, exports) {
 
 	var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz',
@@ -65966,12 +67106,12 @@
 
 
 /***/ }),
-/* 256 */
+/* 257 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
 	var registerFeature = __webpack_require__(207).registerFeature;
-	var pathFeature = __webpack_require__(244);
+	var pathFeature = __webpack_require__(245);
 	
 	/**
 	 * Create a new instance of class pathFeature
@@ -65989,7 +67129,7 @@
 	
 	  var $ = __webpack_require__(7);
 	  var d3 = __webpack_require__(2);
-	  var object = __webpack_require__(254);
+	  var object = __webpack_require__(255);
 	  var timestamp = __webpack_require__(215);
 	
 	  arg = arg || {};
@@ -66093,7 +67233,7 @@
 
 
 /***/ }),
-/* 257 */
+/* 258 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
@@ -66115,7 +67255,7 @@
 	    return new d3_pointFeature(arg);
 	  }
 	
-	  var d3_object = __webpack_require__(254);
+	  var d3_object = __webpack_require__(255);
 	  var timestamp = __webpack_require__(215);
 	
 	  arg = arg || {};
@@ -66210,12 +67350,12 @@
 
 
 /***/ }),
-/* 258 */
+/* 259 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
 	var registerFeature = __webpack_require__(207).registerFeature;
-	var quadFeature = __webpack_require__(228);
+	var quadFeature = __webpack_require__(229);
 	
 	/**
 	 * Create a new instance of class quadFeature
@@ -66233,7 +67373,7 @@
 	
 	  var $ = __webpack_require__(7);
 	  var d3 = __webpack_require__(2);
-	  var object = __webpack_require__(254);
+	  var object = __webpack_require__(255);
 	
 	  quadFeature.call(this, arg);
 	  object.call(this);
@@ -66447,7 +67587,7 @@
 
 
 /***/ }),
-/* 259 */
+/* 260 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
@@ -66465,10 +67605,10 @@
 	  'use strict';
 	
 	  var d3 = __webpack_require__(2);
-	  var object = __webpack_require__(254);
+	  var object = __webpack_require__(255);
 	  var util = __webpack_require__(89);
 	  var geo_event = __webpack_require__(15);
-	  var d3Rescale = __webpack_require__(251);
+	  var d3Rescale = __webpack_require__(252);
 	
 	  if (!(this instanceof d3Renderer)) {
 	    return new d3Renderer(arg);
@@ -67067,7 +68207,7 @@
 
 
 /***/ }),
-/* 260 */
+/* 261 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var registerLayerAdjustment = __webpack_require__(207).registerLayerAdjustment;
@@ -67162,12 +68302,12 @@
 
 
 /***/ }),
-/* 261 */
+/* 262 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
 	var registerFeature = __webpack_require__(207).registerFeature;
-	var vectorFeature = __webpack_require__(247);
+	var vectorFeature = __webpack_require__(248);
 	
 	/**
 	 * Create a new instance of vectorFeature
@@ -67183,7 +68323,7 @@
 	    return new d3_vectorFeature(arg);
 	  }
 	
-	  var object = __webpack_require__(254);
+	  var object = __webpack_require__(255);
 	  var timestamp = __webpack_require__(215);
 	  var d3 = __webpack_require__(2);
 	
@@ -67455,31 +68595,31 @@
 
 
 /***/ }),
-/* 262 */
+/* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * @namespace geo.gl
 	 */
 	module.exports = {
-	  choroplethFeature: __webpack_require__(263),
-	  contourFeature: __webpack_require__(264),
-	  lineFeature: __webpack_require__(266),
-	  pointFeature: __webpack_require__(267),
-	  polygonFeature: __webpack_require__(268),
-	  quadFeature: __webpack_require__(270),
-	  tileLayer: __webpack_require__(271),
+	  choroplethFeature: __webpack_require__(264),
+	  contourFeature: __webpack_require__(265),
+	  lineFeature: __webpack_require__(267),
+	  pointFeature: __webpack_require__(268),
+	  polygonFeature: __webpack_require__(269),
+	  quadFeature: __webpack_require__(271),
+	  tileLayer: __webpack_require__(272),
 	  vglRenderer: __webpack_require__(206)
 	};
 
 
 /***/ }),
-/* 263 */
+/* 264 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
 	var registerFeature = __webpack_require__(207).registerFeature;
-	var choroplethFeature = __webpack_require__(229);
+	var choroplethFeature = __webpack_require__(230);
 	
 	/**
 	 * Create a new instance of choroplethFeature
@@ -67590,12 +68730,12 @@
 
 
 /***/ }),
-/* 264 */
+/* 265 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
 	var registerFeature = __webpack_require__(207).registerFeature;
-	var contourFeature = __webpack_require__(230);
+	var contourFeature = __webpack_require__(231);
 	
 	/**
 	 * Create a new instance of contourFeature
@@ -67616,7 +68756,7 @@
 	  var vgl = __webpack_require__(92);
 	  var transform = __webpack_require__(17);
 	  var util = __webpack_require__(89);
-	  var object = __webpack_require__(265);
+	  var object = __webpack_require__(266);
 	
 	  object.call(this);
 	
@@ -67878,7 +69018,7 @@
 
 
 /***/ }),
-/* 265 */
+/* 266 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -67919,7 +69059,7 @@
 
 
 /***/ }),
-/* 266 */
+/* 267 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
@@ -67975,7 +69115,7 @@
 	  var vgl = __webpack_require__(92);
 	  var transform = __webpack_require__(17);
 	  var util = __webpack_require__(89);
-	  var object = __webpack_require__(265);
+	  var object = __webpack_require__(266);
 	
 	  object.call(this);
 	
@@ -68640,7 +69780,7 @@
 
 
 /***/ }),
-/* 267 */
+/* 268 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var $ = __webpack_require__(7);
@@ -68666,7 +69806,7 @@
 	  var vgl = __webpack_require__(92);
 	  var transform = __webpack_require__(17);
 	  var util = __webpack_require__(89);
-	  var object = __webpack_require__(265);
+	  var object = __webpack_require__(266);
 	
 	  object.call(this);
 	
@@ -69257,7 +70397,7 @@
 
 
 /***/ }),
-/* 268 */
+/* 269 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
@@ -69265,10 +70405,12 @@
 	var polygonFeature = __webpack_require__(223);
 	
 	/**
-	 * Create a new instance of polygonFeature
+	 * Create a new instance of gl.polygonFeature.
 	 *
-	 * @class geo.gl.polygonFeature
+	 * @class
+	 * @alias geo.gl.polygonFeature
 	 * @extends geo.polygonFeature
+	 * @param {geo.polygonFeature.spec} arg
 	 * @returns {geo.gl.polygonFeature}
 	 */
 	var gl_polygonFeature = function (arg) {
@@ -69280,10 +70422,10 @@
 	  polygonFeature.call(this, arg);
 	
 	  var vgl = __webpack_require__(92);
-	  var earcut = __webpack_require__(269);
+	  var earcut = __webpack_require__(270);
 	  var transform = __webpack_require__(17);
 	  var util = __webpack_require__(89);
-	  var object = __webpack_require__(265);
+	  var object = __webpack_require__(266);
 	
 	  object.call(this);
 	
@@ -69351,7 +70493,6 @@
 	   * Array.map is slower in Chrome that using a loop, so loops are used in
 	   * places that would be conceptually served by maps.
 	   *
-	   * @memberof geo.gl.polygonFeature
 	   * @param {boolean} onlyStyle if true, use the existing geoemtry and just
 	   *    recalculate the style.
 	   */
@@ -69388,7 +70529,7 @@
 	        if (!polygon) {
 	          return;
 	        }
-	        outer = polygon.outer || (polygon instanceof Array ? polygon : []);
+	        outer = polygon.outer || (Array.isArray(polygon) ? polygon : []);
 	
 	        /* expand to an earcut polygon geometry.  We had been using a map call,
 	         * but using loops is much faster in Chrome (4 versus 33 ms for one
@@ -69522,8 +70663,10 @@
 	  }
 	
 	  /**
-	   * Initialize
-	   * @memberof geo.gl.polygonFeature
+	   * Initialize.
+	   *
+	   * @param {geo.polygonFeature.spec} arg An object with options for the
+	   *    feature.
 	   */
 	  this._init = function (arg) {
 	    var prog = vgl.shaderProgram(),
@@ -69569,9 +70712,8 @@
 	  };
 	
 	  /**
-	   * Build
+	   * Build.
 	   *
-	   * @memberof geo.gl.polygonFeature
 	   * @override
 	   */
 	  this._build = function () {
@@ -69585,9 +70727,8 @@
 	  };
 	
 	  /**
-	   * Update
+	   * Update.
 	   *
-	   * @memberof geo.gl.polygonFeature
 	   * @override
 	   */
 	  this._update = function (opts) {
@@ -69612,8 +70753,7 @@
 	  };
 	
 	  /**
-	   * Destroy
-	   * @memberof geo.gl.polygonFeature
+	   * Destroy.
 	   */
 	  this._exit = function () {
 	    m_this.renderer().contextRenderer().removeActor(m_actor);
@@ -69632,7 +70772,7 @@
 
 
 /***/ }),
-/* 269 */
+/* 270 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -70282,12 +71422,12 @@
 
 
 /***/ }),
-/* 270 */
+/* 271 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
 	var registerFeature = __webpack_require__(207).registerFeature;
-	var quadFeature = __webpack_require__(228);
+	var quadFeature = __webpack_require__(229);
 	
 	/**
 	 * Create a new instance of class quadFeature
@@ -70306,7 +71446,7 @@
 	
 	  var $ = __webpack_require__(7);
 	  var vgl = __webpack_require__(92);
-	  var object = __webpack_require__(265);
+	  var object = __webpack_require__(266);
 	
 	  object.call(this);
 	
@@ -70706,7 +71846,7 @@
 
 
 /***/ }),
-/* 271 */
+/* 272 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var registerLayerAdjustment = __webpack_require__(207).registerLayerAdjustment;
@@ -70810,24 +71950,25 @@
 
 
 /***/ }),
-/* 272 */
+/* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * @namespace geo.canvas
 	 */
 	module.exports = {
-	  canvasRenderer: __webpack_require__(273),
-	  heatmapFeature: __webpack_require__(274),
-	  lineFeature: __webpack_require__(276),
-	  pixelmapFeature: __webpack_require__(277),
-	  quadFeature: __webpack_require__(278),
-	  tileLayer: __webpack_require__(279)
+	  canvasRenderer: __webpack_require__(274),
+	  heatmapFeature: __webpack_require__(275),
+	  lineFeature: __webpack_require__(277),
+	  pixelmapFeature: __webpack_require__(278),
+	  quadFeature: __webpack_require__(279),
+	  textFeature: __webpack_require__(280),
+	  tileLayer: __webpack_require__(300)
 	};
 
 
 /***/ }),
-/* 273 */
+/* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
@@ -70991,12 +72132,12 @@
 
 
 /***/ }),
-/* 274 */
+/* 275 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
 	var registerFeature = __webpack_require__(207).registerFeature;
-	var heatmapFeature = __webpack_require__(235);
+	var heatmapFeature = __webpack_require__(236);
 	var timestamp = __webpack_require__(215);
 	
 	/**
@@ -71016,7 +72157,7 @@
 	    return new canvas_heatmapFeature(arg);
 	  }
 	  heatmapFeature.call(this, arg);
-	  var object = __webpack_require__(275);
+	  var object = __webpack_require__(276);
 	
 	  object.call(this);
 	
@@ -71465,7 +72606,7 @@
 
 
 /***/ }),
-/* 275 */
+/* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
@@ -71473,7 +72614,8 @@
 	
 	/**
 	 * Canvas specific subclass of object which rerenders when the object is drawn.
-	 * @class geo.canvas.object
+	 * @class
+	 * @alias geo.canvas.object
 	 * @extends geo.sceneObject
 	 */
 	
@@ -71490,7 +72632,8 @@
 	  sceneObject.call(this);
 	
 	  var m_this = this,
-	      s_draw = this.draw;
+	      s_draw = this.draw,
+	      m_canvasProperties = {};
 	
 	  /**
 	   * This must be overridden by any feature that needs to render.
@@ -71499,8 +72642,33 @@
 	  };
 	
 	  /**
-	  *  Redraw the object.
-	  */
+	   * Check if a property has already been set on a canvas's context.  If so,
+	   * don't set it again.  Some browsers are much slower if the properties are
+	   * set, even if no change is made.
+	   *
+	   * @param {CanvasRenderingContext2D} [context] The canvas context to modify.
+	   *    If `undefined`, clear the internal property buffer.
+	   * @param {string} [key] The property to set on the canvas.
+	   * @param {object} [value] The value for the property.
+	   * @returns {this} The current object.
+	   */
+	  this._canvasProperty = function (context, key, value) {
+	    if (!context || !key) {
+	      m_canvasProperties = {};
+	      return m_this;
+	    }
+	    if (m_canvasProperties[key] !== value) {
+	      m_canvasProperties[key] = value;
+	      context[key] = value;
+	    }
+	    return m_this;
+	  };
+	
+	  /**
+	   *  Redraw the object.
+	   *
+	   * @returns {this} The current object.
+	   */
 	  this.draw = function () {
 	    m_this._update();
 	    m_this.renderer()._render();
@@ -71513,11 +72681,10 @@
 	
 	inherit(canvas_object, sceneObject);
 	module.exports = canvas_object;
-	
 
 
 /***/ }),
-/* 276 */
+/* 277 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
@@ -71538,7 +72705,7 @@
 	    return new canvas_lineFeature(arg);
 	  }
 	
-	  var object = __webpack_require__(275);
+	  var object = __webpack_require__(276);
 	
 	  arg = arg || {};
 	  lineFeature.call(this, arg);
@@ -71633,12 +72800,12 @@
 
 
 /***/ }),
-/* 277 */
+/* 278 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
 	var registerFeature = __webpack_require__(207).registerFeature;
-	var pixelmapFeature = __webpack_require__(245);
+	var pixelmapFeature = __webpack_require__(246);
 	
 	/**
 	 * Create a new instance of class pixelmapFeature
@@ -71656,7 +72823,7 @@
 	  }
 	  pixelmapFeature.call(this, arg);
 	
-	  var object = __webpack_require__(275);
+	  var object = __webpack_require__(276);
 	  object.call(this);
 	
 	  this._init(arg);
@@ -71671,12 +72838,12 @@
 
 
 /***/ }),
-/* 278 */
+/* 279 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
 	var registerFeature = __webpack_require__(207).registerFeature;
-	var quadFeature = __webpack_require__(228);
+	var quadFeature = __webpack_require__(229);
 	
 	/**
 	 * Create a new instance of class quadFeature
@@ -71694,7 +72861,7 @@
 	  }
 	  quadFeature.call(this, arg);
 	
-	  var object = __webpack_require__(275);
+	  var object = __webpack_require__(276);
 	  object.call(this);
 	
 	  var $ = __webpack_require__(7);
@@ -71827,7 +72994,876 @@
 
 
 /***/ }),
-/* 279 */
+/* 280 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var inherit = __webpack_require__(14);
+	var registerFeature = __webpack_require__(207).registerFeature;
+	var textFeature = __webpack_require__(224);
+	var util = __webpack_require__(89);
+	var mat3 = __webpack_require__(281);
+	var vec3 = __webpack_require__(144);
+	
+	/**
+	 * Create a new instance of class canvas.textFeature.
+	 *
+	 * @class
+	 * @alias geo.canvas.textFeature
+	 * @extends geo.textFeature
+	 * @extends geo.canvas.object
+	 *
+	 * @param {geo.textFeature.spec} [arg] Options for the feature.
+	 * @returns {geo.canvas.textFeature} The created feature.
+	 */
+	var canvas_textFeature = function (arg) {
+	  'use strict';
+	  if (!(this instanceof canvas_textFeature)) {
+	    return new canvas_textFeature(arg);
+	  }
+	
+	  var object = __webpack_require__(276);
+	
+	  arg = arg || {};
+	  textFeature.call(this, arg);
+	  object.call(this);
+	
+	  /**
+	   * @private
+	   */
+	  var m_this = this,
+	      m_defaultFont = 'bold 16px sans-serif',
+	      /* This regexp parses css font specifications into style, variant,
+	       * weight, stretch, size, line height, and family.  It is based on a
+	       * regexp here: https://stackoverflow.com/questions/10135697/regex-to-parse-any-css-font,
+	       * but has been modified to fix some issues and handle font stretch. */
+	      m_cssFontRegExp = new RegExp(
+	        '^\\s*' +
+	        '(?=(?:(?:[-a-z0-9]+\\s+){0,3}(italic|oblique))?)' +
+	        '(?=(?:(?:[-a-z0-9]+\\s+){0,3}(small-caps))?)' +
+	        '(?=(?:(?:[-a-z0-9]+\\s+){0,3}(bold(?:er)?|lighter|[1-9]00))?)' +
+	        '(?=(?:(?:[-a-z0-9]+\\s+){0,3}((?:ultra-|extra-|semi-)?(?:condensed|expanded)))?)' +
+	        '(?:(?:normal|\\1|\\2|\\3|\\4)\\s+){0,4}' +
+	        '((?:xx?-)?(?:small|large)|medium|smaller|larger|[.\\d]+(?:\\%|in|[cem]m|ex|p[ctx]))' +
+	        '(?:/(normal|[.\\d]+(?:\\%|in|[cem]m|ex|p[ctx])))?\\s+' +
+	        '([-,\\"\\sa-z]+?)\\s*$', 'i');
+	
+	  /**
+	   * Get the font for a specific data item.  This falls back to the default
+	   * font if the value is unset or doesn't contain sufficient information.
+	   *
+	   * @param {boolean} useSubValues If truthy, check all font styles (such as
+	   *    `fontSize`, `lineHeight`, etc., and override the code `font` style
+	   *    with those values.  If falsy, only use `font`.
+	   * @param {object} d The current data element.
+	   * @param {number} i The index of the current data element.
+	   * @returns {string} The font style.
+	   */
+	  this.getFontFromStyles = function (useSubValues, d, i) {
+	    var font = m_this.style.get('font')(d, i) || m_defaultFont;
+	    if (useSubValues) {
+	      var parts = m_cssFontRegExp.exec(font);
+	      if (parts === null) {
+	        parts = m_cssFontRegExp.exec(m_defaultFont);
+	      }
+	      parts[1] = m_this.style.get('fontStyle')(d, i) || parts[1];
+	      parts[2] = m_this.style.get('fontVariant')(d, i) || parts[2];
+	      parts[3] = m_this.style.get('fontWeight')(d, i) || parts[3];
+	      parts[4] = m_this.style.get('fontStretch')(d, i) || parts[4];
+	      parts[5] = m_this.style.get('fontSize')(d, i) || parts[5] || '16px';
+	      parts[6] = m_this.style.get('lineHeight')(d, i) || parts[6];
+	      parts[7] = m_this.style.get('fontFamily')(d, i) || parts[7] || 'sans-serif';
+	      font = (parts[1] || '') + ' ' + (parts[2] || '') + ' ' +
+	             (parts[3] || '') + ' ' + (parts[4] || '') + ' ' +
+	             (parts[5] || '') + (parts[6] ? '/' + parts[6] : '') + ' ' +
+	             parts[7];
+	      font = font.trim().replace(/\s\s+/g, ' ');
+	    }
+	    return font;
+	  };
+	
+	  /**
+	   * Render the data on the canvas.
+	   *
+	   * This does not currently support multiline text or word wrapping, since
+	   * canvas doesn't implement that directly.  To support these, each text item
+	   * would need to be split on line breaks, and have the width of the text
+	   * calculated with context2d.measureText to determine word wrapping.  This
+	   * would also need to calculate the effective line height from the font
+	   * specification.
+	   *
+	   * @protected
+	   * @param {CanvasRenderingContext2D} context2d The canvas context to draw in.
+	   * @param {geo.map} map The parent map object.
+	   */
+	  this._renderOnCanvas = function (context2d, map) {
+	    var data = m_this.data(),
+	        posFunc = m_this.style.get('position'),
+	        textFunc = m_this.style.get('text'),
+	        mapRotation = map.rotation(),
+	        mapZoom = map.zoom(),
+	        fontFromSubValues, text, pos, visible, color, blur, stroke, width,
+	        rotation, rotateWithMap, scale, offset,
+	        transform, lastTransform = util.mat3AsArray();
+	
+	    /* If any of the font styles other than `font` have values, then we need to
+	     * construct a single font value from the subvalues.  Otherwise, we can
+	     * skip it. */
+	    fontFromSubValues = [
+	      'fontStyle', 'fontVariant', 'fontWeight', 'fontStretch', 'fontSize',
+	      'lineHeight', 'fontFamily'
+	    ].some(function (key) {
+	      return m_this.style(key) !== null && m_this.style(key) !== undefined;
+	    });
+	    /* Clear the canvas property buffer */
+	    m_this._canvasProperty();
+	    data.forEach(function (d, i) {
+	      visible = m_this.style.get('visible')(d, i);
+	      if (!visible && visible !== undefined) {
+	        return;
+	      }
+	      color = util.convertColorAndOpacity(
+	        m_this.style.get('color')(d, i), m_this.style.get('textOpacity')(d, i));
+	      stroke = util.convertColorAndOpacity(
+	        m_this.style.get('textStrokeColor')(d, i), m_this.style.get('textOpacity')(d, i), {r: 0, g: 0, b: 0, a: 0});
+	      if (color.a === 0 && stroke.a === 0) {
+	        return;
+	      }
+	      m_this._canvasProperty(context2d, 'fillStyle', util.convertColorToRGBA(color));
+	      // TODO: get the position position without transform.  If it is outside
+	      // of the map to an extent that there is no chance of text showing,
+	      // skip further processing.
+	      pos = m_this.featureGcsToDisplay(posFunc(d, i));
+	      text = textFunc(d, i);
+	      m_this._canvasProperty(context2d, 'font', m_this.getFontFromStyles(fontFromSubValues, d, i));
+	      m_this._canvasProperty(context2d, 'textAlign', m_this.style.get('textAlign')(d, i) || 'center');
+	      m_this._canvasProperty(context2d, 'textBaseline', m_this.style.get('textBaseline')(d, i) || 'middle');
+	      /* rotation, scale, and offset */
+	      rotation = m_this.style.get('rotation')(d, i) || 0;
+	      rotateWithMap = m_this.style.get('rotateWithMap')(d, i) && mapRotation;
+	      scale = m_this.style.get('textScaled')(d, i);
+	      scale = util.isNonNullFinite(scale) ? Math.pow(2, mapZoom - scale) : null;
+	      offset = m_this.style.get('offset')(d, i);
+	      transform = util.mat3AsArray();
+	      if (rotation || rotateWithMap || (scale && scale !== 1) || (offset && (offset.x || offset.y))) {
+	        mat3.translate(transform, transform, [pos.x, pos.y]);
+	        if (rotateWithMap && mapRotation) {
+	          mat3.rotate(transform, transform, mapRotation);
+	        }
+	        mat3.translate(transform, transform, [
+	          offset && offset.x ? +offset.x : 0,
+	          offset && offset.y ? +offset.y : 0]);
+	        if (rotation) {
+	          mat3.rotate(transform, transform, rotation);
+	        }
+	        if (scale && scale !== 1) {
+	          mat3.scale(transform, transform, [scale, scale]);
+	        }
+	        mat3.translate(transform, transform, [-pos.x, -pos.y]);
+	      }
+	      if (lastTransform[0] !== transform[0] || lastTransform[1] !== transform[1] ||
+	          lastTransform[3] !== transform[3] || lastTransform[4] !== transform[4] ||
+	          lastTransform[6] !== transform[6] || lastTransform[7] !== transform[7]) {
+	        context2d.setTransform(transform[0], transform[1], transform[3], transform[4], transform[6], transform[7]);
+	        mat3.copy(lastTransform, transform);
+	      }
+	      /* shadow */
+	      color = util.convertColorAndOpacity(
+	        m_this.style.get('shadowColor')(d, i), undefined, {r: 0, g: 0, b: 0, a: 0});
+	      if (color.a) {
+	        offset = m_this.style.get('shadowOffset')(d, i);
+	        blur = m_this.style.get('shadowBlur')(d, i);
+	      }
+	      if (color.a && ((offset && (offset.x || offset.y)) || blur)) {
+	        m_this._canvasProperty(context2d, 'shadowColor', util.convertColorToRGBA(color));
+	        if (offset && (rotation || rotateWithMap) && m_this.style.get('shadowRotate')(d, i)) {
+	          transform = [+offset.x, +offset.y, 0];
+	          vec3.rotateZ(transform, transform, [0, 0, 0],
+	                       rotation + (rotateWithMap ? mapRotation : 0));
+	          offset = {x: transform[0], y: transform[1]};
+	        }
+	        m_this._canvasProperty(context2d, 'shadowOffsetX', offset && offset.x ? +offset.x : 0);
+	        m_this._canvasProperty(context2d, 'shadowOffsetY', offset && offset.y ? +offset.y : 0);
+	        m_this._canvasProperty(context2d, 'shadowBlur', blur || 0);
+	      } else {
+	        m_this._canvasProperty(context2d, 'shadowColor', 'rgba(0,0,0,0)');
+	      }
+	      /* draw the text */
+	      if (stroke.a) {
+	        width = m_this.style.get('textStrokeWidth')(d, i);
+	        if (isFinite(width) && width > 0) {
+	          m_this._canvasProperty(context2d, 'strokeStyle', util.convertColorToRGBA(stroke));
+	          m_this._canvasProperty(context2d, 'lineWidth', width);
+	          context2d.strokeText(text, pos.x, pos.y);
+	          m_this._canvasProperty(context2d, 'shadowColor', 'rgba(0,0,0,0)');
+	        }
+	      }
+	      context2d.fillText(text, pos.x, pos.y);
+	    });
+	    m_this._canvasProperty(context2d, 'globalAlpha', 1);
+	    context2d.setTransform(1, 0, 0, 1, 0, 0);
+	  };
+	
+	  return this;
+	};
+	
+	inherit(canvas_textFeature, textFeature);
+	
+	// Now register it
+	var capabilities = {};
+	
+	registerFeature('canvas', 'text', canvas_textFeature, capabilities);
+	
+	module.exports = canvas_textFeature;
+
+
+/***/ }),
+/* 281 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports = {
+	  adjoint: __webpack_require__(282)
+	  , clone: __webpack_require__(283)
+	  , copy: __webpack_require__(284)
+	  , create: __webpack_require__(285)
+	  , determinant: __webpack_require__(286)
+	  , frob: __webpack_require__(287)
+	  , fromMat2: __webpack_require__(288)
+	  , fromMat4: __webpack_require__(289)
+	  , fromQuat: __webpack_require__(290)
+	  , identity: __webpack_require__(291)
+	  , invert: __webpack_require__(292)
+	  , multiply: __webpack_require__(293)
+	  , normalFromMat4: __webpack_require__(294)
+	  , rotate: __webpack_require__(295)
+	  , scale: __webpack_require__(296)
+	  , str: __webpack_require__(297)
+	  , translate: __webpack_require__(298)
+	  , transpose: __webpack_require__(299)
+	}
+
+
+/***/ }),
+/* 282 */
+/***/ (function(module, exports) {
+
+	module.exports = adjoint
+	
+	/**
+	 * Calculates the adjugate of a mat3
+	 *
+	 * @alias mat3.adjoint
+	 * @param {mat3} out the receiving matrix
+	 * @param {mat3} a the source matrix
+	 * @returns {mat3} out
+	 */
+	function adjoint(out, a) {
+	  var a00 = a[0], a01 = a[1], a02 = a[2]
+	  var a10 = a[3], a11 = a[4], a12 = a[5]
+	  var a20 = a[6], a21 = a[7], a22 = a[8]
+	
+	  out[0] = (a11 * a22 - a12 * a21)
+	  out[1] = (a02 * a21 - a01 * a22)
+	  out[2] = (a01 * a12 - a02 * a11)
+	  out[3] = (a12 * a20 - a10 * a22)
+	  out[4] = (a00 * a22 - a02 * a20)
+	  out[5] = (a02 * a10 - a00 * a12)
+	  out[6] = (a10 * a21 - a11 * a20)
+	  out[7] = (a01 * a20 - a00 * a21)
+	  out[8] = (a00 * a11 - a01 * a10)
+	
+	  return out
+	}
+
+
+/***/ }),
+/* 283 */
+/***/ (function(module, exports) {
+
+	module.exports = clone
+	
+	/**
+	 * Creates a new mat3 initialized with values from an existing matrix
+	 *
+	 * @alias mat3.clone
+	 * @param {mat3} a matrix to clone
+	 * @returns {mat3} a new 3x3 matrix
+	 */
+	function clone(a) {
+	  var out = new Float32Array(9)
+	  out[0] = a[0]
+	  out[1] = a[1]
+	  out[2] = a[2]
+	  out[3] = a[3]
+	  out[4] = a[4]
+	  out[5] = a[5]
+	  out[6] = a[6]
+	  out[7] = a[7]
+	  out[8] = a[8]
+	  return out
+	}
+
+
+/***/ }),
+/* 284 */
+/***/ (function(module, exports) {
+
+	module.exports = copy
+	
+	/**
+	 * Copy the values from one mat3 to another
+	 *
+	 * @alias mat3.copy
+	 * @param {mat3} out the receiving matrix
+	 * @param {mat3} a the source matrix
+	 * @returns {mat3} out
+	 */
+	function copy(out, a) {
+	  out[0] = a[0]
+	  out[1] = a[1]
+	  out[2] = a[2]
+	  out[3] = a[3]
+	  out[4] = a[4]
+	  out[5] = a[5]
+	  out[6] = a[6]
+	  out[7] = a[7]
+	  out[8] = a[8]
+	  return out
+	}
+
+
+/***/ }),
+/* 285 */
+/***/ (function(module, exports) {
+
+	module.exports = create
+	
+	/**
+	 * Creates a new identity mat3
+	 *
+	 * @alias mat3.create
+	 * @returns {mat3} a new 3x3 matrix
+	 */
+	function create() {
+	  var out = new Float32Array(9)
+	  out[0] = 1
+	  out[1] = 0
+	  out[2] = 0
+	  out[3] = 0
+	  out[4] = 1
+	  out[5] = 0
+	  out[6] = 0
+	  out[7] = 0
+	  out[8] = 1
+	  return out
+	}
+
+
+/***/ }),
+/* 286 */
+/***/ (function(module, exports) {
+
+	module.exports = determinant
+	
+	/**
+	 * Calculates the determinant of a mat3
+	 *
+	 * @alias mat3.determinant
+	 * @param {mat3} a the source matrix
+	 * @returns {Number} determinant of a
+	 */
+	function determinant(a) {
+	  var a00 = a[0], a01 = a[1], a02 = a[2]
+	  var a10 = a[3], a11 = a[4], a12 = a[5]
+	  var a20 = a[6], a21 = a[7], a22 = a[8]
+	
+	  return a00 * (a22 * a11 - a12 * a21)
+	       + a01 * (a12 * a20 - a22 * a10)
+	       + a02 * (a21 * a10 - a11 * a20)
+	}
+
+
+/***/ }),
+/* 287 */
+/***/ (function(module, exports) {
+
+	module.exports = frob
+	
+	/**
+	 * Returns Frobenius norm of a mat3
+	 *
+	 * @alias mat3.frob
+	 * @param {mat3} a the matrix to calculate Frobenius norm of
+	 * @returns {Number} Frobenius norm
+	 */
+	function frob(a) {
+	  return Math.sqrt(
+	      a[0]*a[0]
+	    + a[1]*a[1]
+	    + a[2]*a[2]
+	    + a[3]*a[3]
+	    + a[4]*a[4]
+	    + a[5]*a[5]
+	    + a[6]*a[6]
+	    + a[7]*a[7]
+	    + a[8]*a[8]
+	  )
+	}
+
+
+/***/ }),
+/* 288 */
+/***/ (function(module, exports) {
+
+	module.exports = fromMat2d
+	
+	/**
+	 * Copies the values from a mat2d into a mat3
+	 *
+	 * @alias mat3.fromMat2d
+	 * @param {mat3} out the receiving matrix
+	 * @param {mat2d} a the matrix to copy
+	 * @returns {mat3} out
+	 **/
+	function fromMat2d(out, a) {
+	  out[0] = a[0]
+	  out[1] = a[1]
+	  out[2] = 0
+	
+	  out[3] = a[2]
+	  out[4] = a[3]
+	  out[5] = 0
+	
+	  out[6] = a[4]
+	  out[7] = a[5]
+	  out[8] = 1
+	
+	  return out
+	}
+
+
+/***/ }),
+/* 289 */
+/***/ (function(module, exports) {
+
+	module.exports = fromMat4
+	
+	/**
+	 * Copies the upper-left 3x3 values into the given mat3.
+	 *
+	 * @alias mat3.fromMat4
+	 * @param {mat3} out the receiving 3x3 matrix
+	 * @param {mat4} a   the source 4x4 matrix
+	 * @returns {mat3} out
+	 */
+	function fromMat4(out, a) {
+	  out[0] = a[0]
+	  out[1] = a[1]
+	  out[2] = a[2]
+	  out[3] = a[4]
+	  out[4] = a[5]
+	  out[5] = a[6]
+	  out[6] = a[8]
+	  out[7] = a[9]
+	  out[8] = a[10]
+	  return out
+	}
+
+
+/***/ }),
+/* 290 */
+/***/ (function(module, exports) {
+
+	module.exports = fromQuat
+	
+	/**
+	* Calculates a 3x3 matrix from the given quaternion
+	*
+	* @alias mat3.fromQuat
+	* @param {mat3} out mat3 receiving operation result
+	* @param {quat} q Quaternion to create matrix from
+	*
+	* @returns {mat3} out
+	*/
+	function fromQuat(out, q) {
+	  var x = q[0]
+	  var y = q[1]
+	  var z = q[2]
+	  var w = q[3]
+	
+	  var x2 = x + x
+	  var y2 = y + y
+	  var z2 = z + z
+	
+	  var xx = x * x2
+	  var yx = y * x2
+	  var yy = y * y2
+	  var zx = z * x2
+	  var zy = z * y2
+	  var zz = z * z2
+	  var wx = w * x2
+	  var wy = w * y2
+	  var wz = w * z2
+	
+	  out[0] = 1 - yy - zz
+	  out[3] = yx - wz
+	  out[6] = zx + wy
+	
+	  out[1] = yx + wz
+	  out[4] = 1 - xx - zz
+	  out[7] = zy - wx
+	
+	  out[2] = zx - wy
+	  out[5] = zy + wx
+	  out[8] = 1 - xx - yy
+	
+	  return out
+	}
+
+
+/***/ }),
+/* 291 */
+/***/ (function(module, exports) {
+
+	module.exports = identity
+	
+	/**
+	 * Set a mat3 to the identity matrix
+	 *
+	 * @alias mat3.identity
+	 * @param {mat3} out the receiving matrix
+	 * @returns {mat3} out
+	 */
+	function identity(out) {
+	  out[0] = 1
+	  out[1] = 0
+	  out[2] = 0
+	  out[3] = 0
+	  out[4] = 1
+	  out[5] = 0
+	  out[6] = 0
+	  out[7] = 0
+	  out[8] = 1
+	  return out
+	}
+
+
+/***/ }),
+/* 292 */
+/***/ (function(module, exports) {
+
+	module.exports = invert
+	
+	/**
+	 * Inverts a mat3
+	 *
+	 * @alias mat3.invert
+	 * @param {mat3} out the receiving matrix
+	 * @param {mat3} a the source matrix
+	 * @returns {mat3} out
+	 */
+	function invert(out, a) {
+	  var a00 = a[0], a01 = a[1], a02 = a[2]
+	  var a10 = a[3], a11 = a[4], a12 = a[5]
+	  var a20 = a[6], a21 = a[7], a22 = a[8]
+	
+	  var b01 = a22 * a11 - a12 * a21
+	  var b11 = -a22 * a10 + a12 * a20
+	  var b21 = a21 * a10 - a11 * a20
+	
+	  // Calculate the determinant
+	  var det = a00 * b01 + a01 * b11 + a02 * b21
+	
+	  if (!det) return null
+	  det = 1.0 / det
+	
+	  out[0] = b01 * det
+	  out[1] = (-a22 * a01 + a02 * a21) * det
+	  out[2] = (a12 * a01 - a02 * a11) * det
+	  out[3] = b11 * det
+	  out[4] = (a22 * a00 - a02 * a20) * det
+	  out[5] = (-a12 * a00 + a02 * a10) * det
+	  out[6] = b21 * det
+	  out[7] = (-a21 * a00 + a01 * a20) * det
+	  out[8] = (a11 * a00 - a01 * a10) * det
+	
+	  return out
+	}
+
+
+/***/ }),
+/* 293 */
+/***/ (function(module, exports) {
+
+	module.exports = multiply
+	
+	/**
+	 * Multiplies two mat3's
+	 *
+	 * @alias mat3.multiply
+	 * @param {mat3} out the receiving matrix
+	 * @param {mat3} a the first operand
+	 * @param {mat3} b the second operand
+	 * @returns {mat3} out
+	 */
+	function multiply(out, a, b) {
+	  var a00 = a[0], a01 = a[1], a02 = a[2]
+	  var a10 = a[3], a11 = a[4], a12 = a[5]
+	  var a20 = a[6], a21 = a[7], a22 = a[8]
+	
+	  var b00 = b[0], b01 = b[1], b02 = b[2]
+	  var b10 = b[3], b11 = b[4], b12 = b[5]
+	  var b20 = b[6], b21 = b[7], b22 = b[8]
+	
+	  out[0] = b00 * a00 + b01 * a10 + b02 * a20
+	  out[1] = b00 * a01 + b01 * a11 + b02 * a21
+	  out[2] = b00 * a02 + b01 * a12 + b02 * a22
+	
+	  out[3] = b10 * a00 + b11 * a10 + b12 * a20
+	  out[4] = b10 * a01 + b11 * a11 + b12 * a21
+	  out[5] = b10 * a02 + b11 * a12 + b12 * a22
+	
+	  out[6] = b20 * a00 + b21 * a10 + b22 * a20
+	  out[7] = b20 * a01 + b21 * a11 + b22 * a21
+	  out[8] = b20 * a02 + b21 * a12 + b22 * a22
+	
+	  return out
+	}
+
+
+/***/ }),
+/* 294 */
+/***/ (function(module, exports) {
+
+	module.exports = normalFromMat4
+	
+	/**
+	* Calculates a 3x3 normal matrix (transpose inverse) from the 4x4 matrix
+	*
+	* @alias mat3.normalFromMat4
+	* @param {mat3} out mat3 receiving operation result
+	* @param {mat4} a Mat4 to derive the normal matrix from
+	*
+	* @returns {mat3} out
+	*/
+	function normalFromMat4(out, a) {
+	  var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3]
+	  var a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7]
+	  var a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11]
+	  var a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15]
+	
+	  var b00 = a00 * a11 - a01 * a10
+	  var b01 = a00 * a12 - a02 * a10
+	  var b02 = a00 * a13 - a03 * a10
+	  var b03 = a01 * a12 - a02 * a11
+	  var b04 = a01 * a13 - a03 * a11
+	  var b05 = a02 * a13 - a03 * a12
+	  var b06 = a20 * a31 - a21 * a30
+	  var b07 = a20 * a32 - a22 * a30
+	  var b08 = a20 * a33 - a23 * a30
+	  var b09 = a21 * a32 - a22 * a31
+	  var b10 = a21 * a33 - a23 * a31
+	  var b11 = a22 * a33 - a23 * a32
+	
+	  // Calculate the determinant
+	  var det = b00 * b11
+	          - b01 * b10
+	          + b02 * b09
+	          + b03 * b08
+	          - b04 * b07
+	          + b05 * b06
+	
+	  if (!det) return null
+	  det = 1.0 / det
+	
+	  out[0] = (a11 * b11 - a12 * b10 + a13 * b09) * det
+	  out[1] = (a12 * b08 - a10 * b11 - a13 * b07) * det
+	  out[2] = (a10 * b10 - a11 * b08 + a13 * b06) * det
+	
+	  out[3] = (a02 * b10 - a01 * b11 - a03 * b09) * det
+	  out[4] = (a00 * b11 - a02 * b08 + a03 * b07) * det
+	  out[5] = (a01 * b08 - a00 * b10 - a03 * b06) * det
+	
+	  out[6] = (a31 * b05 - a32 * b04 + a33 * b03) * det
+	  out[7] = (a32 * b02 - a30 * b05 - a33 * b01) * det
+	  out[8] = (a30 * b04 - a31 * b02 + a33 * b00) * det
+	
+	  return out
+	}
+
+
+/***/ }),
+/* 295 */
+/***/ (function(module, exports) {
+
+	module.exports = rotate
+	
+	/**
+	 * Rotates a mat3 by the given angle
+	 *
+	 * @alias mat3.rotate
+	 * @param {mat3} out the receiving matrix
+	 * @param {mat3} a the matrix to rotate
+	 * @param {Number} rad the angle to rotate the matrix by
+	 * @returns {mat3} out
+	 */
+	function rotate(out, a, rad) {
+	  var a00 = a[0], a01 = a[1], a02 = a[2]
+	  var a10 = a[3], a11 = a[4], a12 = a[5]
+	  var a20 = a[6], a21 = a[7], a22 = a[8]
+	
+	  var s = Math.sin(rad)
+	  var c = Math.cos(rad)
+	
+	  out[0] = c * a00 + s * a10
+	  out[1] = c * a01 + s * a11
+	  out[2] = c * a02 + s * a12
+	
+	  out[3] = c * a10 - s * a00
+	  out[4] = c * a11 - s * a01
+	  out[5] = c * a12 - s * a02
+	
+	  out[6] = a20
+	  out[7] = a21
+	  out[8] = a22
+	
+	  return out
+	}
+
+
+/***/ }),
+/* 296 */
+/***/ (function(module, exports) {
+
+	module.exports = scale
+	
+	/**
+	 * Scales the mat3 by the dimensions in the given vec2
+	 *
+	 * @alias mat3.scale
+	 * @param {mat3} out the receiving matrix
+	 * @param {mat3} a the matrix to rotate
+	 * @param {vec2} v the vec2 to scale the matrix by
+	 * @returns {mat3} out
+	 **/
+	function scale(out, a, v) {
+	  var x = v[0]
+	  var y = v[1]
+	
+	  out[0] = x * a[0]
+	  out[1] = x * a[1]
+	  out[2] = x * a[2]
+	
+	  out[3] = y * a[3]
+	  out[4] = y * a[4]
+	  out[5] = y * a[5]
+	
+	  out[6] = a[6]
+	  out[7] = a[7]
+	  out[8] = a[8]
+	
+	  return out
+	}
+
+
+/***/ }),
+/* 297 */
+/***/ (function(module, exports) {
+
+	module.exports = str
+	
+	/**
+	 * Returns a string representation of a mat3
+	 *
+	 * @alias mat3.str
+	 * @param {mat3} mat matrix to represent as a string
+	 * @returns {String} string representation of the matrix
+	 */
+	function str(a) {
+	  return 'mat3(' + a[0] + ', ' + a[1] + ', ' + a[2] + ', ' +
+	                   a[3] + ', ' + a[4] + ', ' + a[5] + ', ' +
+	                   a[6] + ', ' + a[7] + ', ' + a[8] + ')'
+	}
+
+
+/***/ }),
+/* 298 */
+/***/ (function(module, exports) {
+
+	module.exports = translate
+	
+	/**
+	 * Translate a mat3 by the given vector
+	 *
+	 * @alias mat3.translate
+	 * @param {mat3} out the receiving matrix
+	 * @param {mat3} a the matrix to translate
+	 * @param {vec2} v vector to translate by
+	 * @returns {mat3} out
+	 */
+	function translate(out, a, v) {
+	  var a00 = a[0], a01 = a[1], a02 = a[2]
+	  var a10 = a[3], a11 = a[4], a12 = a[5]
+	  var a20 = a[6], a21 = a[7], a22 = a[8]
+	  var x = v[0], y = v[1]
+	
+	  out[0] = a00
+	  out[1] = a01
+	  out[2] = a02
+	
+	  out[3] = a10
+	  out[4] = a11
+	  out[5] = a12
+	
+	  out[6] = x * a00 + y * a10 + a20
+	  out[7] = x * a01 + y * a11 + a21
+	  out[8] = x * a02 + y * a12 + a22
+	
+	  return out
+	}
+
+
+/***/ }),
+/* 299 */
+/***/ (function(module, exports) {
+
+	module.exports = transpose
+	
+	/**
+	 * Transpose the values of a mat3
+	 *
+	 * @alias mat3.transpose
+	 * @param {mat3} out the receiving matrix
+	 * @param {mat3} a the source matrix
+	 * @returns {mat3} out
+	 */
+	function transpose(out, a) {
+	  // If we are transposing ourselves we can skip a few steps but have to cache some values
+	  if (out === a) {
+	    var a01 = a[1], a02 = a[2], a12 = a[5]
+	    out[1] = a[3]
+	    out[2] = a[6]
+	    out[3] = a01
+	    out[5] = a[7]
+	    out[6] = a02
+	    out[7] = a12
+	  } else {
+	    out[0] = a[0]
+	    out[1] = a[3]
+	    out[2] = a[6]
+	    out[3] = a[1]
+	    out[4] = a[4]
+	    out[5] = a[7]
+	    out[6] = a[2]
+	    out[7] = a[5]
+	    out[8] = a[8]
+	  }
+	
+	  return out
+	}
+
+
+/***/ }),
+/* 300 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var registerLayerAdjustment = __webpack_require__(207).registerLayerAdjustment;
@@ -71927,27 +73963,27 @@
 
 
 /***/ }),
-/* 280 */
+/* 301 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
 	 * @namespace geo.gui
 	 */
 	module.exports = {
-	  domWidget: __webpack_require__(281),
-	  legendWidget: __webpack_require__(283),
-	  sliderWidget: __webpack_require__(285),
-	  svgWidget: __webpack_require__(284),
-	  uiLayer: __webpack_require__(240),
-	  widget: __webpack_require__(282)
+	  domWidget: __webpack_require__(302),
+	  legendWidget: __webpack_require__(304),
+	  sliderWidget: __webpack_require__(306),
+	  svgWidget: __webpack_require__(305),
+	  uiLayer: __webpack_require__(241),
+	  widget: __webpack_require__(303)
 	};
 
 
 /***/ }),
-/* 281 */
+/* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var widget = __webpack_require__(282);
+	var widget = __webpack_require__(303);
 	var inherit = __webpack_require__(14);
 	var registerWidget = __webpack_require__(207).registerWidget;
 	
@@ -72000,7 +74036,7 @@
 
 
 /***/ }),
-/* 282 */
+/* 303 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var inherit = __webpack_require__(14);
@@ -72198,10 +74234,10 @@
 
 
 /***/ }),
-/* 283 */
+/* 304 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var svgWidget = __webpack_require__(284);
+	var svgWidget = __webpack_require__(305);
 	var inherit = __webpack_require__(14);
 	var registerWidget = __webpack_require__(207).registerWidget;
 	
@@ -72478,10 +74514,10 @@
 
 
 /***/ }),
-/* 284 */
+/* 305 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var domWidget = __webpack_require__(281);
+	var domWidget = __webpack_require__(302);
 	var inherit = __webpack_require__(14);
 	var registerWidget = __webpack_require__(207).registerWidget;
 	
@@ -72509,7 +74545,7 @@
 	
 	  domWidget.call(this, arg);
 	
-	  var d3Renderer = __webpack_require__(259);
+	  var d3Renderer = __webpack_require__(260);
 	
 	  var m_this = this,
 	      m_renderer = null;
@@ -72565,10 +74601,10 @@
 
 
 /***/ }),
-/* 285 */
+/* 306 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	var svgWidget = __webpack_require__(284);
+	var svgWidget = __webpack_require__(305);
 	var inherit = __webpack_require__(14);
 	var registerWidget = __webpack_require__(207).registerWidget;
 	
@@ -72908,2591 +74944,13 @@
 
 
 /***/ }),
-/* 286 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-	
-	// load the styles
-	var content = __webpack_require__(287);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(12)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../../../css-loader/index.js!./bootstrap.css", function() {
-				var newContent = require("!!../../../css-loader/index.js!./bootstrap.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ }),
-/* 287 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(11)();
-	// imports
-	
-	
-	// module
-	exports.push([module.id, "/*!\n * Bootstrap v3.3.7 (http://getbootstrap.com)\n * Copyright 2011-2016 Twitter, Inc.\n * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)\n */\n/*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */\nhtml {\n  font-family: sans-serif;\n  -webkit-text-size-adjust: 100%;\n      -ms-text-size-adjust: 100%;\n}\nbody {\n  margin: 0;\n}\narticle,\naside,\ndetails,\nfigcaption,\nfigure,\nfooter,\nheader,\nhgroup,\nmain,\nmenu,\nnav,\nsection,\nsummary {\n  display: block;\n}\naudio,\ncanvas,\nprogress,\nvideo {\n  display: inline-block;\n  vertical-align: baseline;\n}\naudio:not([controls]) {\n  display: none;\n  height: 0;\n}\n[hidden],\ntemplate {\n  display: none;\n}\na {\n  background-color: transparent;\n}\na:active,\na:hover {\n  outline: 0;\n}\nabbr[title] {\n  border-bottom: 1px dotted;\n}\nb,\nstrong {\n  font-weight: bold;\n}\ndfn {\n  font-style: italic;\n}\nh1 {\n  margin: .67em 0;\n  font-size: 2em;\n}\nmark {\n  color: #000;\n  background: #ff0;\n}\nsmall {\n  font-size: 80%;\n}\nsub,\nsup {\n  position: relative;\n  font-size: 75%;\n  line-height: 0;\n  vertical-align: baseline;\n}\nsup {\n  top: -.5em;\n}\nsub {\n  bottom: -.25em;\n}\nimg {\n  border: 0;\n}\nsvg:not(:root) {\n  overflow: hidden;\n}\nfigure {\n  margin: 1em 40px;\n}\nhr {\n  height: 0;\n  -webkit-box-sizing: content-box;\n     -moz-box-sizing: content-box;\n          box-sizing: content-box;\n}\npre {\n  overflow: auto;\n}\ncode,\nkbd,\npre,\nsamp {\n  font-family: monospace, monospace;\n  font-size: 1em;\n}\nbutton,\ninput,\noptgroup,\nselect,\ntextarea {\n  margin: 0;\n  font: inherit;\n  color: inherit;\n}\nbutton {\n  overflow: visible;\n}\nbutton,\nselect {\n  text-transform: none;\n}\nbutton,\nhtml input[type=\"button\"],\ninput[type=\"reset\"],\ninput[type=\"submit\"] {\n  -webkit-appearance: button;\n  cursor: pointer;\n}\nbutton[disabled],\nhtml input[disabled] {\n  cursor: default;\n}\nbutton::-moz-focus-inner,\ninput::-moz-focus-inner {\n  padding: 0;\n  border: 0;\n}\ninput {\n  line-height: normal;\n}\ninput[type=\"checkbox\"],\ninput[type=\"radio\"] {\n  -webkit-box-sizing: border-box;\n     -moz-box-sizing: border-box;\n          box-sizing: border-box;\n  padding: 0;\n}\ninput[type=\"number\"]::-webkit-inner-spin-button,\ninput[type=\"number\"]::-webkit-outer-spin-button {\n  height: auto;\n}\ninput[type=\"search\"] {\n  -webkit-box-sizing: content-box;\n     -moz-box-sizing: content-box;\n          box-sizing: content-box;\n  -webkit-appearance: textfield;\n}\ninput[type=\"search\"]::-webkit-search-cancel-button,\ninput[type=\"search\"]::-webkit-search-decoration {\n  -webkit-appearance: none;\n}\nfieldset {\n  padding: .35em .625em .75em;\n  margin: 0 2px;\n  border: 1px solid #c0c0c0;\n}\nlegend {\n  padding: 0;\n  border: 0;\n}\ntextarea {\n  overflow: auto;\n}\noptgroup {\n  font-weight: bold;\n}\ntable {\n  border-spacing: 0;\n  border-collapse: collapse;\n}\ntd,\nth {\n  padding: 0;\n}\n/*! Source: https://github.com/h5bp/html5-boilerplate/blob/master/src/css/main.css */\n@media print {\n  *,\n  *:before,\n  *:after {\n    color: #000 !important;\n    text-shadow: none !important;\n    background: transparent !important;\n    -webkit-box-shadow: none !important;\n            box-shadow: none !important;\n  }\n  a,\n  a:visited {\n    text-decoration: underline;\n  }\n  a[href]:after {\n    content: \" (\" attr(href) \")\";\n  }\n  abbr[title]:after {\n    content: \" (\" attr(title) \")\";\n  }\n  a[href^=\"#\"]:after,\n  a[href^=\"javascript:\"]:after {\n    content: \"\";\n  }\n  pre,\n  blockquote {\n    border: 1px solid #999;\n\n    page-break-inside: avoid;\n  }\n  thead {\n    display: table-header-group;\n  }\n  tr,\n  img {\n    page-break-inside: avoid;\n  }\n  img {\n    max-width: 100% !important;\n  }\n  p,\n  h2,\n  h3 {\n    orphans: 3;\n    widows: 3;\n  }\n  h2,\n  h3 {\n    page-break-after: avoid;\n  }\n  .navbar {\n    display: none;\n  }\n  .btn > .caret,\n  .dropup > .btn > .caret {\n    border-top-color: #000 !important;\n  }\n  .label {\n    border: 1px solid #000;\n  }\n  .table {\n    border-collapse: collapse !important;\n  }\n  .table td,\n  .table th {\n    background-color: #fff !important;\n  }\n  .table-bordered th,\n  .table-bordered td {\n    border: 1px solid #ddd !important;\n  }\n}\n@font-face {\n  font-family: 'Glyphicons Halflings';\n\n  src: url(" + __webpack_require__(288) + ");\n  src: url(" + __webpack_require__(288) + "?#iefix) format('embedded-opentype'), url(" + __webpack_require__(289) + ") format('woff2'), url(" + __webpack_require__(290) + ") format('woff'), url(" + __webpack_require__(291) + ") format('truetype'), url(" + __webpack_require__(292) + "#glyphicons_halflingsregular) format('svg');\n}\n.glyphicon {\n  position: relative;\n  top: 1px;\n  display: inline-block;\n  font-family: 'Glyphicons Halflings';\n  font-style: normal;\n  font-weight: normal;\n  line-height: 1;\n\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.glyphicon-asterisk:before {\n  content: \"*\";\n}\n.glyphicon-plus:before {\n  content: \"+\";\n}\n.glyphicon-euro:before,\n.glyphicon-eur:before {\n  content: \"\\20AC\";\n}\n.glyphicon-minus:before {\n  content: \"\\2212\";\n}\n.glyphicon-cloud:before {\n  content: \"\\2601\";\n}\n.glyphicon-envelope:before {\n  content: \"\\2709\";\n}\n.glyphicon-pencil:before {\n  content: \"\\270F\";\n}\n.glyphicon-glass:before {\n  content: \"\\E001\";\n}\n.glyphicon-music:before {\n  content: \"\\E002\";\n}\n.glyphicon-search:before {\n  content: \"\\E003\";\n}\n.glyphicon-heart:before {\n  content: \"\\E005\";\n}\n.glyphicon-star:before {\n  content: \"\\E006\";\n}\n.glyphicon-star-empty:before {\n  content: \"\\E007\";\n}\n.glyphicon-user:before {\n  content: \"\\E008\";\n}\n.glyphicon-film:before {\n  content: \"\\E009\";\n}\n.glyphicon-th-large:before {\n  content: \"\\E010\";\n}\n.glyphicon-th:before {\n  content: \"\\E011\";\n}\n.glyphicon-th-list:before {\n  content: \"\\E012\";\n}\n.glyphicon-ok:before {\n  content: \"\\E013\";\n}\n.glyphicon-remove:before {\n  content: \"\\E014\";\n}\n.glyphicon-zoom-in:before {\n  content: \"\\E015\";\n}\n.glyphicon-zoom-out:before {\n  content: \"\\E016\";\n}\n.glyphicon-off:before {\n  content: \"\\E017\";\n}\n.glyphicon-signal:before {\n  content: \"\\E018\";\n}\n.glyphicon-cog:before {\n  content: \"\\E019\";\n}\n.glyphicon-trash:before {\n  content: \"\\E020\";\n}\n.glyphicon-home:before {\n  content: \"\\E021\";\n}\n.glyphicon-file:before {\n  content: \"\\E022\";\n}\n.glyphicon-time:before {\n  content: \"\\E023\";\n}\n.glyphicon-road:before {\n  content: \"\\E024\";\n}\n.glyphicon-download-alt:before {\n  content: \"\\E025\";\n}\n.glyphicon-download:before {\n  content: \"\\E026\";\n}\n.glyphicon-upload:before {\n  content: \"\\E027\";\n}\n.glyphicon-inbox:before {\n  content: \"\\E028\";\n}\n.glyphicon-play-circle:before {\n  content: \"\\E029\";\n}\n.glyphicon-repeat:before {\n  content: \"\\E030\";\n}\n.glyphicon-refresh:before {\n  content: \"\\E031\";\n}\n.glyphicon-list-alt:before {\n  content: \"\\E032\";\n}\n.glyphicon-lock:before {\n  content: \"\\E033\";\n}\n.glyphicon-flag:before {\n  content: \"\\E034\";\n}\n.glyphicon-headphones:before {\n  content: \"\\E035\";\n}\n.glyphicon-volume-off:before {\n  content: \"\\E036\";\n}\n.glyphicon-volume-down:before {\n  content: \"\\E037\";\n}\n.glyphicon-volume-up:before {\n  content: \"\\E038\";\n}\n.glyphicon-qrcode:before {\n  content: \"\\E039\";\n}\n.glyphicon-barcode:before {\n  content: \"\\E040\";\n}\n.glyphicon-tag:before {\n  content: \"\\E041\";\n}\n.glyphicon-tags:before {\n  content: \"\\E042\";\n}\n.glyphicon-book:before {\n  content: \"\\E043\";\n}\n.glyphicon-bookmark:before {\n  content: \"\\E044\";\n}\n.glyphicon-print:before {\n  content: \"\\E045\";\n}\n.glyphicon-camera:before {\n  content: \"\\E046\";\n}\n.glyphicon-font:before {\n  content: \"\\E047\";\n}\n.glyphicon-bold:before {\n  content: \"\\E048\";\n}\n.glyphicon-italic:before {\n  content: \"\\E049\";\n}\n.glyphicon-text-height:before {\n  content: \"\\E050\";\n}\n.glyphicon-text-width:before {\n  content: \"\\E051\";\n}\n.glyphicon-align-left:before {\n  content: \"\\E052\";\n}\n.glyphicon-align-center:before {\n  content: \"\\E053\";\n}\n.glyphicon-align-right:before {\n  content: \"\\E054\";\n}\n.glyphicon-align-justify:before {\n  content: \"\\E055\";\n}\n.glyphicon-list:before {\n  content: \"\\E056\";\n}\n.glyphicon-indent-left:before {\n  content: \"\\E057\";\n}\n.glyphicon-indent-right:before {\n  content: \"\\E058\";\n}\n.glyphicon-facetime-video:before {\n  content: \"\\E059\";\n}\n.glyphicon-picture:before {\n  content: \"\\E060\";\n}\n.glyphicon-map-marker:before {\n  content: \"\\E062\";\n}\n.glyphicon-adjust:before {\n  content: \"\\E063\";\n}\n.glyphicon-tint:before {\n  content: \"\\E064\";\n}\n.glyphicon-edit:before {\n  content: \"\\E065\";\n}\n.glyphicon-share:before {\n  content: \"\\E066\";\n}\n.glyphicon-check:before {\n  content: \"\\E067\";\n}\n.glyphicon-move:before {\n  content: \"\\E068\";\n}\n.glyphicon-step-backward:before {\n  content: \"\\E069\";\n}\n.glyphicon-fast-backward:before {\n  content: \"\\E070\";\n}\n.glyphicon-backward:before {\n  content: \"\\E071\";\n}\n.glyphicon-play:before {\n  content: \"\\E072\";\n}\n.glyphicon-pause:before {\n  content: \"\\E073\";\n}\n.glyphicon-stop:before {\n  content: \"\\E074\";\n}\n.glyphicon-forward:before {\n  content: \"\\E075\";\n}\n.glyphicon-fast-forward:before {\n  content: \"\\E076\";\n}\n.glyphicon-step-forward:before {\n  content: \"\\E077\";\n}\n.glyphicon-eject:before {\n  content: \"\\E078\";\n}\n.glyphicon-chevron-left:before {\n  content: \"\\E079\";\n}\n.glyphicon-chevron-right:before {\n  content: \"\\E080\";\n}\n.glyphicon-plus-sign:before {\n  content: \"\\E081\";\n}\n.glyphicon-minus-sign:before {\n  content: \"\\E082\";\n}\n.glyphicon-remove-sign:before {\n  content: \"\\E083\";\n}\n.glyphicon-ok-sign:before {\n  content: \"\\E084\";\n}\n.glyphicon-question-sign:before {\n  content: \"\\E085\";\n}\n.glyphicon-info-sign:before {\n  content: \"\\E086\";\n}\n.glyphicon-screenshot:before {\n  content: \"\\E087\";\n}\n.glyphicon-remove-circle:before {\n  content: \"\\E088\";\n}\n.glyphicon-ok-circle:before {\n  content: \"\\E089\";\n}\n.glyphicon-ban-circle:before {\n  content: \"\\E090\";\n}\n.glyphicon-arrow-left:before {\n  content: \"\\E091\";\n}\n.glyphicon-arrow-right:before {\n  content: \"\\E092\";\n}\n.glyphicon-arrow-up:before {\n  content: \"\\E093\";\n}\n.glyphicon-arrow-down:before {\n  content: \"\\E094\";\n}\n.glyphicon-share-alt:before {\n  content: \"\\E095\";\n}\n.glyphicon-resize-full:before {\n  content: \"\\E096\";\n}\n.glyphicon-resize-small:before {\n  content: \"\\E097\";\n}\n.glyphicon-exclamation-sign:before {\n  content: \"\\E101\";\n}\n.glyphicon-gift:before {\n  content: \"\\E102\";\n}\n.glyphicon-leaf:before {\n  content: \"\\E103\";\n}\n.glyphicon-fire:before {\n  content: \"\\E104\";\n}\n.glyphicon-eye-open:before {\n  content: \"\\E105\";\n}\n.glyphicon-eye-close:before {\n  content: \"\\E106\";\n}\n.glyphicon-warning-sign:before {\n  content: \"\\E107\";\n}\n.glyphicon-plane:before {\n  content: \"\\E108\";\n}\n.glyphicon-calendar:before {\n  content: \"\\E109\";\n}\n.glyphicon-random:before {\n  content: \"\\E110\";\n}\n.glyphicon-comment:before {\n  content: \"\\E111\";\n}\n.glyphicon-magnet:before {\n  content: \"\\E112\";\n}\n.glyphicon-chevron-up:before {\n  content: \"\\E113\";\n}\n.glyphicon-chevron-down:before {\n  content: \"\\E114\";\n}\n.glyphicon-retweet:before {\n  content: \"\\E115\";\n}\n.glyphicon-shopping-cart:before {\n  content: \"\\E116\";\n}\n.glyphicon-folder-close:before {\n  content: \"\\E117\";\n}\n.glyphicon-folder-open:before {\n  content: \"\\E118\";\n}\n.glyphicon-resize-vertical:before {\n  content: \"\\E119\";\n}\n.glyphicon-resize-horizontal:before {\n  content: \"\\E120\";\n}\n.glyphicon-hdd:before {\n  content: \"\\E121\";\n}\n.glyphicon-bullhorn:before {\n  content: \"\\E122\";\n}\n.glyphicon-bell:before {\n  content: \"\\E123\";\n}\n.glyphicon-certificate:before {\n  content: \"\\E124\";\n}\n.glyphicon-thumbs-up:before {\n  content: \"\\E125\";\n}\n.glyphicon-thumbs-down:before {\n  content: \"\\E126\";\n}\n.glyphicon-hand-right:before {\n  content: \"\\E127\";\n}\n.glyphicon-hand-left:before {\n  content: \"\\E128\";\n}\n.glyphicon-hand-up:before {\n  content: \"\\E129\";\n}\n.glyphicon-hand-down:before {\n  content: \"\\E130\";\n}\n.glyphicon-circle-arrow-right:before {\n  content: \"\\E131\";\n}\n.glyphicon-circle-arrow-left:before {\n  content: \"\\E132\";\n}\n.glyphicon-circle-arrow-up:before {\n  content: \"\\E133\";\n}\n.glyphicon-circle-arrow-down:before {\n  content: \"\\E134\";\n}\n.glyphicon-globe:before {\n  content: \"\\E135\";\n}\n.glyphicon-wrench:before {\n  content: \"\\E136\";\n}\n.glyphicon-tasks:before {\n  content: \"\\E137\";\n}\n.glyphicon-filter:before {\n  content: \"\\E138\";\n}\n.glyphicon-briefcase:before {\n  content: \"\\E139\";\n}\n.glyphicon-fullscreen:before {\n  content: \"\\E140\";\n}\n.glyphicon-dashboard:before {\n  content: \"\\E141\";\n}\n.glyphicon-paperclip:before {\n  content: \"\\E142\";\n}\n.glyphicon-heart-empty:before {\n  content: \"\\E143\";\n}\n.glyphicon-link:before {\n  content: \"\\E144\";\n}\n.glyphicon-phone:before {\n  content: \"\\E145\";\n}\n.glyphicon-pushpin:before {\n  content: \"\\E146\";\n}\n.glyphicon-usd:before {\n  content: \"\\E148\";\n}\n.glyphicon-gbp:before {\n  content: \"\\E149\";\n}\n.glyphicon-sort:before {\n  content: \"\\E150\";\n}\n.glyphicon-sort-by-alphabet:before {\n  content: \"\\E151\";\n}\n.glyphicon-sort-by-alphabet-alt:before {\n  content: \"\\E152\";\n}\n.glyphicon-sort-by-order:before {\n  content: \"\\E153\";\n}\n.glyphicon-sort-by-order-alt:before {\n  content: \"\\E154\";\n}\n.glyphicon-sort-by-attributes:before {\n  content: \"\\E155\";\n}\n.glyphicon-sort-by-attributes-alt:before {\n  content: \"\\E156\";\n}\n.glyphicon-unchecked:before {\n  content: \"\\E157\";\n}\n.glyphicon-expand:before {\n  content: \"\\E158\";\n}\n.glyphicon-collapse-down:before {\n  content: \"\\E159\";\n}\n.glyphicon-collapse-up:before {\n  content: \"\\E160\";\n}\n.glyphicon-log-in:before {\n  content: \"\\E161\";\n}\n.glyphicon-flash:before {\n  content: \"\\E162\";\n}\n.glyphicon-log-out:before {\n  content: \"\\E163\";\n}\n.glyphicon-new-window:before {\n  content: \"\\E164\";\n}\n.glyphicon-record:before {\n  content: \"\\E165\";\n}\n.glyphicon-save:before {\n  content: \"\\E166\";\n}\n.glyphicon-open:before {\n  content: \"\\E167\";\n}\n.glyphicon-saved:before {\n  content: \"\\E168\";\n}\n.glyphicon-import:before {\n  content: \"\\E169\";\n}\n.glyphicon-export:before {\n  content: \"\\E170\";\n}\n.glyphicon-send:before {\n  content: \"\\E171\";\n}\n.glyphicon-floppy-disk:before {\n  content: \"\\E172\";\n}\n.glyphicon-floppy-saved:before {\n  content: \"\\E173\";\n}\n.glyphicon-floppy-remove:before {\n  content: \"\\E174\";\n}\n.glyphicon-floppy-save:before {\n  content: \"\\E175\";\n}\n.glyphicon-floppy-open:before {\n  content: \"\\E176\";\n}\n.glyphicon-credit-card:before {\n  content: \"\\E177\";\n}\n.glyphicon-transfer:before {\n  content: \"\\E178\";\n}\n.glyphicon-cutlery:before {\n  content: \"\\E179\";\n}\n.glyphicon-header:before {\n  content: \"\\E180\";\n}\n.glyphicon-compressed:before {\n  content: \"\\E181\";\n}\n.glyphicon-earphone:before {\n  content: \"\\E182\";\n}\n.glyphicon-phone-alt:before {\n  content: \"\\E183\";\n}\n.glyphicon-tower:before {\n  content: \"\\E184\";\n}\n.glyphicon-stats:before {\n  content: \"\\E185\";\n}\n.glyphicon-sd-video:before {\n  content: \"\\E186\";\n}\n.glyphicon-hd-video:before {\n  content: \"\\E187\";\n}\n.glyphicon-subtitles:before {\n  content: \"\\E188\";\n}\n.glyphicon-sound-stereo:before {\n  content: \"\\E189\";\n}\n.glyphicon-sound-dolby:before {\n  content: \"\\E190\";\n}\n.glyphicon-sound-5-1:before {\n  content: \"\\E191\";\n}\n.glyphicon-sound-6-1:before {\n  content: \"\\E192\";\n}\n.glyphicon-sound-7-1:before {\n  content: \"\\E193\";\n}\n.glyphicon-copyright-mark:before {\n  content: \"\\E194\";\n}\n.glyphicon-registration-mark:before {\n  content: \"\\E195\";\n}\n.glyphicon-cloud-download:before {\n  content: \"\\E197\";\n}\n.glyphicon-cloud-upload:before {\n  content: \"\\E198\";\n}\n.glyphicon-tree-conifer:before {\n  content: \"\\E199\";\n}\n.glyphicon-tree-deciduous:before {\n  content: \"\\E200\";\n}\n.glyphicon-cd:before {\n  content: \"\\E201\";\n}\n.glyphicon-save-file:before {\n  content: \"\\E202\";\n}\n.glyphicon-open-file:before {\n  content: \"\\E203\";\n}\n.glyphicon-level-up:before {\n  content: \"\\E204\";\n}\n.glyphicon-copy:before {\n  content: \"\\E205\";\n}\n.glyphicon-paste:before {\n  content: \"\\E206\";\n}\n.glyphicon-alert:before {\n  content: \"\\E209\";\n}\n.glyphicon-equalizer:before {\n  content: \"\\E210\";\n}\n.glyphicon-king:before {\n  content: \"\\E211\";\n}\n.glyphicon-queen:before {\n  content: \"\\E212\";\n}\n.glyphicon-pawn:before {\n  content: \"\\E213\";\n}\n.glyphicon-bishop:before {\n  content: \"\\E214\";\n}\n.glyphicon-knight:before {\n  content: \"\\E215\";\n}\n.glyphicon-baby-formula:before {\n  content: \"\\E216\";\n}\n.glyphicon-tent:before {\n  content: \"\\26FA\";\n}\n.glyphicon-blackboard:before {\n  content: \"\\E218\";\n}\n.glyphicon-bed:before {\n  content: \"\\E219\";\n}\n.glyphicon-apple:before {\n  content: \"\\F8FF\";\n}\n.glyphicon-erase:before {\n  content: \"\\E221\";\n}\n.glyphicon-hourglass:before {\n  content: \"\\231B\";\n}\n.glyphicon-lamp:before {\n  content: \"\\E223\";\n}\n.glyphicon-duplicate:before {\n  content: \"\\E224\";\n}\n.glyphicon-piggy-bank:before {\n  content: \"\\E225\";\n}\n.glyphicon-scissors:before {\n  content: \"\\E226\";\n}\n.glyphicon-bitcoin:before {\n  content: \"\\E227\";\n}\n.glyphicon-btc:before {\n  content: \"\\E227\";\n}\n.glyphicon-xbt:before {\n  content: \"\\E227\";\n}\n.glyphicon-yen:before {\n  content: \"\\A5\";\n}\n.glyphicon-jpy:before {\n  content: \"\\A5\";\n}\n.glyphicon-ruble:before {\n  content: \"\\20BD\";\n}\n.glyphicon-rub:before {\n  content: \"\\20BD\";\n}\n.glyphicon-scale:before {\n  content: \"\\E230\";\n}\n.glyphicon-ice-lolly:before {\n  content: \"\\E231\";\n}\n.glyphicon-ice-lolly-tasted:before {\n  content: \"\\E232\";\n}\n.glyphicon-education:before {\n  content: \"\\E233\";\n}\n.glyphicon-option-horizontal:before {\n  content: \"\\E234\";\n}\n.glyphicon-option-vertical:before {\n  content: \"\\E235\";\n}\n.glyphicon-menu-hamburger:before {\n  content: \"\\E236\";\n}\n.glyphicon-modal-window:before {\n  content: \"\\E237\";\n}\n.glyphicon-oil:before {\n  content: \"\\E238\";\n}\n.glyphicon-grain:before {\n  content: \"\\E239\";\n}\n.glyphicon-sunglasses:before {\n  content: \"\\E240\";\n}\n.glyphicon-text-size:before {\n  content: \"\\E241\";\n}\n.glyphicon-text-color:before {\n  content: \"\\E242\";\n}\n.glyphicon-text-background:before {\n  content: \"\\E243\";\n}\n.glyphicon-object-align-top:before {\n  content: \"\\E244\";\n}\n.glyphicon-object-align-bottom:before {\n  content: \"\\E245\";\n}\n.glyphicon-object-align-horizontal:before {\n  content: \"\\E246\";\n}\n.glyphicon-object-align-left:before {\n  content: \"\\E247\";\n}\n.glyphicon-object-align-vertical:before {\n  content: \"\\E248\";\n}\n.glyphicon-object-align-right:before {\n  content: \"\\E249\";\n}\n.glyphicon-triangle-right:before {\n  content: \"\\E250\";\n}\n.glyphicon-triangle-left:before {\n  content: \"\\E251\";\n}\n.glyphicon-triangle-bottom:before {\n  content: \"\\E252\";\n}\n.glyphicon-triangle-top:before {\n  content: \"\\E253\";\n}\n.glyphicon-console:before {\n  content: \"\\E254\";\n}\n.glyphicon-superscript:before {\n  content: \"\\E255\";\n}\n.glyphicon-subscript:before {\n  content: \"\\E256\";\n}\n.glyphicon-menu-left:before {\n  content: \"\\E257\";\n}\n.glyphicon-menu-right:before {\n  content: \"\\E258\";\n}\n.glyphicon-menu-down:before {\n  content: \"\\E259\";\n}\n.glyphicon-menu-up:before {\n  content: \"\\E260\";\n}\n* {\n  -webkit-box-sizing: border-box;\n     -moz-box-sizing: border-box;\n          box-sizing: border-box;\n}\n*:before,\n*:after {\n  -webkit-box-sizing: border-box;\n     -moz-box-sizing: border-box;\n          box-sizing: border-box;\n}\nhtml {\n  font-size: 10px;\n\n  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);\n}\nbody {\n  font-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n  font-size: 14px;\n  line-height: 1.42857143;\n  color: #333;\n  background-color: #fff;\n}\ninput,\nbutton,\nselect,\ntextarea {\n  font-family: inherit;\n  font-size: inherit;\n  line-height: inherit;\n}\na {\n  color: #337ab7;\n  text-decoration: none;\n}\na:hover,\na:focus {\n  color: #23527c;\n  text-decoration: underline;\n}\na:focus {\n  outline: 5px auto -webkit-focus-ring-color;\n  outline-offset: -2px;\n}\nfigure {\n  margin: 0;\n}\nimg {\n  vertical-align: middle;\n}\n.img-responsive,\n.thumbnail > img,\n.thumbnail a > img,\n.carousel-inner > .item > img,\n.carousel-inner > .item > a > img {\n  display: block;\n  max-width: 100%;\n  height: auto;\n}\n.img-rounded {\n  border-radius: 6px;\n}\n.img-thumbnail {\n  display: inline-block;\n  max-width: 100%;\n  height: auto;\n  padding: 4px;\n  line-height: 1.42857143;\n  background-color: #fff;\n  border: 1px solid #ddd;\n  border-radius: 4px;\n  -webkit-transition: all .2s ease-in-out;\n       -o-transition: all .2s ease-in-out;\n          transition: all .2s ease-in-out;\n}\n.img-circle {\n  border-radius: 50%;\n}\nhr {\n  margin-top: 20px;\n  margin-bottom: 20px;\n  border: 0;\n  border-top: 1px solid #eee;\n}\n.sr-only {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip: rect(0, 0, 0, 0);\n  border: 0;\n}\n.sr-only-focusable:active,\n.sr-only-focusable:focus {\n  position: static;\n  width: auto;\n  height: auto;\n  margin: 0;\n  overflow: visible;\n  clip: auto;\n}\n[role=\"button\"] {\n  cursor: pointer;\n}\nh1,\nh2,\nh3,\nh4,\nh5,\nh6,\n.h1,\n.h2,\n.h3,\n.h4,\n.h5,\n.h6 {\n  font-family: inherit;\n  font-weight: 500;\n  line-height: 1.1;\n  color: inherit;\n}\nh1 small,\nh2 small,\nh3 small,\nh4 small,\nh5 small,\nh6 small,\n.h1 small,\n.h2 small,\n.h3 small,\n.h4 small,\n.h5 small,\n.h6 small,\nh1 .small,\nh2 .small,\nh3 .small,\nh4 .small,\nh5 .small,\nh6 .small,\n.h1 .small,\n.h2 .small,\n.h3 .small,\n.h4 .small,\n.h5 .small,\n.h6 .small {\n  font-weight: normal;\n  line-height: 1;\n  color: #777;\n}\nh1,\n.h1,\nh2,\n.h2,\nh3,\n.h3 {\n  margin-top: 20px;\n  margin-bottom: 10px;\n}\nh1 small,\n.h1 small,\nh2 small,\n.h2 small,\nh3 small,\n.h3 small,\nh1 .small,\n.h1 .small,\nh2 .small,\n.h2 .small,\nh3 .small,\n.h3 .small {\n  font-size: 65%;\n}\nh4,\n.h4,\nh5,\n.h5,\nh6,\n.h6 {\n  margin-top: 10px;\n  margin-bottom: 10px;\n}\nh4 small,\n.h4 small,\nh5 small,\n.h5 small,\nh6 small,\n.h6 small,\nh4 .small,\n.h4 .small,\nh5 .small,\n.h5 .small,\nh6 .small,\n.h6 .small {\n  font-size: 75%;\n}\nh1,\n.h1 {\n  font-size: 36px;\n}\nh2,\n.h2 {\n  font-size: 30px;\n}\nh3,\n.h3 {\n  font-size: 24px;\n}\nh4,\n.h4 {\n  font-size: 18px;\n}\nh5,\n.h5 {\n  font-size: 14px;\n}\nh6,\n.h6 {\n  font-size: 12px;\n}\np {\n  margin: 0 0 10px;\n}\n.lead {\n  margin-bottom: 20px;\n  font-size: 16px;\n  font-weight: 300;\n  line-height: 1.4;\n}\n@media (min-width: 768px) {\n  .lead {\n    font-size: 21px;\n  }\n}\nsmall,\n.small {\n  font-size: 85%;\n}\nmark,\n.mark {\n  padding: .2em;\n  background-color: #fcf8e3;\n}\n.text-left {\n  text-align: left;\n}\n.text-right {\n  text-align: right;\n}\n.text-center {\n  text-align: center;\n}\n.text-justify {\n  text-align: justify;\n}\n.text-nowrap {\n  white-space: nowrap;\n}\n.text-lowercase {\n  text-transform: lowercase;\n}\n.text-uppercase {\n  text-transform: uppercase;\n}\n.text-capitalize {\n  text-transform: capitalize;\n}\n.text-muted {\n  color: #777;\n}\n.text-primary {\n  color: #337ab7;\n}\na.text-primary:hover,\na.text-primary:focus {\n  color: #286090;\n}\n.text-success {\n  color: #3c763d;\n}\na.text-success:hover,\na.text-success:focus {\n  color: #2b542c;\n}\n.text-info {\n  color: #31708f;\n}\na.text-info:hover,\na.text-info:focus {\n  color: #245269;\n}\n.text-warning {\n  color: #8a6d3b;\n}\na.text-warning:hover,\na.text-warning:focus {\n  color: #66512c;\n}\n.text-danger {\n  color: #a94442;\n}\na.text-danger:hover,\na.text-danger:focus {\n  color: #843534;\n}\n.bg-primary {\n  color: #fff;\n  background-color: #337ab7;\n}\na.bg-primary:hover,\na.bg-primary:focus {\n  background-color: #286090;\n}\n.bg-success {\n  background-color: #dff0d8;\n}\na.bg-success:hover,\na.bg-success:focus {\n  background-color: #c1e2b3;\n}\n.bg-info {\n  background-color: #d9edf7;\n}\na.bg-info:hover,\na.bg-info:focus {\n  background-color: #afd9ee;\n}\n.bg-warning {\n  background-color: #fcf8e3;\n}\na.bg-warning:hover,\na.bg-warning:focus {\n  background-color: #f7ecb5;\n}\n.bg-danger {\n  background-color: #f2dede;\n}\na.bg-danger:hover,\na.bg-danger:focus {\n  background-color: #e4b9b9;\n}\n.page-header {\n  padding-bottom: 9px;\n  margin: 40px 0 20px;\n  border-bottom: 1px solid #eee;\n}\nul,\nol {\n  margin-top: 0;\n  margin-bottom: 10px;\n}\nul ul,\nol ul,\nul ol,\nol ol {\n  margin-bottom: 0;\n}\n.list-unstyled {\n  padding-left: 0;\n  list-style: none;\n}\n.list-inline {\n  padding-left: 0;\n  margin-left: -5px;\n  list-style: none;\n}\n.list-inline > li {\n  display: inline-block;\n  padding-right: 5px;\n  padding-left: 5px;\n}\ndl {\n  margin-top: 0;\n  margin-bottom: 20px;\n}\ndt,\ndd {\n  line-height: 1.42857143;\n}\ndt {\n  font-weight: bold;\n}\ndd {\n  margin-left: 0;\n}\n@media (min-width: 768px) {\n  .dl-horizontal dt {\n    float: left;\n    width: 160px;\n    overflow: hidden;\n    clear: left;\n    text-align: right;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n  }\n  .dl-horizontal dd {\n    margin-left: 180px;\n  }\n}\nabbr[title],\nabbr[data-original-title] {\n  cursor: help;\n  border-bottom: 1px dotted #777;\n}\n.initialism {\n  font-size: 90%;\n  text-transform: uppercase;\n}\nblockquote {\n  padding: 10px 20px;\n  margin: 0 0 20px;\n  font-size: 17.5px;\n  border-left: 5px solid #eee;\n}\nblockquote p:last-child,\nblockquote ul:last-child,\nblockquote ol:last-child {\n  margin-bottom: 0;\n}\nblockquote footer,\nblockquote small,\nblockquote .small {\n  display: block;\n  font-size: 80%;\n  line-height: 1.42857143;\n  color: #777;\n}\nblockquote footer:before,\nblockquote small:before,\nblockquote .small:before {\n  content: '\\2014   \\A0';\n}\n.blockquote-reverse,\nblockquote.pull-right {\n  padding-right: 15px;\n  padding-left: 0;\n  text-align: right;\n  border-right: 5px solid #eee;\n  border-left: 0;\n}\n.blockquote-reverse footer:before,\nblockquote.pull-right footer:before,\n.blockquote-reverse small:before,\nblockquote.pull-right small:before,\n.blockquote-reverse .small:before,\nblockquote.pull-right .small:before {\n  content: '';\n}\n.blockquote-reverse footer:after,\nblockquote.pull-right footer:after,\n.blockquote-reverse small:after,\nblockquote.pull-right small:after,\n.blockquote-reverse .small:after,\nblockquote.pull-right .small:after {\n  content: '\\A0   \\2014';\n}\naddress {\n  margin-bottom: 20px;\n  font-style: normal;\n  line-height: 1.42857143;\n}\ncode,\nkbd,\npre,\nsamp {\n  font-family: Menlo, Monaco, Consolas, \"Courier New\", monospace;\n}\ncode {\n  padding: 2px 4px;\n  font-size: 90%;\n  color: #c7254e;\n  background-color: #f9f2f4;\n  border-radius: 4px;\n}\nkbd {\n  padding: 2px 4px;\n  font-size: 90%;\n  color: #fff;\n  background-color: #333;\n  border-radius: 3px;\n  -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .25);\n          box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .25);\n}\nkbd kbd {\n  padding: 0;\n  font-size: 100%;\n  font-weight: bold;\n  -webkit-box-shadow: none;\n          box-shadow: none;\n}\npre {\n  display: block;\n  padding: 9.5px;\n  margin: 0 0 10px;\n  font-size: 13px;\n  line-height: 1.42857143;\n  color: #333;\n  word-break: break-all;\n  word-wrap: break-word;\n  background-color: #f5f5f5;\n  border: 1px solid #ccc;\n  border-radius: 4px;\n}\npre code {\n  padding: 0;\n  font-size: inherit;\n  color: inherit;\n  white-space: pre-wrap;\n  background-color: transparent;\n  border-radius: 0;\n}\n.pre-scrollable {\n  max-height: 340px;\n  overflow-y: scroll;\n}\n.container {\n  padding-right: 15px;\n  padding-left: 15px;\n  margin-right: auto;\n  margin-left: auto;\n}\n@media (min-width: 768px) {\n  .container {\n    width: 750px;\n  }\n}\n@media (min-width: 992px) {\n  .container {\n    width: 970px;\n  }\n}\n@media (min-width: 1200px) {\n  .container {\n    width: 1170px;\n  }\n}\n.container-fluid {\n  padding-right: 15px;\n  padding-left: 15px;\n  margin-right: auto;\n  margin-left: auto;\n}\n.row {\n  margin-right: -15px;\n  margin-left: -15px;\n}\n.col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {\n  position: relative;\n  min-height: 1px;\n  padding-right: 15px;\n  padding-left: 15px;\n}\n.col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9, .col-xs-10, .col-xs-11, .col-xs-12 {\n  float: left;\n}\n.col-xs-12 {\n  width: 100%;\n}\n.col-xs-11 {\n  width: 91.66666667%;\n}\n.col-xs-10 {\n  width: 83.33333333%;\n}\n.col-xs-9 {\n  width: 75%;\n}\n.col-xs-8 {\n  width: 66.66666667%;\n}\n.col-xs-7 {\n  width: 58.33333333%;\n}\n.col-xs-6 {\n  width: 50%;\n}\n.col-xs-5 {\n  width: 41.66666667%;\n}\n.col-xs-4 {\n  width: 33.33333333%;\n}\n.col-xs-3 {\n  width: 25%;\n}\n.col-xs-2 {\n  width: 16.66666667%;\n}\n.col-xs-1 {\n  width: 8.33333333%;\n}\n.col-xs-pull-12 {\n  right: 100%;\n}\n.col-xs-pull-11 {\n  right: 91.66666667%;\n}\n.col-xs-pull-10 {\n  right: 83.33333333%;\n}\n.col-xs-pull-9 {\n  right: 75%;\n}\n.col-xs-pull-8 {\n  right: 66.66666667%;\n}\n.col-xs-pull-7 {\n  right: 58.33333333%;\n}\n.col-xs-pull-6 {\n  right: 50%;\n}\n.col-xs-pull-5 {\n  right: 41.66666667%;\n}\n.col-xs-pull-4 {\n  right: 33.33333333%;\n}\n.col-xs-pull-3 {\n  right: 25%;\n}\n.col-xs-pull-2 {\n  right: 16.66666667%;\n}\n.col-xs-pull-1 {\n  right: 8.33333333%;\n}\n.col-xs-pull-0 {\n  right: auto;\n}\n.col-xs-push-12 {\n  left: 100%;\n}\n.col-xs-push-11 {\n  left: 91.66666667%;\n}\n.col-xs-push-10 {\n  left: 83.33333333%;\n}\n.col-xs-push-9 {\n  left: 75%;\n}\n.col-xs-push-8 {\n  left: 66.66666667%;\n}\n.col-xs-push-7 {\n  left: 58.33333333%;\n}\n.col-xs-push-6 {\n  left: 50%;\n}\n.col-xs-push-5 {\n  left: 41.66666667%;\n}\n.col-xs-push-4 {\n  left: 33.33333333%;\n}\n.col-xs-push-3 {\n  left: 25%;\n}\n.col-xs-push-2 {\n  left: 16.66666667%;\n}\n.col-xs-push-1 {\n  left: 8.33333333%;\n}\n.col-xs-push-0 {\n  left: auto;\n}\n.col-xs-offset-12 {\n  margin-left: 100%;\n}\n.col-xs-offset-11 {\n  margin-left: 91.66666667%;\n}\n.col-xs-offset-10 {\n  margin-left: 83.33333333%;\n}\n.col-xs-offset-9 {\n  margin-left: 75%;\n}\n.col-xs-offset-8 {\n  margin-left: 66.66666667%;\n}\n.col-xs-offset-7 {\n  margin-left: 58.33333333%;\n}\n.col-xs-offset-6 {\n  margin-left: 50%;\n}\n.col-xs-offset-5 {\n  margin-left: 41.66666667%;\n}\n.col-xs-offset-4 {\n  margin-left: 33.33333333%;\n}\n.col-xs-offset-3 {\n  margin-left: 25%;\n}\n.col-xs-offset-2 {\n  margin-left: 16.66666667%;\n}\n.col-xs-offset-1 {\n  margin-left: 8.33333333%;\n}\n.col-xs-offset-0 {\n  margin-left: 0;\n}\n@media (min-width: 768px) {\n  .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12 {\n    float: left;\n  }\n  .col-sm-12 {\n    width: 100%;\n  }\n  .col-sm-11 {\n    width: 91.66666667%;\n  }\n  .col-sm-10 {\n    width: 83.33333333%;\n  }\n  .col-sm-9 {\n    width: 75%;\n  }\n  .col-sm-8 {\n    width: 66.66666667%;\n  }\n  .col-sm-7 {\n    width: 58.33333333%;\n  }\n  .col-sm-6 {\n    width: 50%;\n  }\n  .col-sm-5 {\n    width: 41.66666667%;\n  }\n  .col-sm-4 {\n    width: 33.33333333%;\n  }\n  .col-sm-3 {\n    width: 25%;\n  }\n  .col-sm-2 {\n    width: 16.66666667%;\n  }\n  .col-sm-1 {\n    width: 8.33333333%;\n  }\n  .col-sm-pull-12 {\n    right: 100%;\n  }\n  .col-sm-pull-11 {\n    right: 91.66666667%;\n  }\n  .col-sm-pull-10 {\n    right: 83.33333333%;\n  }\n  .col-sm-pull-9 {\n    right: 75%;\n  }\n  .col-sm-pull-8 {\n    right: 66.66666667%;\n  }\n  .col-sm-pull-7 {\n    right: 58.33333333%;\n  }\n  .col-sm-pull-6 {\n    right: 50%;\n  }\n  .col-sm-pull-5 {\n    right: 41.66666667%;\n  }\n  .col-sm-pull-4 {\n    right: 33.33333333%;\n  }\n  .col-sm-pull-3 {\n    right: 25%;\n  }\n  .col-sm-pull-2 {\n    right: 16.66666667%;\n  }\n  .col-sm-pull-1 {\n    right: 8.33333333%;\n  }\n  .col-sm-pull-0 {\n    right: auto;\n  }\n  .col-sm-push-12 {\n    left: 100%;\n  }\n  .col-sm-push-11 {\n    left: 91.66666667%;\n  }\n  .col-sm-push-10 {\n    left: 83.33333333%;\n  }\n  .col-sm-push-9 {\n    left: 75%;\n  }\n  .col-sm-push-8 {\n    left: 66.66666667%;\n  }\n  .col-sm-push-7 {\n    left: 58.33333333%;\n  }\n  .col-sm-push-6 {\n    left: 50%;\n  }\n  .col-sm-push-5 {\n    left: 41.66666667%;\n  }\n  .col-sm-push-4 {\n    left: 33.33333333%;\n  }\n  .col-sm-push-3 {\n    left: 25%;\n  }\n  .col-sm-push-2 {\n    left: 16.66666667%;\n  }\n  .col-sm-push-1 {\n    left: 8.33333333%;\n  }\n  .col-sm-push-0 {\n    left: auto;\n  }\n  .col-sm-offset-12 {\n    margin-left: 100%;\n  }\n  .col-sm-offset-11 {\n    margin-left: 91.66666667%;\n  }\n  .col-sm-offset-10 {\n    margin-left: 83.33333333%;\n  }\n  .col-sm-offset-9 {\n    margin-left: 75%;\n  }\n  .col-sm-offset-8 {\n    margin-left: 66.66666667%;\n  }\n  .col-sm-offset-7 {\n    margin-left: 58.33333333%;\n  }\n  .col-sm-offset-6 {\n    margin-left: 50%;\n  }\n  .col-sm-offset-5 {\n    margin-left: 41.66666667%;\n  }\n  .col-sm-offset-4 {\n    margin-left: 33.33333333%;\n  }\n  .col-sm-offset-3 {\n    margin-left: 25%;\n  }\n  .col-sm-offset-2 {\n    margin-left: 16.66666667%;\n  }\n  .col-sm-offset-1 {\n    margin-left: 8.33333333%;\n  }\n  .col-sm-offset-0 {\n    margin-left: 0;\n  }\n}\n@media (min-width: 992px) {\n  .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12 {\n    float: left;\n  }\n  .col-md-12 {\n    width: 100%;\n  }\n  .col-md-11 {\n    width: 91.66666667%;\n  }\n  .col-md-10 {\n    width: 83.33333333%;\n  }\n  .col-md-9 {\n    width: 75%;\n  }\n  .col-md-8 {\n    width: 66.66666667%;\n  }\n  .col-md-7 {\n    width: 58.33333333%;\n  }\n  .col-md-6 {\n    width: 50%;\n  }\n  .col-md-5 {\n    width: 41.66666667%;\n  }\n  .col-md-4 {\n    width: 33.33333333%;\n  }\n  .col-md-3 {\n    width: 25%;\n  }\n  .col-md-2 {\n    width: 16.66666667%;\n  }\n  .col-md-1 {\n    width: 8.33333333%;\n  }\n  .col-md-pull-12 {\n    right: 100%;\n  }\n  .col-md-pull-11 {\n    right: 91.66666667%;\n  }\n  .col-md-pull-10 {\n    right: 83.33333333%;\n  }\n  .col-md-pull-9 {\n    right: 75%;\n  }\n  .col-md-pull-8 {\n    right: 66.66666667%;\n  }\n  .col-md-pull-7 {\n    right: 58.33333333%;\n  }\n  .col-md-pull-6 {\n    right: 50%;\n  }\n  .col-md-pull-5 {\n    right: 41.66666667%;\n  }\n  .col-md-pull-4 {\n    right: 33.33333333%;\n  }\n  .col-md-pull-3 {\n    right: 25%;\n  }\n  .col-md-pull-2 {\n    right: 16.66666667%;\n  }\n  .col-md-pull-1 {\n    right: 8.33333333%;\n  }\n  .col-md-pull-0 {\n    right: auto;\n  }\n  .col-md-push-12 {\n    left: 100%;\n  }\n  .col-md-push-11 {\n    left: 91.66666667%;\n  }\n  .col-md-push-10 {\n    left: 83.33333333%;\n  }\n  .col-md-push-9 {\n    left: 75%;\n  }\n  .col-md-push-8 {\n    left: 66.66666667%;\n  }\n  .col-md-push-7 {\n    left: 58.33333333%;\n  }\n  .col-md-push-6 {\n    left: 50%;\n  }\n  .col-md-push-5 {\n    left: 41.66666667%;\n  }\n  .col-md-push-4 {\n    left: 33.33333333%;\n  }\n  .col-md-push-3 {\n    left: 25%;\n  }\n  .col-md-push-2 {\n    left: 16.66666667%;\n  }\n  .col-md-push-1 {\n    left: 8.33333333%;\n  }\n  .col-md-push-0 {\n    left: auto;\n  }\n  .col-md-offset-12 {\n    margin-left: 100%;\n  }\n  .col-md-offset-11 {\n    margin-left: 91.66666667%;\n  }\n  .col-md-offset-10 {\n    margin-left: 83.33333333%;\n  }\n  .col-md-offset-9 {\n    margin-left: 75%;\n  }\n  .col-md-offset-8 {\n    margin-left: 66.66666667%;\n  }\n  .col-md-offset-7 {\n    margin-left: 58.33333333%;\n  }\n  .col-md-offset-6 {\n    margin-left: 50%;\n  }\n  .col-md-offset-5 {\n    margin-left: 41.66666667%;\n  }\n  .col-md-offset-4 {\n    margin-left: 33.33333333%;\n  }\n  .col-md-offset-3 {\n    margin-left: 25%;\n  }\n  .col-md-offset-2 {\n    margin-left: 16.66666667%;\n  }\n  .col-md-offset-1 {\n    margin-left: 8.33333333%;\n  }\n  .col-md-offset-0 {\n    margin-left: 0;\n  }\n}\n@media (min-width: 1200px) {\n  .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12 {\n    float: left;\n  }\n  .col-lg-12 {\n    width: 100%;\n  }\n  .col-lg-11 {\n    width: 91.66666667%;\n  }\n  .col-lg-10 {\n    width: 83.33333333%;\n  }\n  .col-lg-9 {\n    width: 75%;\n  }\n  .col-lg-8 {\n    width: 66.66666667%;\n  }\n  .col-lg-7 {\n    width: 58.33333333%;\n  }\n  .col-lg-6 {\n    width: 50%;\n  }\n  .col-lg-5 {\n    width: 41.66666667%;\n  }\n  .col-lg-4 {\n    width: 33.33333333%;\n  }\n  .col-lg-3 {\n    width: 25%;\n  }\n  .col-lg-2 {\n    width: 16.66666667%;\n  }\n  .col-lg-1 {\n    width: 8.33333333%;\n  }\n  .col-lg-pull-12 {\n    right: 100%;\n  }\n  .col-lg-pull-11 {\n    right: 91.66666667%;\n  }\n  .col-lg-pull-10 {\n    right: 83.33333333%;\n  }\n  .col-lg-pull-9 {\n    right: 75%;\n  }\n  .col-lg-pull-8 {\n    right: 66.66666667%;\n  }\n  .col-lg-pull-7 {\n    right: 58.33333333%;\n  }\n  .col-lg-pull-6 {\n    right: 50%;\n  }\n  .col-lg-pull-5 {\n    right: 41.66666667%;\n  }\n  .col-lg-pull-4 {\n    right: 33.33333333%;\n  }\n  .col-lg-pull-3 {\n    right: 25%;\n  }\n  .col-lg-pull-2 {\n    right: 16.66666667%;\n  }\n  .col-lg-pull-1 {\n    right: 8.33333333%;\n  }\n  .col-lg-pull-0 {\n    right: auto;\n  }\n  .col-lg-push-12 {\n    left: 100%;\n  }\n  .col-lg-push-11 {\n    left: 91.66666667%;\n  }\n  .col-lg-push-10 {\n    left: 83.33333333%;\n  }\n  .col-lg-push-9 {\n    left: 75%;\n  }\n  .col-lg-push-8 {\n    left: 66.66666667%;\n  }\n  .col-lg-push-7 {\n    left: 58.33333333%;\n  }\n  .col-lg-push-6 {\n    left: 50%;\n  }\n  .col-lg-push-5 {\n    left: 41.66666667%;\n  }\n  .col-lg-push-4 {\n    left: 33.33333333%;\n  }\n  .col-lg-push-3 {\n    left: 25%;\n  }\n  .col-lg-push-2 {\n    left: 16.66666667%;\n  }\n  .col-lg-push-1 {\n    left: 8.33333333%;\n  }\n  .col-lg-push-0 {\n    left: auto;\n  }\n  .col-lg-offset-12 {\n    margin-left: 100%;\n  }\n  .col-lg-offset-11 {\n    margin-left: 91.66666667%;\n  }\n  .col-lg-offset-10 {\n    margin-left: 83.33333333%;\n  }\n  .col-lg-offset-9 {\n    margin-left: 75%;\n  }\n  .col-lg-offset-8 {\n    margin-left: 66.66666667%;\n  }\n  .col-lg-offset-7 {\n    margin-left: 58.33333333%;\n  }\n  .col-lg-offset-6 {\n    margin-left: 50%;\n  }\n  .col-lg-offset-5 {\n    margin-left: 41.66666667%;\n  }\n  .col-lg-offset-4 {\n    margin-left: 33.33333333%;\n  }\n  .col-lg-offset-3 {\n    margin-left: 25%;\n  }\n  .col-lg-offset-2 {\n    margin-left: 16.66666667%;\n  }\n  .col-lg-offset-1 {\n    margin-left: 8.33333333%;\n  }\n  .col-lg-offset-0 {\n    margin-left: 0;\n  }\n}\ntable {\n  background-color: transparent;\n}\ncaption {\n  padding-top: 8px;\n  padding-bottom: 8px;\n  color: #777;\n  text-align: left;\n}\nth {\n  text-align: left;\n}\n.table {\n  width: 100%;\n  max-width: 100%;\n  margin-bottom: 20px;\n}\n.table > thead > tr > th,\n.table > tbody > tr > th,\n.table > tfoot > tr > th,\n.table > thead > tr > td,\n.table > tbody > tr > td,\n.table > tfoot > tr > td {\n  padding: 8px;\n  line-height: 1.42857143;\n  vertical-align: top;\n  border-top: 1px solid #ddd;\n}\n.table > thead > tr > th {\n  vertical-align: bottom;\n  border-bottom: 2px solid #ddd;\n}\n.table > caption + thead > tr:first-child > th,\n.table > colgroup + thead > tr:first-child > th,\n.table > thead:first-child > tr:first-child > th,\n.table > caption + thead > tr:first-child > td,\n.table > colgroup + thead > tr:first-child > td,\n.table > thead:first-child > tr:first-child > td {\n  border-top: 0;\n}\n.table > tbody + tbody {\n  border-top: 2px solid #ddd;\n}\n.table .table {\n  background-color: #fff;\n}\n.table-condensed > thead > tr > th,\n.table-condensed > tbody > tr > th,\n.table-condensed > tfoot > tr > th,\n.table-condensed > thead > tr > td,\n.table-condensed > tbody > tr > td,\n.table-condensed > tfoot > tr > td {\n  padding: 5px;\n}\n.table-bordered {\n  border: 1px solid #ddd;\n}\n.table-bordered > thead > tr > th,\n.table-bordered > tbody > tr > th,\n.table-bordered > tfoot > tr > th,\n.table-bordered > thead > tr > td,\n.table-bordered > tbody > tr > td,\n.table-bordered > tfoot > tr > td {\n  border: 1px solid #ddd;\n}\n.table-bordered > thead > tr > th,\n.table-bordered > thead > tr > td {\n  border-bottom-width: 2px;\n}\n.table-striped > tbody > tr:nth-of-type(odd) {\n  background-color: #f9f9f9;\n}\n.table-hover > tbody > tr:hover {\n  background-color: #f5f5f5;\n}\ntable col[class*=\"col-\"] {\n  position: static;\n  display: table-column;\n  float: none;\n}\ntable td[class*=\"col-\"],\ntable th[class*=\"col-\"] {\n  position: static;\n  display: table-cell;\n  float: none;\n}\n.table > thead > tr > td.active,\n.table > tbody > tr > td.active,\n.table > tfoot > tr > td.active,\n.table > thead > tr > th.active,\n.table > tbody > tr > th.active,\n.table > tfoot > tr > th.active,\n.table > thead > tr.active > td,\n.table > tbody > tr.active > td,\n.table > tfoot > tr.active > td,\n.table > thead > tr.active > th,\n.table > tbody > tr.active > th,\n.table > tfoot > tr.active > th {\n  background-color: #f5f5f5;\n}\n.table-hover > tbody > tr > td.active:hover,\n.table-hover > tbody > tr > th.active:hover,\n.table-hover > tbody > tr.active:hover > td,\n.table-hover > tbody > tr:hover > .active,\n.table-hover > tbody > tr.active:hover > th {\n  background-color: #e8e8e8;\n}\n.table > thead > tr > td.success,\n.table > tbody > tr > td.success,\n.table > tfoot > tr > td.success,\n.table > thead > tr > th.success,\n.table > tbody > tr > th.success,\n.table > tfoot > tr > th.success,\n.table > thead > tr.success > td,\n.table > tbody > tr.success > td,\n.table > tfoot > tr.success > td,\n.table > thead > tr.success > th,\n.table > tbody > tr.success > th,\n.table > tfoot > tr.success > th {\n  background-color: #dff0d8;\n}\n.table-hover > tbody > tr > td.success:hover,\n.table-hover > tbody > tr > th.success:hover,\n.table-hover > tbody > tr.success:hover > td,\n.table-hover > tbody > tr:hover > .success,\n.table-hover > tbody > tr.success:hover > th {\n  background-color: #d0e9c6;\n}\n.table > thead > tr > td.info,\n.table > tbody > tr > td.info,\n.table > tfoot > tr > td.info,\n.table > thead > tr > th.info,\n.table > tbody > tr > th.info,\n.table > tfoot > tr > th.info,\n.table > thead > tr.info > td,\n.table > tbody > tr.info > td,\n.table > tfoot > tr.info > td,\n.table > thead > tr.info > th,\n.table > tbody > tr.info > th,\n.table > tfoot > tr.info > th {\n  background-color: #d9edf7;\n}\n.table-hover > tbody > tr > td.info:hover,\n.table-hover > tbody > tr > th.info:hover,\n.table-hover > tbody > tr.info:hover > td,\n.table-hover > tbody > tr:hover > .info,\n.table-hover > tbody > tr.info:hover > th {\n  background-color: #c4e3f3;\n}\n.table > thead > tr > td.warning,\n.table > tbody > tr > td.warning,\n.table > tfoot > tr > td.warning,\n.table > thead > tr > th.warning,\n.table > tbody > tr > th.warning,\n.table > tfoot > tr > th.warning,\n.table > thead > tr.warning > td,\n.table > tbody > tr.warning > td,\n.table > tfoot > tr.warning > td,\n.table > thead > tr.warning > th,\n.table > tbody > tr.warning > th,\n.table > tfoot > tr.warning > th {\n  background-color: #fcf8e3;\n}\n.table-hover > tbody > tr > td.warning:hover,\n.table-hover > tbody > tr > th.warning:hover,\n.table-hover > tbody > tr.warning:hover > td,\n.table-hover > tbody > tr:hover > .warning,\n.table-hover > tbody > tr.warning:hover > th {\n  background-color: #faf2cc;\n}\n.table > thead > tr > td.danger,\n.table > tbody > tr > td.danger,\n.table > tfoot > tr > td.danger,\n.table > thead > tr > th.danger,\n.table > tbody > tr > th.danger,\n.table > tfoot > tr > th.danger,\n.table > thead > tr.danger > td,\n.table > tbody > tr.danger > td,\n.table > tfoot > tr.danger > td,\n.table > thead > tr.danger > th,\n.table > tbody > tr.danger > th,\n.table > tfoot > tr.danger > th {\n  background-color: #f2dede;\n}\n.table-hover > tbody > tr > td.danger:hover,\n.table-hover > tbody > tr > th.danger:hover,\n.table-hover > tbody > tr.danger:hover > td,\n.table-hover > tbody > tr:hover > .danger,\n.table-hover > tbody > tr.danger:hover > th {\n  background-color: #ebcccc;\n}\n.table-responsive {\n  min-height: .01%;\n  overflow-x: auto;\n}\n@media screen and (max-width: 767px) {\n  .table-responsive {\n    width: 100%;\n    margin-bottom: 15px;\n    overflow-y: hidden;\n    -ms-overflow-style: -ms-autohiding-scrollbar;\n    border: 1px solid #ddd;\n  }\n  .table-responsive > .table {\n    margin-bottom: 0;\n  }\n  .table-responsive > .table > thead > tr > th,\n  .table-responsive > .table > tbody > tr > th,\n  .table-responsive > .table > tfoot > tr > th,\n  .table-responsive > .table > thead > tr > td,\n  .table-responsive > .table > tbody > tr > td,\n  .table-responsive > .table > tfoot > tr > td {\n    white-space: nowrap;\n  }\n  .table-responsive > .table-bordered {\n    border: 0;\n  }\n  .table-responsive > .table-bordered > thead > tr > th:first-child,\n  .table-responsive > .table-bordered > tbody > tr > th:first-child,\n  .table-responsive > .table-bordered > tfoot > tr > th:first-child,\n  .table-responsive > .table-bordered > thead > tr > td:first-child,\n  .table-responsive > .table-bordered > tbody > tr > td:first-child,\n  .table-responsive > .table-bordered > tfoot > tr > td:first-child {\n    border-left: 0;\n  }\n  .table-responsive > .table-bordered > thead > tr > th:last-child,\n  .table-responsive > .table-bordered > tbody > tr > th:last-child,\n  .table-responsive > .table-bordered > tfoot > tr > th:last-child,\n  .table-responsive > .table-bordered > thead > tr > td:last-child,\n  .table-responsive > .table-bordered > tbody > tr > td:last-child,\n  .table-responsive > .table-bordered > tfoot > tr > td:last-child {\n    border-right: 0;\n  }\n  .table-responsive > .table-bordered > tbody > tr:last-child > th,\n  .table-responsive > .table-bordered > tfoot > tr:last-child > th,\n  .table-responsive > .table-bordered > tbody > tr:last-child > td,\n  .table-responsive > .table-bordered > tfoot > tr:last-child > td {\n    border-bottom: 0;\n  }\n}\nfieldset {\n  min-width: 0;\n  padding: 0;\n  margin: 0;\n  border: 0;\n}\nlegend {\n  display: block;\n  width: 100%;\n  padding: 0;\n  margin-bottom: 20px;\n  font-size: 21px;\n  line-height: inherit;\n  color: #333;\n  border: 0;\n  border-bottom: 1px solid #e5e5e5;\n}\nlabel {\n  display: inline-block;\n  max-width: 100%;\n  margin-bottom: 5px;\n  font-weight: bold;\n}\ninput[type=\"search\"] {\n  -webkit-box-sizing: border-box;\n     -moz-box-sizing: border-box;\n          box-sizing: border-box;\n}\ninput[type=\"radio\"],\ninput[type=\"checkbox\"] {\n  margin: 4px 0 0;\n  margin-top: 1px \\9;\n  line-height: normal;\n}\ninput[type=\"file\"] {\n  display: block;\n}\ninput[type=\"range\"] {\n  display: block;\n  width: 100%;\n}\nselect[multiple],\nselect[size] {\n  height: auto;\n}\ninput[type=\"file\"]:focus,\ninput[type=\"radio\"]:focus,\ninput[type=\"checkbox\"]:focus {\n  outline: 5px auto -webkit-focus-ring-color;\n  outline-offset: -2px;\n}\noutput {\n  display: block;\n  padding-top: 7px;\n  font-size: 14px;\n  line-height: 1.42857143;\n  color: #555;\n}\n.form-control {\n  display: block;\n  width: 100%;\n  height: 34px;\n  padding: 6px 12px;\n  font-size: 14px;\n  line-height: 1.42857143;\n  color: #555;\n  background-color: #fff;\n  background-image: none;\n  border: 1px solid #ccc;\n  border-radius: 4px;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);\n  -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;\n       -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;\n          transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;\n}\n.form-control:focus {\n  border-color: #66afe9;\n  outline: 0;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);\n          box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);\n}\n.form-control::-moz-placeholder {\n  color: #999;\n  opacity: 1;\n}\n.form-control:-ms-input-placeholder {\n  color: #999;\n}\n.form-control::-webkit-input-placeholder {\n  color: #999;\n}\n.form-control::-ms-expand {\n  background-color: transparent;\n  border: 0;\n}\n.form-control[disabled],\n.form-control[readonly],\nfieldset[disabled] .form-control {\n  background-color: #eee;\n  opacity: 1;\n}\n.form-control[disabled],\nfieldset[disabled] .form-control {\n  cursor: not-allowed;\n}\ntextarea.form-control {\n  height: auto;\n}\ninput[type=\"search\"] {\n  -webkit-appearance: none;\n}\n@media screen and (-webkit-min-device-pixel-ratio: 0) {\n  input[type=\"date\"].form-control,\n  input[type=\"time\"].form-control,\n  input[type=\"datetime-local\"].form-control,\n  input[type=\"month\"].form-control {\n    line-height: 34px;\n  }\n  input[type=\"date\"].input-sm,\n  input[type=\"time\"].input-sm,\n  input[type=\"datetime-local\"].input-sm,\n  input[type=\"month\"].input-sm,\n  .input-group-sm input[type=\"date\"],\n  .input-group-sm input[type=\"time\"],\n  .input-group-sm input[type=\"datetime-local\"],\n  .input-group-sm input[type=\"month\"] {\n    line-height: 30px;\n  }\n  input[type=\"date\"].input-lg,\n  input[type=\"time\"].input-lg,\n  input[type=\"datetime-local\"].input-lg,\n  input[type=\"month\"].input-lg,\n  .input-group-lg input[type=\"date\"],\n  .input-group-lg input[type=\"time\"],\n  .input-group-lg input[type=\"datetime-local\"],\n  .input-group-lg input[type=\"month\"] {\n    line-height: 46px;\n  }\n}\n.form-group {\n  margin-bottom: 15px;\n}\n.radio,\n.checkbox {\n  position: relative;\n  display: block;\n  margin-top: 10px;\n  margin-bottom: 10px;\n}\n.radio label,\n.checkbox label {\n  min-height: 20px;\n  padding-left: 20px;\n  margin-bottom: 0;\n  font-weight: normal;\n  cursor: pointer;\n}\n.radio input[type=\"radio\"],\n.radio-inline input[type=\"radio\"],\n.checkbox input[type=\"checkbox\"],\n.checkbox-inline input[type=\"checkbox\"] {\n  position: absolute;\n  margin-top: 4px \\9;\n  margin-left: -20px;\n}\n.radio + .radio,\n.checkbox + .checkbox {\n  margin-top: -5px;\n}\n.radio-inline,\n.checkbox-inline {\n  position: relative;\n  display: inline-block;\n  padding-left: 20px;\n  margin-bottom: 0;\n  font-weight: normal;\n  vertical-align: middle;\n  cursor: pointer;\n}\n.radio-inline + .radio-inline,\n.checkbox-inline + .checkbox-inline {\n  margin-top: 0;\n  margin-left: 10px;\n}\ninput[type=\"radio\"][disabled],\ninput[type=\"checkbox\"][disabled],\ninput[type=\"radio\"].disabled,\ninput[type=\"checkbox\"].disabled,\nfieldset[disabled] input[type=\"radio\"],\nfieldset[disabled] input[type=\"checkbox\"] {\n  cursor: not-allowed;\n}\n.radio-inline.disabled,\n.checkbox-inline.disabled,\nfieldset[disabled] .radio-inline,\nfieldset[disabled] .checkbox-inline {\n  cursor: not-allowed;\n}\n.radio.disabled label,\n.checkbox.disabled label,\nfieldset[disabled] .radio label,\nfieldset[disabled] .checkbox label {\n  cursor: not-allowed;\n}\n.form-control-static {\n  min-height: 34px;\n  padding-top: 7px;\n  padding-bottom: 7px;\n  margin-bottom: 0;\n}\n.form-control-static.input-lg,\n.form-control-static.input-sm {\n  padding-right: 0;\n  padding-left: 0;\n}\n.input-sm {\n  height: 30px;\n  padding: 5px 10px;\n  font-size: 12px;\n  line-height: 1.5;\n  border-radius: 3px;\n}\nselect.input-sm {\n  height: 30px;\n  line-height: 30px;\n}\ntextarea.input-sm,\nselect[multiple].input-sm {\n  height: auto;\n}\n.form-group-sm .form-control {\n  height: 30px;\n  padding: 5px 10px;\n  font-size: 12px;\n  line-height: 1.5;\n  border-radius: 3px;\n}\n.form-group-sm select.form-control {\n  height: 30px;\n  line-height: 30px;\n}\n.form-group-sm textarea.form-control,\n.form-group-sm select[multiple].form-control {\n  height: auto;\n}\n.form-group-sm .form-control-static {\n  height: 30px;\n  min-height: 32px;\n  padding: 6px 10px;\n  font-size: 12px;\n  line-height: 1.5;\n}\n.input-lg {\n  height: 46px;\n  padding: 10px 16px;\n  font-size: 18px;\n  line-height: 1.3333333;\n  border-radius: 6px;\n}\nselect.input-lg {\n  height: 46px;\n  line-height: 46px;\n}\ntextarea.input-lg,\nselect[multiple].input-lg {\n  height: auto;\n}\n.form-group-lg .form-control {\n  height: 46px;\n  padding: 10px 16px;\n  font-size: 18px;\n  line-height: 1.3333333;\n  border-radius: 6px;\n}\n.form-group-lg select.form-control {\n  height: 46px;\n  line-height: 46px;\n}\n.form-group-lg textarea.form-control,\n.form-group-lg select[multiple].form-control {\n  height: auto;\n}\n.form-group-lg .form-control-static {\n  height: 46px;\n  min-height: 38px;\n  padding: 11px 16px;\n  font-size: 18px;\n  line-height: 1.3333333;\n}\n.has-feedback {\n  position: relative;\n}\n.has-feedback .form-control {\n  padding-right: 42.5px;\n}\n.form-control-feedback {\n  position: absolute;\n  top: 0;\n  right: 0;\n  z-index: 2;\n  display: block;\n  width: 34px;\n  height: 34px;\n  line-height: 34px;\n  text-align: center;\n  pointer-events: none;\n}\n.input-lg + .form-control-feedback,\n.input-group-lg + .form-control-feedback,\n.form-group-lg .form-control + .form-control-feedback {\n  width: 46px;\n  height: 46px;\n  line-height: 46px;\n}\n.input-sm + .form-control-feedback,\n.input-group-sm + .form-control-feedback,\n.form-group-sm .form-control + .form-control-feedback {\n  width: 30px;\n  height: 30px;\n  line-height: 30px;\n}\n.has-success .help-block,\n.has-success .control-label,\n.has-success .radio,\n.has-success .checkbox,\n.has-success .radio-inline,\n.has-success .checkbox-inline,\n.has-success.radio label,\n.has-success.checkbox label,\n.has-success.radio-inline label,\n.has-success.checkbox-inline label {\n  color: #3c763d;\n}\n.has-success .form-control {\n  border-color: #3c763d;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);\n}\n.has-success .form-control:focus {\n  border-color: #2b542c;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px #67b168;\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px #67b168;\n}\n.has-success .input-group-addon {\n  color: #3c763d;\n  background-color: #dff0d8;\n  border-color: #3c763d;\n}\n.has-success .form-control-feedback {\n  color: #3c763d;\n}\n.has-warning .help-block,\n.has-warning .control-label,\n.has-warning .radio,\n.has-warning .checkbox,\n.has-warning .radio-inline,\n.has-warning .checkbox-inline,\n.has-warning.radio label,\n.has-warning.checkbox label,\n.has-warning.radio-inline label,\n.has-warning.checkbox-inline label {\n  color: #8a6d3b;\n}\n.has-warning .form-control {\n  border-color: #8a6d3b;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);\n}\n.has-warning .form-control:focus {\n  border-color: #66512c;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px #c0a16b;\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px #c0a16b;\n}\n.has-warning .input-group-addon {\n  color: #8a6d3b;\n  background-color: #fcf8e3;\n  border-color: #8a6d3b;\n}\n.has-warning .form-control-feedback {\n  color: #8a6d3b;\n}\n.has-error .help-block,\n.has-error .control-label,\n.has-error .radio,\n.has-error .checkbox,\n.has-error .radio-inline,\n.has-error .checkbox-inline,\n.has-error.radio label,\n.has-error.checkbox label,\n.has-error.radio-inline label,\n.has-error.checkbox-inline label {\n  color: #a94442;\n}\n.has-error .form-control {\n  border-color: #a94442;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);\n}\n.has-error .form-control:focus {\n  border-color: #843534;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px #ce8483;\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px #ce8483;\n}\n.has-error .input-group-addon {\n  color: #a94442;\n  background-color: #f2dede;\n  border-color: #a94442;\n}\n.has-error .form-control-feedback {\n  color: #a94442;\n}\n.has-feedback label ~ .form-control-feedback {\n  top: 25px;\n}\n.has-feedback label.sr-only ~ .form-control-feedback {\n  top: 0;\n}\n.help-block {\n  display: block;\n  margin-top: 5px;\n  margin-bottom: 10px;\n  color: #737373;\n}\n@media (min-width: 768px) {\n  .form-inline .form-group {\n    display: inline-block;\n    margin-bottom: 0;\n    vertical-align: middle;\n  }\n  .form-inline .form-control {\n    display: inline-block;\n    width: auto;\n    vertical-align: middle;\n  }\n  .form-inline .form-control-static {\n    display: inline-block;\n  }\n  .form-inline .input-group {\n    display: inline-table;\n    vertical-align: middle;\n  }\n  .form-inline .input-group .input-group-addon,\n  .form-inline .input-group .input-group-btn,\n  .form-inline .input-group .form-control {\n    width: auto;\n  }\n  .form-inline .input-group > .form-control {\n    width: 100%;\n  }\n  .form-inline .control-label {\n    margin-bottom: 0;\n    vertical-align: middle;\n  }\n  .form-inline .radio,\n  .form-inline .checkbox {\n    display: inline-block;\n    margin-top: 0;\n    margin-bottom: 0;\n    vertical-align: middle;\n  }\n  .form-inline .radio label,\n  .form-inline .checkbox label {\n    padding-left: 0;\n  }\n  .form-inline .radio input[type=\"radio\"],\n  .form-inline .checkbox input[type=\"checkbox\"] {\n    position: relative;\n    margin-left: 0;\n  }\n  .form-inline .has-feedback .form-control-feedback {\n    top: 0;\n  }\n}\n.form-horizontal .radio,\n.form-horizontal .checkbox,\n.form-horizontal .radio-inline,\n.form-horizontal .checkbox-inline {\n  padding-top: 7px;\n  margin-top: 0;\n  margin-bottom: 0;\n}\n.form-horizontal .radio,\n.form-horizontal .checkbox {\n  min-height: 27px;\n}\n.form-horizontal .form-group {\n  margin-right: -15px;\n  margin-left: -15px;\n}\n@media (min-width: 768px) {\n  .form-horizontal .control-label {\n    padding-top: 7px;\n    margin-bottom: 0;\n    text-align: right;\n  }\n}\n.form-horizontal .has-feedback .form-control-feedback {\n  right: 15px;\n}\n@media (min-width: 768px) {\n  .form-horizontal .form-group-lg .control-label {\n    padding-top: 11px;\n    font-size: 18px;\n  }\n}\n@media (min-width: 768px) {\n  .form-horizontal .form-group-sm .control-label {\n    padding-top: 6px;\n    font-size: 12px;\n  }\n}\n.btn {\n  display: inline-block;\n  padding: 6px 12px;\n  margin-bottom: 0;\n  font-size: 14px;\n  font-weight: normal;\n  line-height: 1.42857143;\n  text-align: center;\n  white-space: nowrap;\n  vertical-align: middle;\n  -ms-touch-action: manipulation;\n      touch-action: manipulation;\n  cursor: pointer;\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  background-image: none;\n  border: 1px solid transparent;\n  border-radius: 4px;\n}\n.btn:focus,\n.btn:active:focus,\n.btn.active:focus,\n.btn.focus,\n.btn:active.focus,\n.btn.active.focus {\n  outline: 5px auto -webkit-focus-ring-color;\n  outline-offset: -2px;\n}\n.btn:hover,\n.btn:focus,\n.btn.focus {\n  color: #333;\n  text-decoration: none;\n}\n.btn:active,\n.btn.active {\n  background-image: none;\n  outline: 0;\n  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);\n          box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);\n}\n.btn.disabled,\n.btn[disabled],\nfieldset[disabled] .btn {\n  cursor: not-allowed;\n  filter: alpha(opacity=65);\n  -webkit-box-shadow: none;\n          box-shadow: none;\n  opacity: .65;\n}\na.btn.disabled,\nfieldset[disabled] a.btn {\n  pointer-events: none;\n}\n.btn-default {\n  color: #333;\n  background-color: #fff;\n  border-color: #ccc;\n}\n.btn-default:focus,\n.btn-default.focus {\n  color: #333;\n  background-color: #e6e6e6;\n  border-color: #8c8c8c;\n}\n.btn-default:hover {\n  color: #333;\n  background-color: #e6e6e6;\n  border-color: #adadad;\n}\n.btn-default:active,\n.btn-default.active,\n.open > .dropdown-toggle.btn-default {\n  color: #333;\n  background-color: #e6e6e6;\n  border-color: #adadad;\n}\n.btn-default:active:hover,\n.btn-default.active:hover,\n.open > .dropdown-toggle.btn-default:hover,\n.btn-default:active:focus,\n.btn-default.active:focus,\n.open > .dropdown-toggle.btn-default:focus,\n.btn-default:active.focus,\n.btn-default.active.focus,\n.open > .dropdown-toggle.btn-default.focus {\n  color: #333;\n  background-color: #d4d4d4;\n  border-color: #8c8c8c;\n}\n.btn-default:active,\n.btn-default.active,\n.open > .dropdown-toggle.btn-default {\n  background-image: none;\n}\n.btn-default.disabled:hover,\n.btn-default[disabled]:hover,\nfieldset[disabled] .btn-default:hover,\n.btn-default.disabled:focus,\n.btn-default[disabled]:focus,\nfieldset[disabled] .btn-default:focus,\n.btn-default.disabled.focus,\n.btn-default[disabled].focus,\nfieldset[disabled] .btn-default.focus {\n  background-color: #fff;\n  border-color: #ccc;\n}\n.btn-default .badge {\n  color: #fff;\n  background-color: #333;\n}\n.btn-primary {\n  color: #fff;\n  background-color: #337ab7;\n  border-color: #2e6da4;\n}\n.btn-primary:focus,\n.btn-primary.focus {\n  color: #fff;\n  background-color: #286090;\n  border-color: #122b40;\n}\n.btn-primary:hover {\n  color: #fff;\n  background-color: #286090;\n  border-color: #204d74;\n}\n.btn-primary:active,\n.btn-primary.active,\n.open > .dropdown-toggle.btn-primary {\n  color: #fff;\n  background-color: #286090;\n  border-color: #204d74;\n}\n.btn-primary:active:hover,\n.btn-primary.active:hover,\n.open > .dropdown-toggle.btn-primary:hover,\n.btn-primary:active:focus,\n.btn-primary.active:focus,\n.open > .dropdown-toggle.btn-primary:focus,\n.btn-primary:active.focus,\n.btn-primary.active.focus,\n.open > .dropdown-toggle.btn-primary.focus {\n  color: #fff;\n  background-color: #204d74;\n  border-color: #122b40;\n}\n.btn-primary:active,\n.btn-primary.active,\n.open > .dropdown-toggle.btn-primary {\n  background-image: none;\n}\n.btn-primary.disabled:hover,\n.btn-primary[disabled]:hover,\nfieldset[disabled] .btn-primary:hover,\n.btn-primary.disabled:focus,\n.btn-primary[disabled]:focus,\nfieldset[disabled] .btn-primary:focus,\n.btn-primary.disabled.focus,\n.btn-primary[disabled].focus,\nfieldset[disabled] .btn-primary.focus {\n  background-color: #337ab7;\n  border-color: #2e6da4;\n}\n.btn-primary .badge {\n  color: #337ab7;\n  background-color: #fff;\n}\n.btn-success {\n  color: #fff;\n  background-color: #5cb85c;\n  border-color: #4cae4c;\n}\n.btn-success:focus,\n.btn-success.focus {\n  color: #fff;\n  background-color: #449d44;\n  border-color: #255625;\n}\n.btn-success:hover {\n  color: #fff;\n  background-color: #449d44;\n  border-color: #398439;\n}\n.btn-success:active,\n.btn-success.active,\n.open > .dropdown-toggle.btn-success {\n  color: #fff;\n  background-color: #449d44;\n  border-color: #398439;\n}\n.btn-success:active:hover,\n.btn-success.active:hover,\n.open > .dropdown-toggle.btn-success:hover,\n.btn-success:active:focus,\n.btn-success.active:focus,\n.open > .dropdown-toggle.btn-success:focus,\n.btn-success:active.focus,\n.btn-success.active.focus,\n.open > .dropdown-toggle.btn-success.focus {\n  color: #fff;\n  background-color: #398439;\n  border-color: #255625;\n}\n.btn-success:active,\n.btn-success.active,\n.open > .dropdown-toggle.btn-success {\n  background-image: none;\n}\n.btn-success.disabled:hover,\n.btn-success[disabled]:hover,\nfieldset[disabled] .btn-success:hover,\n.btn-success.disabled:focus,\n.btn-success[disabled]:focus,\nfieldset[disabled] .btn-success:focus,\n.btn-success.disabled.focus,\n.btn-success[disabled].focus,\nfieldset[disabled] .btn-success.focus {\n  background-color: #5cb85c;\n  border-color: #4cae4c;\n}\n.btn-success .badge {\n  color: #5cb85c;\n  background-color: #fff;\n}\n.btn-info {\n  color: #fff;\n  background-color: #5bc0de;\n  border-color: #46b8da;\n}\n.btn-info:focus,\n.btn-info.focus {\n  color: #fff;\n  background-color: #31b0d5;\n  border-color: #1b6d85;\n}\n.btn-info:hover {\n  color: #fff;\n  background-color: #31b0d5;\n  border-color: #269abc;\n}\n.btn-info:active,\n.btn-info.active,\n.open > .dropdown-toggle.btn-info {\n  color: #fff;\n  background-color: #31b0d5;\n  border-color: #269abc;\n}\n.btn-info:active:hover,\n.btn-info.active:hover,\n.open > .dropdown-toggle.btn-info:hover,\n.btn-info:active:focus,\n.btn-info.active:focus,\n.open > .dropdown-toggle.btn-info:focus,\n.btn-info:active.focus,\n.btn-info.active.focus,\n.open > .dropdown-toggle.btn-info.focus {\n  color: #fff;\n  background-color: #269abc;\n  border-color: #1b6d85;\n}\n.btn-info:active,\n.btn-info.active,\n.open > .dropdown-toggle.btn-info {\n  background-image: none;\n}\n.btn-info.disabled:hover,\n.btn-info[disabled]:hover,\nfieldset[disabled] .btn-info:hover,\n.btn-info.disabled:focus,\n.btn-info[disabled]:focus,\nfieldset[disabled] .btn-info:focus,\n.btn-info.disabled.focus,\n.btn-info[disabled].focus,\nfieldset[disabled] .btn-info.focus {\n  background-color: #5bc0de;\n  border-color: #46b8da;\n}\n.btn-info .badge {\n  color: #5bc0de;\n  background-color: #fff;\n}\n.btn-warning {\n  color: #fff;\n  background-color: #f0ad4e;\n  border-color: #eea236;\n}\n.btn-warning:focus,\n.btn-warning.focus {\n  color: #fff;\n  background-color: #ec971f;\n  border-color: #985f0d;\n}\n.btn-warning:hover {\n  color: #fff;\n  background-color: #ec971f;\n  border-color: #d58512;\n}\n.btn-warning:active,\n.btn-warning.active,\n.open > .dropdown-toggle.btn-warning {\n  color: #fff;\n  background-color: #ec971f;\n  border-color: #d58512;\n}\n.btn-warning:active:hover,\n.btn-warning.active:hover,\n.open > .dropdown-toggle.btn-warning:hover,\n.btn-warning:active:focus,\n.btn-warning.active:focus,\n.open > .dropdown-toggle.btn-warning:focus,\n.btn-warning:active.focus,\n.btn-warning.active.focus,\n.open > .dropdown-toggle.btn-warning.focus {\n  color: #fff;\n  background-color: #d58512;\n  border-color: #985f0d;\n}\n.btn-warning:active,\n.btn-warning.active,\n.open > .dropdown-toggle.btn-warning {\n  background-image: none;\n}\n.btn-warning.disabled:hover,\n.btn-warning[disabled]:hover,\nfieldset[disabled] .btn-warning:hover,\n.btn-warning.disabled:focus,\n.btn-warning[disabled]:focus,\nfieldset[disabled] .btn-warning:focus,\n.btn-warning.disabled.focus,\n.btn-warning[disabled].focus,\nfieldset[disabled] .btn-warning.focus {\n  background-color: #f0ad4e;\n  border-color: #eea236;\n}\n.btn-warning .badge {\n  color: #f0ad4e;\n  background-color: #fff;\n}\n.btn-danger {\n  color: #fff;\n  background-color: #d9534f;\n  border-color: #d43f3a;\n}\n.btn-danger:focus,\n.btn-danger.focus {\n  color: #fff;\n  background-color: #c9302c;\n  border-color: #761c19;\n}\n.btn-danger:hover {\n  color: #fff;\n  background-color: #c9302c;\n  border-color: #ac2925;\n}\n.btn-danger:active,\n.btn-danger.active,\n.open > .dropdown-toggle.btn-danger {\n  color: #fff;\n  background-color: #c9302c;\n  border-color: #ac2925;\n}\n.btn-danger:active:hover,\n.btn-danger.active:hover,\n.open > .dropdown-toggle.btn-danger:hover,\n.btn-danger:active:focus,\n.btn-danger.active:focus,\n.open > .dropdown-toggle.btn-danger:focus,\n.btn-danger:active.focus,\n.btn-danger.active.focus,\n.open > .dropdown-toggle.btn-danger.focus {\n  color: #fff;\n  background-color: #ac2925;\n  border-color: #761c19;\n}\n.btn-danger:active,\n.btn-danger.active,\n.open > .dropdown-toggle.btn-danger {\n  background-image: none;\n}\n.btn-danger.disabled:hover,\n.btn-danger[disabled]:hover,\nfieldset[disabled] .btn-danger:hover,\n.btn-danger.disabled:focus,\n.btn-danger[disabled]:focus,\nfieldset[disabled] .btn-danger:focus,\n.btn-danger.disabled.focus,\n.btn-danger[disabled].focus,\nfieldset[disabled] .btn-danger.focus {\n  background-color: #d9534f;\n  border-color: #d43f3a;\n}\n.btn-danger .badge {\n  color: #d9534f;\n  background-color: #fff;\n}\n.btn-link {\n  font-weight: normal;\n  color: #337ab7;\n  border-radius: 0;\n}\n.btn-link,\n.btn-link:active,\n.btn-link.active,\n.btn-link[disabled],\nfieldset[disabled] .btn-link {\n  background-color: transparent;\n  -webkit-box-shadow: none;\n          box-shadow: none;\n}\n.btn-link,\n.btn-link:hover,\n.btn-link:focus,\n.btn-link:active {\n  border-color: transparent;\n}\n.btn-link:hover,\n.btn-link:focus {\n  color: #23527c;\n  text-decoration: underline;\n  background-color: transparent;\n}\n.btn-link[disabled]:hover,\nfieldset[disabled] .btn-link:hover,\n.btn-link[disabled]:focus,\nfieldset[disabled] .btn-link:focus {\n  color: #777;\n  text-decoration: none;\n}\n.btn-lg,\n.btn-group-lg > .btn {\n  padding: 10px 16px;\n  font-size: 18px;\n  line-height: 1.3333333;\n  border-radius: 6px;\n}\n.btn-sm,\n.btn-group-sm > .btn {\n  padding: 5px 10px;\n  font-size: 12px;\n  line-height: 1.5;\n  border-radius: 3px;\n}\n.btn-xs,\n.btn-group-xs > .btn {\n  padding: 1px 5px;\n  font-size: 12px;\n  line-height: 1.5;\n  border-radius: 3px;\n}\n.btn-block {\n  display: block;\n  width: 100%;\n}\n.btn-block + .btn-block {\n  margin-top: 5px;\n}\ninput[type=\"submit\"].btn-block,\ninput[type=\"reset\"].btn-block,\ninput[type=\"button\"].btn-block {\n  width: 100%;\n}\n.fade {\n  opacity: 0;\n  -webkit-transition: opacity .15s linear;\n       -o-transition: opacity .15s linear;\n          transition: opacity .15s linear;\n}\n.fade.in {\n  opacity: 1;\n}\n.collapse {\n  display: none;\n}\n.collapse.in {\n  display: block;\n}\ntr.collapse.in {\n  display: table-row;\n}\ntbody.collapse.in {\n  display: table-row-group;\n}\n.collapsing {\n  position: relative;\n  height: 0;\n  overflow: hidden;\n  -webkit-transition-timing-function: ease;\n       -o-transition-timing-function: ease;\n          transition-timing-function: ease;\n  -webkit-transition-duration: .35s;\n       -o-transition-duration: .35s;\n          transition-duration: .35s;\n  -webkit-transition-property: height, visibility;\n       -o-transition-property: height, visibility;\n          transition-property: height, visibility;\n}\n.caret {\n  display: inline-block;\n  width: 0;\n  height: 0;\n  margin-left: 2px;\n  vertical-align: middle;\n  border-top: 4px dashed;\n  border-top: 4px solid \\9;\n  border-right: 4px solid transparent;\n  border-left: 4px solid transparent;\n}\n.dropup,\n.dropdown {\n  position: relative;\n}\n.dropdown-toggle:focus {\n  outline: 0;\n}\n.dropdown-menu {\n  position: absolute;\n  top: 100%;\n  left: 0;\n  z-index: 1000;\n  display: none;\n  float: left;\n  min-width: 160px;\n  padding: 5px 0;\n  margin: 2px 0 0;\n  font-size: 14px;\n  text-align: left;\n  list-style: none;\n  background-color: #fff;\n  -webkit-background-clip: padding-box;\n          background-clip: padding-box;\n  border: 1px solid #ccc;\n  border: 1px solid rgba(0, 0, 0, .15);\n  border-radius: 4px;\n  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);\n          box-shadow: 0 6px 12px rgba(0, 0, 0, .175);\n}\n.dropdown-menu.pull-right {\n  right: 0;\n  left: auto;\n}\n.dropdown-menu .divider {\n  height: 1px;\n  margin: 9px 0;\n  overflow: hidden;\n  background-color: #e5e5e5;\n}\n.dropdown-menu > li > a {\n  display: block;\n  padding: 3px 20px;\n  clear: both;\n  font-weight: normal;\n  line-height: 1.42857143;\n  color: #333;\n  white-space: nowrap;\n}\n.dropdown-menu > li > a:hover,\n.dropdown-menu > li > a:focus {\n  color: #262626;\n  text-decoration: none;\n  background-color: #f5f5f5;\n}\n.dropdown-menu > .active > a,\n.dropdown-menu > .active > a:hover,\n.dropdown-menu > .active > a:focus {\n  color: #fff;\n  text-decoration: none;\n  background-color: #337ab7;\n  outline: 0;\n}\n.dropdown-menu > .disabled > a,\n.dropdown-menu > .disabled > a:hover,\n.dropdown-menu > .disabled > a:focus {\n  color: #777;\n}\n.dropdown-menu > .disabled > a:hover,\n.dropdown-menu > .disabled > a:focus {\n  text-decoration: none;\n  cursor: not-allowed;\n  background-color: transparent;\n  background-image: none;\n  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);\n}\n.open > .dropdown-menu {\n  display: block;\n}\n.open > a {\n  outline: 0;\n}\n.dropdown-menu-right {\n  right: 0;\n  left: auto;\n}\n.dropdown-menu-left {\n  right: auto;\n  left: 0;\n}\n.dropdown-header {\n  display: block;\n  padding: 3px 20px;\n  font-size: 12px;\n  line-height: 1.42857143;\n  color: #777;\n  white-space: nowrap;\n}\n.dropdown-backdrop {\n  position: fixed;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n  z-index: 990;\n}\n.pull-right > .dropdown-menu {\n  right: 0;\n  left: auto;\n}\n.dropup .caret,\n.navbar-fixed-bottom .dropdown .caret {\n  content: \"\";\n  border-top: 0;\n  border-bottom: 4px dashed;\n  border-bottom: 4px solid \\9;\n}\n.dropup .dropdown-menu,\n.navbar-fixed-bottom .dropdown .dropdown-menu {\n  top: auto;\n  bottom: 100%;\n  margin-bottom: 2px;\n}\n@media (min-width: 768px) {\n  .navbar-right .dropdown-menu {\n    right: 0;\n    left: auto;\n  }\n  .navbar-right .dropdown-menu-left {\n    right: auto;\n    left: 0;\n  }\n}\n.btn-group,\n.btn-group-vertical {\n  position: relative;\n  display: inline-block;\n  vertical-align: middle;\n}\n.btn-group > .btn,\n.btn-group-vertical > .btn {\n  position: relative;\n  float: left;\n}\n.btn-group > .btn:hover,\n.btn-group-vertical > .btn:hover,\n.btn-group > .btn:focus,\n.btn-group-vertical > .btn:focus,\n.btn-group > .btn:active,\n.btn-group-vertical > .btn:active,\n.btn-group > .btn.active,\n.btn-group-vertical > .btn.active {\n  z-index: 2;\n}\n.btn-group .btn + .btn,\n.btn-group .btn + .btn-group,\n.btn-group .btn-group + .btn,\n.btn-group .btn-group + .btn-group {\n  margin-left: -1px;\n}\n.btn-toolbar {\n  margin-left: -5px;\n}\n.btn-toolbar .btn,\n.btn-toolbar .btn-group,\n.btn-toolbar .input-group {\n  float: left;\n}\n.btn-toolbar > .btn,\n.btn-toolbar > .btn-group,\n.btn-toolbar > .input-group {\n  margin-left: 5px;\n}\n.btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {\n  border-radius: 0;\n}\n.btn-group > .btn:first-child {\n  margin-left: 0;\n}\n.btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle) {\n  border-top-right-radius: 0;\n  border-bottom-right-radius: 0;\n}\n.btn-group > .btn:last-child:not(:first-child),\n.btn-group > .dropdown-toggle:not(:first-child) {\n  border-top-left-radius: 0;\n  border-bottom-left-radius: 0;\n}\n.btn-group > .btn-group {\n  float: left;\n}\n.btn-group > .btn-group:not(:first-child):not(:last-child) > .btn {\n  border-radius: 0;\n}\n.btn-group > .btn-group:first-child:not(:last-child) > .btn:last-child,\n.btn-group > .btn-group:first-child:not(:last-child) > .dropdown-toggle {\n  border-top-right-radius: 0;\n  border-bottom-right-radius: 0;\n}\n.btn-group > .btn-group:last-child:not(:first-child) > .btn:first-child {\n  border-top-left-radius: 0;\n  border-bottom-left-radius: 0;\n}\n.btn-group .dropdown-toggle:active,\n.btn-group.open .dropdown-toggle {\n  outline: 0;\n}\n.btn-group > .btn + .dropdown-toggle {\n  padding-right: 8px;\n  padding-left: 8px;\n}\n.btn-group > .btn-lg + .dropdown-toggle {\n  padding-right: 12px;\n  padding-left: 12px;\n}\n.btn-group.open .dropdown-toggle {\n  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);\n          box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);\n}\n.btn-group.open .dropdown-toggle.btn-link {\n  -webkit-box-shadow: none;\n          box-shadow: none;\n}\n.btn .caret {\n  margin-left: 0;\n}\n.btn-lg .caret {\n  border-width: 5px 5px 0;\n  border-bottom-width: 0;\n}\n.dropup .btn-lg .caret {\n  border-width: 0 5px 5px;\n}\n.btn-group-vertical > .btn,\n.btn-group-vertical > .btn-group,\n.btn-group-vertical > .btn-group > .btn {\n  display: block;\n  float: none;\n  width: 100%;\n  max-width: 100%;\n}\n.btn-group-vertical > .btn-group > .btn {\n  float: none;\n}\n.btn-group-vertical > .btn + .btn,\n.btn-group-vertical > .btn + .btn-group,\n.btn-group-vertical > .btn-group + .btn,\n.btn-group-vertical > .btn-group + .btn-group {\n  margin-top: -1px;\n  margin-left: 0;\n}\n.btn-group-vertical > .btn:not(:first-child):not(:last-child) {\n  border-radius: 0;\n}\n.btn-group-vertical > .btn:first-child:not(:last-child) {\n  border-top-left-radius: 4px;\n  border-top-right-radius: 4px;\n  border-bottom-right-radius: 0;\n  border-bottom-left-radius: 0;\n}\n.btn-group-vertical > .btn:last-child:not(:first-child) {\n  border-top-left-radius: 0;\n  border-top-right-radius: 0;\n  border-bottom-right-radius: 4px;\n  border-bottom-left-radius: 4px;\n}\n.btn-group-vertical > .btn-group:not(:first-child):not(:last-child) > .btn {\n  border-radius: 0;\n}\n.btn-group-vertical > .btn-group:first-child:not(:last-child) > .btn:last-child,\n.btn-group-vertical > .btn-group:first-child:not(:last-child) > .dropdown-toggle {\n  border-bottom-right-radius: 0;\n  border-bottom-left-radius: 0;\n}\n.btn-group-vertical > .btn-group:last-child:not(:first-child) > .btn:first-child {\n  border-top-left-radius: 0;\n  border-top-right-radius: 0;\n}\n.btn-group-justified {\n  display: table;\n  width: 100%;\n  table-layout: fixed;\n  border-collapse: separate;\n}\n.btn-group-justified > .btn,\n.btn-group-justified > .btn-group {\n  display: table-cell;\n  float: none;\n  width: 1%;\n}\n.btn-group-justified > .btn-group .btn {\n  width: 100%;\n}\n.btn-group-justified > .btn-group .dropdown-menu {\n  left: auto;\n}\n[data-toggle=\"buttons\"] > .btn input[type=\"radio\"],\n[data-toggle=\"buttons\"] > .btn-group > .btn input[type=\"radio\"],\n[data-toggle=\"buttons\"] > .btn input[type=\"checkbox\"],\n[data-toggle=\"buttons\"] > .btn-group > .btn input[type=\"checkbox\"] {\n  position: absolute;\n  clip: rect(0, 0, 0, 0);\n  pointer-events: none;\n}\n.input-group {\n  position: relative;\n  display: table;\n  border-collapse: separate;\n}\n.input-group[class*=\"col-\"] {\n  float: none;\n  padding-right: 0;\n  padding-left: 0;\n}\n.input-group .form-control {\n  position: relative;\n  z-index: 2;\n  float: left;\n  width: 100%;\n  margin-bottom: 0;\n}\n.input-group .form-control:focus {\n  z-index: 3;\n}\n.input-group-lg > .form-control,\n.input-group-lg > .input-group-addon,\n.input-group-lg > .input-group-btn > .btn {\n  height: 46px;\n  padding: 10px 16px;\n  font-size: 18px;\n  line-height: 1.3333333;\n  border-radius: 6px;\n}\nselect.input-group-lg > .form-control,\nselect.input-group-lg > .input-group-addon,\nselect.input-group-lg > .input-group-btn > .btn {\n  height: 46px;\n  line-height: 46px;\n}\ntextarea.input-group-lg > .form-control,\ntextarea.input-group-lg > .input-group-addon,\ntextarea.input-group-lg > .input-group-btn > .btn,\nselect[multiple].input-group-lg > .form-control,\nselect[multiple].input-group-lg > .input-group-addon,\nselect[multiple].input-group-lg > .input-group-btn > .btn {\n  height: auto;\n}\n.input-group-sm > .form-control,\n.input-group-sm > .input-group-addon,\n.input-group-sm > .input-group-btn > .btn {\n  height: 30px;\n  padding: 5px 10px;\n  font-size: 12px;\n  line-height: 1.5;\n  border-radius: 3px;\n}\nselect.input-group-sm > .form-control,\nselect.input-group-sm > .input-group-addon,\nselect.input-group-sm > .input-group-btn > .btn {\n  height: 30px;\n  line-height: 30px;\n}\ntextarea.input-group-sm > .form-control,\ntextarea.input-group-sm > .input-group-addon,\ntextarea.input-group-sm > .input-group-btn > .btn,\nselect[multiple].input-group-sm > .form-control,\nselect[multiple].input-group-sm > .input-group-addon,\nselect[multiple].input-group-sm > .input-group-btn > .btn {\n  height: auto;\n}\n.input-group-addon,\n.input-group-btn,\n.input-group .form-control {\n  display: table-cell;\n}\n.input-group-addon:not(:first-child):not(:last-child),\n.input-group-btn:not(:first-child):not(:last-child),\n.input-group .form-control:not(:first-child):not(:last-child) {\n  border-radius: 0;\n}\n.input-group-addon,\n.input-group-btn {\n  width: 1%;\n  white-space: nowrap;\n  vertical-align: middle;\n}\n.input-group-addon {\n  padding: 6px 12px;\n  font-size: 14px;\n  font-weight: normal;\n  line-height: 1;\n  color: #555;\n  text-align: center;\n  background-color: #eee;\n  border: 1px solid #ccc;\n  border-radius: 4px;\n}\n.input-group-addon.input-sm {\n  padding: 5px 10px;\n  font-size: 12px;\n  border-radius: 3px;\n}\n.input-group-addon.input-lg {\n  padding: 10px 16px;\n  font-size: 18px;\n  border-radius: 6px;\n}\n.input-group-addon input[type=\"radio\"],\n.input-group-addon input[type=\"checkbox\"] {\n  margin-top: 0;\n}\n.input-group .form-control:first-child,\n.input-group-addon:first-child,\n.input-group-btn:first-child > .btn,\n.input-group-btn:first-child > .btn-group > .btn,\n.input-group-btn:first-child > .dropdown-toggle,\n.input-group-btn:last-child > .btn:not(:last-child):not(.dropdown-toggle),\n.input-group-btn:last-child > .btn-group:not(:last-child) > .btn {\n  border-top-right-radius: 0;\n  border-bottom-right-radius: 0;\n}\n.input-group-addon:first-child {\n  border-right: 0;\n}\n.input-group .form-control:last-child,\n.input-group-addon:last-child,\n.input-group-btn:last-child > .btn,\n.input-group-btn:last-child > .btn-group > .btn,\n.input-group-btn:last-child > .dropdown-toggle,\n.input-group-btn:first-child > .btn:not(:first-child),\n.input-group-btn:first-child > .btn-group:not(:first-child) > .btn {\n  border-top-left-radius: 0;\n  border-bottom-left-radius: 0;\n}\n.input-group-addon:last-child {\n  border-left: 0;\n}\n.input-group-btn {\n  position: relative;\n  font-size: 0;\n  white-space: nowrap;\n}\n.input-group-btn > .btn {\n  position: relative;\n}\n.input-group-btn > .btn + .btn {\n  margin-left: -1px;\n}\n.input-group-btn > .btn:hover,\n.input-group-btn > .btn:focus,\n.input-group-btn > .btn:active {\n  z-index: 2;\n}\n.input-group-btn:first-child > .btn,\n.input-group-btn:first-child > .btn-group {\n  margin-right: -1px;\n}\n.input-group-btn:last-child > .btn,\n.input-group-btn:last-child > .btn-group {\n  z-index: 2;\n  margin-left: -1px;\n}\n.nav {\n  padding-left: 0;\n  margin-bottom: 0;\n  list-style: none;\n}\n.nav > li {\n  position: relative;\n  display: block;\n}\n.nav > li > a {\n  position: relative;\n  display: block;\n  padding: 10px 15px;\n}\n.nav > li > a:hover,\n.nav > li > a:focus {\n  text-decoration: none;\n  background-color: #eee;\n}\n.nav > li.disabled > a {\n  color: #777;\n}\n.nav > li.disabled > a:hover,\n.nav > li.disabled > a:focus {\n  color: #777;\n  text-decoration: none;\n  cursor: not-allowed;\n  background-color: transparent;\n}\n.nav .open > a,\n.nav .open > a:hover,\n.nav .open > a:focus {\n  background-color: #eee;\n  border-color: #337ab7;\n}\n.nav .nav-divider {\n  height: 1px;\n  margin: 9px 0;\n  overflow: hidden;\n  background-color: #e5e5e5;\n}\n.nav > li > a > img {\n  max-width: none;\n}\n.nav-tabs {\n  border-bottom: 1px solid #ddd;\n}\n.nav-tabs > li {\n  float: left;\n  margin-bottom: -1px;\n}\n.nav-tabs > li > a {\n  margin-right: 2px;\n  line-height: 1.42857143;\n  border: 1px solid transparent;\n  border-radius: 4px 4px 0 0;\n}\n.nav-tabs > li > a:hover {\n  border-color: #eee #eee #ddd;\n}\n.nav-tabs > li.active > a,\n.nav-tabs > li.active > a:hover,\n.nav-tabs > li.active > a:focus {\n  color: #555;\n  cursor: default;\n  background-color: #fff;\n  border: 1px solid #ddd;\n  border-bottom-color: transparent;\n}\n.nav-tabs.nav-justified {\n  width: 100%;\n  border-bottom: 0;\n}\n.nav-tabs.nav-justified > li {\n  float: none;\n}\n.nav-tabs.nav-justified > li > a {\n  margin-bottom: 5px;\n  text-align: center;\n}\n.nav-tabs.nav-justified > .dropdown .dropdown-menu {\n  top: auto;\n  left: auto;\n}\n@media (min-width: 768px) {\n  .nav-tabs.nav-justified > li {\n    display: table-cell;\n    width: 1%;\n  }\n  .nav-tabs.nav-justified > li > a {\n    margin-bottom: 0;\n  }\n}\n.nav-tabs.nav-justified > li > a {\n  margin-right: 0;\n  border-radius: 4px;\n}\n.nav-tabs.nav-justified > .active > a,\n.nav-tabs.nav-justified > .active > a:hover,\n.nav-tabs.nav-justified > .active > a:focus {\n  border: 1px solid #ddd;\n}\n@media (min-width: 768px) {\n  .nav-tabs.nav-justified > li > a {\n    border-bottom: 1px solid #ddd;\n    border-radius: 4px 4px 0 0;\n  }\n  .nav-tabs.nav-justified > .active > a,\n  .nav-tabs.nav-justified > .active > a:hover,\n  .nav-tabs.nav-justified > .active > a:focus {\n    border-bottom-color: #fff;\n  }\n}\n.nav-pills > li {\n  float: left;\n}\n.nav-pills > li > a {\n  border-radius: 4px;\n}\n.nav-pills > li + li {\n  margin-left: 2px;\n}\n.nav-pills > li.active > a,\n.nav-pills > li.active > a:hover,\n.nav-pills > li.active > a:focus {\n  color: #fff;\n  background-color: #337ab7;\n}\n.nav-stacked > li {\n  float: none;\n}\n.nav-stacked > li + li {\n  margin-top: 2px;\n  margin-left: 0;\n}\n.nav-justified {\n  width: 100%;\n}\n.nav-justified > li {\n  float: none;\n}\n.nav-justified > li > a {\n  margin-bottom: 5px;\n  text-align: center;\n}\n.nav-justified > .dropdown .dropdown-menu {\n  top: auto;\n  left: auto;\n}\n@media (min-width: 768px) {\n  .nav-justified > li {\n    display: table-cell;\n    width: 1%;\n  }\n  .nav-justified > li > a {\n    margin-bottom: 0;\n  }\n}\n.nav-tabs-justified {\n  border-bottom: 0;\n}\n.nav-tabs-justified > li > a {\n  margin-right: 0;\n  border-radius: 4px;\n}\n.nav-tabs-justified > .active > a,\n.nav-tabs-justified > .active > a:hover,\n.nav-tabs-justified > .active > a:focus {\n  border: 1px solid #ddd;\n}\n@media (min-width: 768px) {\n  .nav-tabs-justified > li > a {\n    border-bottom: 1px solid #ddd;\n    border-radius: 4px 4px 0 0;\n  }\n  .nav-tabs-justified > .active > a,\n  .nav-tabs-justified > .active > a:hover,\n  .nav-tabs-justified > .active > a:focus {\n    border-bottom-color: #fff;\n  }\n}\n.tab-content > .tab-pane {\n  display: none;\n}\n.tab-content > .active {\n  display: block;\n}\n.nav-tabs .dropdown-menu {\n  margin-top: -1px;\n  border-top-left-radius: 0;\n  border-top-right-radius: 0;\n}\n.navbar {\n  position: relative;\n  min-height: 50px;\n  margin-bottom: 20px;\n  border: 1px solid transparent;\n}\n@media (min-width: 768px) {\n  .navbar {\n    border-radius: 4px;\n  }\n}\n@media (min-width: 768px) {\n  .navbar-header {\n    float: left;\n  }\n}\n.navbar-collapse {\n  padding-right: 15px;\n  padding-left: 15px;\n  overflow-x: visible;\n  -webkit-overflow-scrolling: touch;\n  border-top: 1px solid transparent;\n  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1);\n          box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1);\n}\n.navbar-collapse.in {\n  overflow-y: auto;\n}\n@media (min-width: 768px) {\n  .navbar-collapse {\n    width: auto;\n    border-top: 0;\n    -webkit-box-shadow: none;\n            box-shadow: none;\n  }\n  .navbar-collapse.collapse {\n    display: block !important;\n    height: auto !important;\n    padding-bottom: 0;\n    overflow: visible !important;\n  }\n  .navbar-collapse.in {\n    overflow-y: visible;\n  }\n  .navbar-fixed-top .navbar-collapse,\n  .navbar-static-top .navbar-collapse,\n  .navbar-fixed-bottom .navbar-collapse {\n    padding-right: 0;\n    padding-left: 0;\n  }\n}\n.navbar-fixed-top .navbar-collapse,\n.navbar-fixed-bottom .navbar-collapse {\n  max-height: 340px;\n}\n@media (max-device-width: 480px) and (orientation: landscape) {\n  .navbar-fixed-top .navbar-collapse,\n  .navbar-fixed-bottom .navbar-collapse {\n    max-height: 200px;\n  }\n}\n.container > .navbar-header,\n.container-fluid > .navbar-header,\n.container > .navbar-collapse,\n.container-fluid > .navbar-collapse {\n  margin-right: -15px;\n  margin-left: -15px;\n}\n@media (min-width: 768px) {\n  .container > .navbar-header,\n  .container-fluid > .navbar-header,\n  .container > .navbar-collapse,\n  .container-fluid > .navbar-collapse {\n    margin-right: 0;\n    margin-left: 0;\n  }\n}\n.navbar-static-top {\n  z-index: 1000;\n  border-width: 0 0 1px;\n}\n@media (min-width: 768px) {\n  .navbar-static-top {\n    border-radius: 0;\n  }\n}\n.navbar-fixed-top,\n.navbar-fixed-bottom {\n  position: fixed;\n  right: 0;\n  left: 0;\n  z-index: 1030;\n}\n@media (min-width: 768px) {\n  .navbar-fixed-top,\n  .navbar-fixed-bottom {\n    border-radius: 0;\n  }\n}\n.navbar-fixed-top {\n  top: 0;\n  border-width: 0 0 1px;\n}\n.navbar-fixed-bottom {\n  bottom: 0;\n  margin-bottom: 0;\n  border-width: 1px 0 0;\n}\n.navbar-brand {\n  float: left;\n  height: 50px;\n  padding: 15px 15px;\n  font-size: 18px;\n  line-height: 20px;\n}\n.navbar-brand:hover,\n.navbar-brand:focus {\n  text-decoration: none;\n}\n.navbar-brand > img {\n  display: block;\n}\n@media (min-width: 768px) {\n  .navbar > .container .navbar-brand,\n  .navbar > .container-fluid .navbar-brand {\n    margin-left: -15px;\n  }\n}\n.navbar-toggle {\n  position: relative;\n  float: right;\n  padding: 9px 10px;\n  margin-top: 8px;\n  margin-right: 15px;\n  margin-bottom: 8px;\n  background-color: transparent;\n  background-image: none;\n  border: 1px solid transparent;\n  border-radius: 4px;\n}\n.navbar-toggle:focus {\n  outline: 0;\n}\n.navbar-toggle .icon-bar {\n  display: block;\n  width: 22px;\n  height: 2px;\n  border-radius: 1px;\n}\n.navbar-toggle .icon-bar + .icon-bar {\n  margin-top: 4px;\n}\n@media (min-width: 768px) {\n  .navbar-toggle {\n    display: none;\n  }\n}\n.navbar-nav {\n  margin: 7.5px -15px;\n}\n.navbar-nav > li > a {\n  padding-top: 10px;\n  padding-bottom: 10px;\n  line-height: 20px;\n}\n@media (max-width: 767px) {\n  .navbar-nav .open .dropdown-menu {\n    position: static;\n    float: none;\n    width: auto;\n    margin-top: 0;\n    background-color: transparent;\n    border: 0;\n    -webkit-box-shadow: none;\n            box-shadow: none;\n  }\n  .navbar-nav .open .dropdown-menu > li > a,\n  .navbar-nav .open .dropdown-menu .dropdown-header {\n    padding: 5px 15px 5px 25px;\n  }\n  .navbar-nav .open .dropdown-menu > li > a {\n    line-height: 20px;\n  }\n  .navbar-nav .open .dropdown-menu > li > a:hover,\n  .navbar-nav .open .dropdown-menu > li > a:focus {\n    background-image: none;\n  }\n}\n@media (min-width: 768px) {\n  .navbar-nav {\n    float: left;\n    margin: 0;\n  }\n  .navbar-nav > li {\n    float: left;\n  }\n  .navbar-nav > li > a {\n    padding-top: 15px;\n    padding-bottom: 15px;\n  }\n}\n.navbar-form {\n  padding: 10px 15px;\n  margin-top: 8px;\n  margin-right: -15px;\n  margin-bottom: 8px;\n  margin-left: -15px;\n  border-top: 1px solid transparent;\n  border-bottom: 1px solid transparent;\n  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 1px 0 rgba(255, 255, 255, .1);\n          box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 1px 0 rgba(255, 255, 255, .1);\n}\n@media (min-width: 768px) {\n  .navbar-form .form-group {\n    display: inline-block;\n    margin-bottom: 0;\n    vertical-align: middle;\n  }\n  .navbar-form .form-control {\n    display: inline-block;\n    width: auto;\n    vertical-align: middle;\n  }\n  .navbar-form .form-control-static {\n    display: inline-block;\n  }\n  .navbar-form .input-group {\n    display: inline-table;\n    vertical-align: middle;\n  }\n  .navbar-form .input-group .input-group-addon,\n  .navbar-form .input-group .input-group-btn,\n  .navbar-form .input-group .form-control {\n    width: auto;\n  }\n  .navbar-form .input-group > .form-control {\n    width: 100%;\n  }\n  .navbar-form .control-label {\n    margin-bottom: 0;\n    vertical-align: middle;\n  }\n  .navbar-form .radio,\n  .navbar-form .checkbox {\n    display: inline-block;\n    margin-top: 0;\n    margin-bottom: 0;\n    vertical-align: middle;\n  }\n  .navbar-form .radio label,\n  .navbar-form .checkbox label {\n    padding-left: 0;\n  }\n  .navbar-form .radio input[type=\"radio\"],\n  .navbar-form .checkbox input[type=\"checkbox\"] {\n    position: relative;\n    margin-left: 0;\n  }\n  .navbar-form .has-feedback .form-control-feedback {\n    top: 0;\n  }\n}\n@media (max-width: 767px) {\n  .navbar-form .form-group {\n    margin-bottom: 5px;\n  }\n  .navbar-form .form-group:last-child {\n    margin-bottom: 0;\n  }\n}\n@media (min-width: 768px) {\n  .navbar-form {\n    width: auto;\n    padding-top: 0;\n    padding-bottom: 0;\n    margin-right: 0;\n    margin-left: 0;\n    border: 0;\n    -webkit-box-shadow: none;\n            box-shadow: none;\n  }\n}\n.navbar-nav > li > .dropdown-menu {\n  margin-top: 0;\n  border-top-left-radius: 0;\n  border-top-right-radius: 0;\n}\n.navbar-fixed-bottom .navbar-nav > li > .dropdown-menu {\n  margin-bottom: 0;\n  border-top-left-radius: 4px;\n  border-top-right-radius: 4px;\n  border-bottom-right-radius: 0;\n  border-bottom-left-radius: 0;\n}\n.navbar-btn {\n  margin-top: 8px;\n  margin-bottom: 8px;\n}\n.navbar-btn.btn-sm {\n  margin-top: 10px;\n  margin-bottom: 10px;\n}\n.navbar-btn.btn-xs {\n  margin-top: 14px;\n  margin-bottom: 14px;\n}\n.navbar-text {\n  margin-top: 15px;\n  margin-bottom: 15px;\n}\n@media (min-width: 768px) {\n  .navbar-text {\n    float: left;\n    margin-right: 15px;\n    margin-left: 15px;\n  }\n}\n@media (min-width: 768px) {\n  .navbar-left {\n    float: left !important;\n  }\n  .navbar-right {\n    float: right !important;\n    margin-right: -15px;\n  }\n  .navbar-right ~ .navbar-right {\n    margin-right: 0;\n  }\n}\n.navbar-default {\n  background-color: #f8f8f8;\n  border-color: #e7e7e7;\n}\n.navbar-default .navbar-brand {\n  color: #777;\n}\n.navbar-default .navbar-brand:hover,\n.navbar-default .navbar-brand:focus {\n  color: #5e5e5e;\n  background-color: transparent;\n}\n.navbar-default .navbar-text {\n  color: #777;\n}\n.navbar-default .navbar-nav > li > a {\n  color: #777;\n}\n.navbar-default .navbar-nav > li > a:hover,\n.navbar-default .navbar-nav > li > a:focus {\n  color: #333;\n  background-color: transparent;\n}\n.navbar-default .navbar-nav > .active > a,\n.navbar-default .navbar-nav > .active > a:hover,\n.navbar-default .navbar-nav > .active > a:focus {\n  color: #555;\n  background-color: #e7e7e7;\n}\n.navbar-default .navbar-nav > .disabled > a,\n.navbar-default .navbar-nav > .disabled > a:hover,\n.navbar-default .navbar-nav > .disabled > a:focus {\n  color: #ccc;\n  background-color: transparent;\n}\n.navbar-default .navbar-toggle {\n  border-color: #ddd;\n}\n.navbar-default .navbar-toggle:hover,\n.navbar-default .navbar-toggle:focus {\n  background-color: #ddd;\n}\n.navbar-default .navbar-toggle .icon-bar {\n  background-color: #888;\n}\n.navbar-default .navbar-collapse,\n.navbar-default .navbar-form {\n  border-color: #e7e7e7;\n}\n.navbar-default .navbar-nav > .open > a,\n.navbar-default .navbar-nav > .open > a:hover,\n.navbar-default .navbar-nav > .open > a:focus {\n  color: #555;\n  background-color: #e7e7e7;\n}\n@media (max-width: 767px) {\n  .navbar-default .navbar-nav .open .dropdown-menu > li > a {\n    color: #777;\n  }\n  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,\n  .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {\n    color: #333;\n    background-color: transparent;\n  }\n  .navbar-default .navbar-nav .open .dropdown-menu > .active > a,\n  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,\n  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {\n    color: #555;\n    background-color: #e7e7e7;\n  }\n  .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a,\n  .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:hover,\n  .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:focus {\n    color: #ccc;\n    background-color: transparent;\n  }\n}\n.navbar-default .navbar-link {\n  color: #777;\n}\n.navbar-default .navbar-link:hover {\n  color: #333;\n}\n.navbar-default .btn-link {\n  color: #777;\n}\n.navbar-default .btn-link:hover,\n.navbar-default .btn-link:focus {\n  color: #333;\n}\n.navbar-default .btn-link[disabled]:hover,\nfieldset[disabled] .navbar-default .btn-link:hover,\n.navbar-default .btn-link[disabled]:focus,\nfieldset[disabled] .navbar-default .btn-link:focus {\n  color: #ccc;\n}\n.navbar-inverse {\n  background-color: #222;\n  border-color: #080808;\n}\n.navbar-inverse .navbar-brand {\n  color: #9d9d9d;\n}\n.navbar-inverse .navbar-brand:hover,\n.navbar-inverse .navbar-brand:focus {\n  color: #fff;\n  background-color: transparent;\n}\n.navbar-inverse .navbar-text {\n  color: #9d9d9d;\n}\n.navbar-inverse .navbar-nav > li > a {\n  color: #9d9d9d;\n}\n.navbar-inverse .navbar-nav > li > a:hover,\n.navbar-inverse .navbar-nav > li > a:focus {\n  color: #fff;\n  background-color: transparent;\n}\n.navbar-inverse .navbar-nav > .active > a,\n.navbar-inverse .navbar-nav > .active > a:hover,\n.navbar-inverse .navbar-nav > .active > a:focus {\n  color: #fff;\n  background-color: #080808;\n}\n.navbar-inverse .navbar-nav > .disabled > a,\n.navbar-inverse .navbar-nav > .disabled > a:hover,\n.navbar-inverse .navbar-nav > .disabled > a:focus {\n  color: #444;\n  background-color: transparent;\n}\n.navbar-inverse .navbar-toggle {\n  border-color: #333;\n}\n.navbar-inverse .navbar-toggle:hover,\n.navbar-inverse .navbar-toggle:focus {\n  background-color: #333;\n}\n.navbar-inverse .navbar-toggle .icon-bar {\n  background-color: #fff;\n}\n.navbar-inverse .navbar-collapse,\n.navbar-inverse .navbar-form {\n  border-color: #101010;\n}\n.navbar-inverse .navbar-nav > .open > a,\n.navbar-inverse .navbar-nav > .open > a:hover,\n.navbar-inverse .navbar-nav > .open > a:focus {\n  color: #fff;\n  background-color: #080808;\n}\n@media (max-width: 767px) {\n  .navbar-inverse .navbar-nav .open .dropdown-menu > .dropdown-header {\n    border-color: #080808;\n  }\n  .navbar-inverse .navbar-nav .open .dropdown-menu .divider {\n    background-color: #080808;\n  }\n  .navbar-inverse .navbar-nav .open .dropdown-menu > li > a {\n    color: #9d9d9d;\n  }\n  .navbar-inverse .navbar-nav .open .dropdown-menu > li > a:hover,\n  .navbar-inverse .navbar-nav .open .dropdown-menu > li > a:focus {\n    color: #fff;\n    background-color: transparent;\n  }\n  .navbar-inverse .navbar-nav .open .dropdown-menu > .active > a,\n  .navbar-inverse .navbar-nav .open .dropdown-menu > .active > a:hover,\n  .navbar-inverse .navbar-nav .open .dropdown-menu > .active > a:focus {\n    color: #fff;\n    background-color: #080808;\n  }\n  .navbar-inverse .navbar-nav .open .dropdown-menu > .disabled > a,\n  .navbar-inverse .navbar-nav .open .dropdown-menu > .disabled > a:hover,\n  .navbar-inverse .navbar-nav .open .dropdown-menu > .disabled > a:focus {\n    color: #444;\n    background-color: transparent;\n  }\n}\n.navbar-inverse .navbar-link {\n  color: #9d9d9d;\n}\n.navbar-inverse .navbar-link:hover {\n  color: #fff;\n}\n.navbar-inverse .btn-link {\n  color: #9d9d9d;\n}\n.navbar-inverse .btn-link:hover,\n.navbar-inverse .btn-link:focus {\n  color: #fff;\n}\n.navbar-inverse .btn-link[disabled]:hover,\nfieldset[disabled] .navbar-inverse .btn-link:hover,\n.navbar-inverse .btn-link[disabled]:focus,\nfieldset[disabled] .navbar-inverse .btn-link:focus {\n  color: #444;\n}\n.breadcrumb {\n  padding: 8px 15px;\n  margin-bottom: 20px;\n  list-style: none;\n  background-color: #f5f5f5;\n  border-radius: 4px;\n}\n.breadcrumb > li {\n  display: inline-block;\n}\n.breadcrumb > li + li:before {\n  padding: 0 5px;\n  color: #ccc;\n  content: \"/\\A0\";\n}\n.breadcrumb > .active {\n  color: #777;\n}\n.pagination {\n  display: inline-block;\n  padding-left: 0;\n  margin: 20px 0;\n  border-radius: 4px;\n}\n.pagination > li {\n  display: inline;\n}\n.pagination > li > a,\n.pagination > li > span {\n  position: relative;\n  float: left;\n  padding: 6px 12px;\n  margin-left: -1px;\n  line-height: 1.42857143;\n  color: #337ab7;\n  text-decoration: none;\n  background-color: #fff;\n  border: 1px solid #ddd;\n}\n.pagination > li:first-child > a,\n.pagination > li:first-child > span {\n  margin-left: 0;\n  border-top-left-radius: 4px;\n  border-bottom-left-radius: 4px;\n}\n.pagination > li:last-child > a,\n.pagination > li:last-child > span {\n  border-top-right-radius: 4px;\n  border-bottom-right-radius: 4px;\n}\n.pagination > li > a:hover,\n.pagination > li > span:hover,\n.pagination > li > a:focus,\n.pagination > li > span:focus {\n  z-index: 2;\n  color: #23527c;\n  background-color: #eee;\n  border-color: #ddd;\n}\n.pagination > .active > a,\n.pagination > .active > span,\n.pagination > .active > a:hover,\n.pagination > .active > span:hover,\n.pagination > .active > a:focus,\n.pagination > .active > span:focus {\n  z-index: 3;\n  color: #fff;\n  cursor: default;\n  background-color: #337ab7;\n  border-color: #337ab7;\n}\n.pagination > .disabled > span,\n.pagination > .disabled > span:hover,\n.pagination > .disabled > span:focus,\n.pagination > .disabled > a,\n.pagination > .disabled > a:hover,\n.pagination > .disabled > a:focus {\n  color: #777;\n  cursor: not-allowed;\n  background-color: #fff;\n  border-color: #ddd;\n}\n.pagination-lg > li > a,\n.pagination-lg > li > span {\n  padding: 10px 16px;\n  font-size: 18px;\n  line-height: 1.3333333;\n}\n.pagination-lg > li:first-child > a,\n.pagination-lg > li:first-child > span {\n  border-top-left-radius: 6px;\n  border-bottom-left-radius: 6px;\n}\n.pagination-lg > li:last-child > a,\n.pagination-lg > li:last-child > span {\n  border-top-right-radius: 6px;\n  border-bottom-right-radius: 6px;\n}\n.pagination-sm > li > a,\n.pagination-sm > li > span {\n  padding: 5px 10px;\n  font-size: 12px;\n  line-height: 1.5;\n}\n.pagination-sm > li:first-child > a,\n.pagination-sm > li:first-child > span {\n  border-top-left-radius: 3px;\n  border-bottom-left-radius: 3px;\n}\n.pagination-sm > li:last-child > a,\n.pagination-sm > li:last-child > span {\n  border-top-right-radius: 3px;\n  border-bottom-right-radius: 3px;\n}\n.pager {\n  padding-left: 0;\n  margin: 20px 0;\n  text-align: center;\n  list-style: none;\n}\n.pager li {\n  display: inline;\n}\n.pager li > a,\n.pager li > span {\n  display: inline-block;\n  padding: 5px 14px;\n  background-color: #fff;\n  border: 1px solid #ddd;\n  border-radius: 15px;\n}\n.pager li > a:hover,\n.pager li > a:focus {\n  text-decoration: none;\n  background-color: #eee;\n}\n.pager .next > a,\n.pager .next > span {\n  float: right;\n}\n.pager .previous > a,\n.pager .previous > span {\n  float: left;\n}\n.pager .disabled > a,\n.pager .disabled > a:hover,\n.pager .disabled > a:focus,\n.pager .disabled > span {\n  color: #777;\n  cursor: not-allowed;\n  background-color: #fff;\n}\n.label {\n  display: inline;\n  padding: .2em .6em .3em;\n  font-size: 75%;\n  font-weight: bold;\n  line-height: 1;\n  color: #fff;\n  text-align: center;\n  white-space: nowrap;\n  vertical-align: baseline;\n  border-radius: .25em;\n}\na.label:hover,\na.label:focus {\n  color: #fff;\n  text-decoration: none;\n  cursor: pointer;\n}\n.label:empty {\n  display: none;\n}\n.btn .label {\n  position: relative;\n  top: -1px;\n}\n.label-default {\n  background-color: #777;\n}\n.label-default[href]:hover,\n.label-default[href]:focus {\n  background-color: #5e5e5e;\n}\n.label-primary {\n  background-color: #337ab7;\n}\n.label-primary[href]:hover,\n.label-primary[href]:focus {\n  background-color: #286090;\n}\n.label-success {\n  background-color: #5cb85c;\n}\n.label-success[href]:hover,\n.label-success[href]:focus {\n  background-color: #449d44;\n}\n.label-info {\n  background-color: #5bc0de;\n}\n.label-info[href]:hover,\n.label-info[href]:focus {\n  background-color: #31b0d5;\n}\n.label-warning {\n  background-color: #f0ad4e;\n}\n.label-warning[href]:hover,\n.label-warning[href]:focus {\n  background-color: #ec971f;\n}\n.label-danger {\n  background-color: #d9534f;\n}\n.label-danger[href]:hover,\n.label-danger[href]:focus {\n  background-color: #c9302c;\n}\n.badge {\n  display: inline-block;\n  min-width: 10px;\n  padding: 3px 7px;\n  font-size: 12px;\n  font-weight: bold;\n  line-height: 1;\n  color: #fff;\n  text-align: center;\n  white-space: nowrap;\n  vertical-align: middle;\n  background-color: #777;\n  border-radius: 10px;\n}\n.badge:empty {\n  display: none;\n}\n.btn .badge {\n  position: relative;\n  top: -1px;\n}\n.btn-xs .badge,\n.btn-group-xs > .btn .badge {\n  top: 0;\n  padding: 1px 5px;\n}\na.badge:hover,\na.badge:focus {\n  color: #fff;\n  text-decoration: none;\n  cursor: pointer;\n}\n.list-group-item.active > .badge,\n.nav-pills > .active > a > .badge {\n  color: #337ab7;\n  background-color: #fff;\n}\n.list-group-item > .badge {\n  float: right;\n}\n.list-group-item > .badge + .badge {\n  margin-right: 5px;\n}\n.nav-pills > li > a > .badge {\n  margin-left: 3px;\n}\n.jumbotron {\n  padding-top: 30px;\n  padding-bottom: 30px;\n  margin-bottom: 30px;\n  color: inherit;\n  background-color: #eee;\n}\n.jumbotron h1,\n.jumbotron .h1 {\n  color: inherit;\n}\n.jumbotron p {\n  margin-bottom: 15px;\n  font-size: 21px;\n  font-weight: 200;\n}\n.jumbotron > hr {\n  border-top-color: #d5d5d5;\n}\n.container .jumbotron,\n.container-fluid .jumbotron {\n  padding-right: 15px;\n  padding-left: 15px;\n  border-radius: 6px;\n}\n.jumbotron .container {\n  max-width: 100%;\n}\n@media screen and (min-width: 768px) {\n  .jumbotron {\n    padding-top: 48px;\n    padding-bottom: 48px;\n  }\n  .container .jumbotron,\n  .container-fluid .jumbotron {\n    padding-right: 60px;\n    padding-left: 60px;\n  }\n  .jumbotron h1,\n  .jumbotron .h1 {\n    font-size: 63px;\n  }\n}\n.thumbnail {\n  display: block;\n  padding: 4px;\n  margin-bottom: 20px;\n  line-height: 1.42857143;\n  background-color: #fff;\n  border: 1px solid #ddd;\n  border-radius: 4px;\n  -webkit-transition: border .2s ease-in-out;\n       -o-transition: border .2s ease-in-out;\n          transition: border .2s ease-in-out;\n}\n.thumbnail > img,\n.thumbnail a > img {\n  margin-right: auto;\n  margin-left: auto;\n}\na.thumbnail:hover,\na.thumbnail:focus,\na.thumbnail.active {\n  border-color: #337ab7;\n}\n.thumbnail .caption {\n  padding: 9px;\n  color: #333;\n}\n.alert {\n  padding: 15px;\n  margin-bottom: 20px;\n  border: 1px solid transparent;\n  border-radius: 4px;\n}\n.alert h4 {\n  margin-top: 0;\n  color: inherit;\n}\n.alert .alert-link {\n  font-weight: bold;\n}\n.alert > p,\n.alert > ul {\n  margin-bottom: 0;\n}\n.alert > p + p {\n  margin-top: 5px;\n}\n.alert-dismissable,\n.alert-dismissible {\n  padding-right: 35px;\n}\n.alert-dismissable .close,\n.alert-dismissible .close {\n  position: relative;\n  top: -2px;\n  right: -21px;\n  color: inherit;\n}\n.alert-success {\n  color: #3c763d;\n  background-color: #dff0d8;\n  border-color: #d6e9c6;\n}\n.alert-success hr {\n  border-top-color: #c9e2b3;\n}\n.alert-success .alert-link {\n  color: #2b542c;\n}\n.alert-info {\n  color: #31708f;\n  background-color: #d9edf7;\n  border-color: #bce8f1;\n}\n.alert-info hr {\n  border-top-color: #a6e1ec;\n}\n.alert-info .alert-link {\n  color: #245269;\n}\n.alert-warning {\n  color: #8a6d3b;\n  background-color: #fcf8e3;\n  border-color: #faebcc;\n}\n.alert-warning hr {\n  border-top-color: #f7e1b5;\n}\n.alert-warning .alert-link {\n  color: #66512c;\n}\n.alert-danger {\n  color: #a94442;\n  background-color: #f2dede;\n  border-color: #ebccd1;\n}\n.alert-danger hr {\n  border-top-color: #e4b9c0;\n}\n.alert-danger .alert-link {\n  color: #843534;\n}\n@-webkit-keyframes progress-bar-stripes {\n  from {\n    background-position: 40px 0;\n  }\n  to {\n    background-position: 0 0;\n  }\n}\n@-o-keyframes progress-bar-stripes {\n  from {\n    background-position: 40px 0;\n  }\n  to {\n    background-position: 0 0;\n  }\n}\n@keyframes progress-bar-stripes {\n  from {\n    background-position: 40px 0;\n  }\n  to {\n    background-position: 0 0;\n  }\n}\n.progress {\n  height: 20px;\n  margin-bottom: 20px;\n  overflow: hidden;\n  background-color: #f5f5f5;\n  border-radius: 4px;\n  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);\n          box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);\n}\n.progress-bar {\n  float: left;\n  width: 0;\n  height: 100%;\n  font-size: 12px;\n  line-height: 20px;\n  color: #fff;\n  text-align: center;\n  background-color: #337ab7;\n  -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);\n          box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);\n  -webkit-transition: width .6s ease;\n       -o-transition: width .6s ease;\n          transition: width .6s ease;\n}\n.progress-striped .progress-bar,\n.progress-bar-striped {\n  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);\n  background-image:      -o-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);\n  background-image:         linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);\n  -webkit-background-size: 40px 40px;\n          background-size: 40px 40px;\n}\n.progress.active .progress-bar,\n.progress-bar.active {\n  -webkit-animation: progress-bar-stripes 2s linear infinite;\n       -o-animation: progress-bar-stripes 2s linear infinite;\n          animation: progress-bar-stripes 2s linear infinite;\n}\n.progress-bar-success {\n  background-color: #5cb85c;\n}\n.progress-striped .progress-bar-success {\n  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);\n  background-image:      -o-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);\n  background-image:         linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);\n}\n.progress-bar-info {\n  background-color: #5bc0de;\n}\n.progress-striped .progress-bar-info {\n  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);\n  background-image:      -o-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);\n  background-image:         linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);\n}\n.progress-bar-warning {\n  background-color: #f0ad4e;\n}\n.progress-striped .progress-bar-warning {\n  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);\n  background-image:      -o-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);\n  background-image:         linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);\n}\n.progress-bar-danger {\n  background-color: #d9534f;\n}\n.progress-striped .progress-bar-danger {\n  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);\n  background-image:      -o-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);\n  background-image:         linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);\n}\n.media {\n  margin-top: 15px;\n}\n.media:first-child {\n  margin-top: 0;\n}\n.media,\n.media-body {\n  overflow: hidden;\n  zoom: 1;\n}\n.media-body {\n  width: 10000px;\n}\n.media-object {\n  display: block;\n}\n.media-object.img-thumbnail {\n  max-width: none;\n}\n.media-right,\n.media > .pull-right {\n  padding-left: 10px;\n}\n.media-left,\n.media > .pull-left {\n  padding-right: 10px;\n}\n.media-left,\n.media-right,\n.media-body {\n  display: table-cell;\n  vertical-align: top;\n}\n.media-middle {\n  vertical-align: middle;\n}\n.media-bottom {\n  vertical-align: bottom;\n}\n.media-heading {\n  margin-top: 0;\n  margin-bottom: 5px;\n}\n.media-list {\n  padding-left: 0;\n  list-style: none;\n}\n.list-group {\n  padding-left: 0;\n  margin-bottom: 20px;\n}\n.list-group-item {\n  position: relative;\n  display: block;\n  padding: 10px 15px;\n  margin-bottom: -1px;\n  background-color: #fff;\n  border: 1px solid #ddd;\n}\n.list-group-item:first-child {\n  border-top-left-radius: 4px;\n  border-top-right-radius: 4px;\n}\n.list-group-item:last-child {\n  margin-bottom: 0;\n  border-bottom-right-radius: 4px;\n  border-bottom-left-radius: 4px;\n}\na.list-group-item,\nbutton.list-group-item {\n  color: #555;\n}\na.list-group-item .list-group-item-heading,\nbutton.list-group-item .list-group-item-heading {\n  color: #333;\n}\na.list-group-item:hover,\nbutton.list-group-item:hover,\na.list-group-item:focus,\nbutton.list-group-item:focus {\n  color: #555;\n  text-decoration: none;\n  background-color: #f5f5f5;\n}\nbutton.list-group-item {\n  width: 100%;\n  text-align: left;\n}\n.list-group-item.disabled,\n.list-group-item.disabled:hover,\n.list-group-item.disabled:focus {\n  color: #777;\n  cursor: not-allowed;\n  background-color: #eee;\n}\n.list-group-item.disabled .list-group-item-heading,\n.list-group-item.disabled:hover .list-group-item-heading,\n.list-group-item.disabled:focus .list-group-item-heading {\n  color: inherit;\n}\n.list-group-item.disabled .list-group-item-text,\n.list-group-item.disabled:hover .list-group-item-text,\n.list-group-item.disabled:focus .list-group-item-text {\n  color: #777;\n}\n.list-group-item.active,\n.list-group-item.active:hover,\n.list-group-item.active:focus {\n  z-index: 2;\n  color: #fff;\n  background-color: #337ab7;\n  border-color: #337ab7;\n}\n.list-group-item.active .list-group-item-heading,\n.list-group-item.active:hover .list-group-item-heading,\n.list-group-item.active:focus .list-group-item-heading,\n.list-group-item.active .list-group-item-heading > small,\n.list-group-item.active:hover .list-group-item-heading > small,\n.list-group-item.active:focus .list-group-item-heading > small,\n.list-group-item.active .list-group-item-heading > .small,\n.list-group-item.active:hover .list-group-item-heading > .small,\n.list-group-item.active:focus .list-group-item-heading > .small {\n  color: inherit;\n}\n.list-group-item.active .list-group-item-text,\n.list-group-item.active:hover .list-group-item-text,\n.list-group-item.active:focus .list-group-item-text {\n  color: #c7ddef;\n}\n.list-group-item-success {\n  color: #3c763d;\n  background-color: #dff0d8;\n}\na.list-group-item-success,\nbutton.list-group-item-success {\n  color: #3c763d;\n}\na.list-group-item-success .list-group-item-heading,\nbutton.list-group-item-success .list-group-item-heading {\n  color: inherit;\n}\na.list-group-item-success:hover,\nbutton.list-group-item-success:hover,\na.list-group-item-success:focus,\nbutton.list-group-item-success:focus {\n  color: #3c763d;\n  background-color: #d0e9c6;\n}\na.list-group-item-success.active,\nbutton.list-group-item-success.active,\na.list-group-item-success.active:hover,\nbutton.list-group-item-success.active:hover,\na.list-group-item-success.active:focus,\nbutton.list-group-item-success.active:focus {\n  color: #fff;\n  background-color: #3c763d;\n  border-color: #3c763d;\n}\n.list-group-item-info {\n  color: #31708f;\n  background-color: #d9edf7;\n}\na.list-group-item-info,\nbutton.list-group-item-info {\n  color: #31708f;\n}\na.list-group-item-info .list-group-item-heading,\nbutton.list-group-item-info .list-group-item-heading {\n  color: inherit;\n}\na.list-group-item-info:hover,\nbutton.list-group-item-info:hover,\na.list-group-item-info:focus,\nbutton.list-group-item-info:focus {\n  color: #31708f;\n  background-color: #c4e3f3;\n}\na.list-group-item-info.active,\nbutton.list-group-item-info.active,\na.list-group-item-info.active:hover,\nbutton.list-group-item-info.active:hover,\na.list-group-item-info.active:focus,\nbutton.list-group-item-info.active:focus {\n  color: #fff;\n  background-color: #31708f;\n  border-color: #31708f;\n}\n.list-group-item-warning {\n  color: #8a6d3b;\n  background-color: #fcf8e3;\n}\na.list-group-item-warning,\nbutton.list-group-item-warning {\n  color: #8a6d3b;\n}\na.list-group-item-warning .list-group-item-heading,\nbutton.list-group-item-warning .list-group-item-heading {\n  color: inherit;\n}\na.list-group-item-warning:hover,\nbutton.list-group-item-warning:hover,\na.list-group-item-warning:focus,\nbutton.list-group-item-warning:focus {\n  color: #8a6d3b;\n  background-color: #faf2cc;\n}\na.list-group-item-warning.active,\nbutton.list-group-item-warning.active,\na.list-group-item-warning.active:hover,\nbutton.list-group-item-warning.active:hover,\na.list-group-item-warning.active:focus,\nbutton.list-group-item-warning.active:focus {\n  color: #fff;\n  background-color: #8a6d3b;\n  border-color: #8a6d3b;\n}\n.list-group-item-danger {\n  color: #a94442;\n  background-color: #f2dede;\n}\na.list-group-item-danger,\nbutton.list-group-item-danger {\n  color: #a94442;\n}\na.list-group-item-danger .list-group-item-heading,\nbutton.list-group-item-danger .list-group-item-heading {\n  color: inherit;\n}\na.list-group-item-danger:hover,\nbutton.list-group-item-danger:hover,\na.list-group-item-danger:focus,\nbutton.list-group-item-danger:focus {\n  color: #a94442;\n  background-color: #ebcccc;\n}\na.list-group-item-danger.active,\nbutton.list-group-item-danger.active,\na.list-group-item-danger.active:hover,\nbutton.list-group-item-danger.active:hover,\na.list-group-item-danger.active:focus,\nbutton.list-group-item-danger.active:focus {\n  color: #fff;\n  background-color: #a94442;\n  border-color: #a94442;\n}\n.list-group-item-heading {\n  margin-top: 0;\n  margin-bottom: 5px;\n}\n.list-group-item-text {\n  margin-bottom: 0;\n  line-height: 1.3;\n}\n.panel {\n  margin-bottom: 20px;\n  background-color: #fff;\n  border: 1px solid transparent;\n  border-radius: 4px;\n  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);\n          box-shadow: 0 1px 1px rgba(0, 0, 0, .05);\n}\n.panel-body {\n  padding: 15px;\n}\n.panel-heading {\n  padding: 10px 15px;\n  border-bottom: 1px solid transparent;\n  border-top-left-radius: 3px;\n  border-top-right-radius: 3px;\n}\n.panel-heading > .dropdown .dropdown-toggle {\n  color: inherit;\n}\n.panel-title {\n  margin-top: 0;\n  margin-bottom: 0;\n  font-size: 16px;\n  color: inherit;\n}\n.panel-title > a,\n.panel-title > small,\n.panel-title > .small,\n.panel-title > small > a,\n.panel-title > .small > a {\n  color: inherit;\n}\n.panel-footer {\n  padding: 10px 15px;\n  background-color: #f5f5f5;\n  border-top: 1px solid #ddd;\n  border-bottom-right-radius: 3px;\n  border-bottom-left-radius: 3px;\n}\n.panel > .list-group,\n.panel > .panel-collapse > .list-group {\n  margin-bottom: 0;\n}\n.panel > .list-group .list-group-item,\n.panel > .panel-collapse > .list-group .list-group-item {\n  border-width: 1px 0;\n  border-radius: 0;\n}\n.panel > .list-group:first-child .list-group-item:first-child,\n.panel > .panel-collapse > .list-group:first-child .list-group-item:first-child {\n  border-top: 0;\n  border-top-left-radius: 3px;\n  border-top-right-radius: 3px;\n}\n.panel > .list-group:last-child .list-group-item:last-child,\n.panel > .panel-collapse > .list-group:last-child .list-group-item:last-child {\n  border-bottom: 0;\n  border-bottom-right-radius: 3px;\n  border-bottom-left-radius: 3px;\n}\n.panel > .panel-heading + .panel-collapse > .list-group .list-group-item:first-child {\n  border-top-left-radius: 0;\n  border-top-right-radius: 0;\n}\n.panel-heading + .list-group .list-group-item:first-child {\n  border-top-width: 0;\n}\n.list-group + .panel-footer {\n  border-top-width: 0;\n}\n.panel > .table,\n.panel > .table-responsive > .table,\n.panel > .panel-collapse > .table {\n  margin-bottom: 0;\n}\n.panel > .table caption,\n.panel > .table-responsive > .table caption,\n.panel > .panel-collapse > .table caption {\n  padding-right: 15px;\n  padding-left: 15px;\n}\n.panel > .table:first-child,\n.panel > .table-responsive:first-child > .table:first-child {\n  border-top-left-radius: 3px;\n  border-top-right-radius: 3px;\n}\n.panel > .table:first-child > thead:first-child > tr:first-child,\n.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child,\n.panel > .table:first-child > tbody:first-child > tr:first-child,\n.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child {\n  border-top-left-radius: 3px;\n  border-top-right-radius: 3px;\n}\n.panel > .table:first-child > thead:first-child > tr:first-child td:first-child,\n.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child td:first-child,\n.panel > .table:first-child > tbody:first-child > tr:first-child td:first-child,\n.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child td:first-child,\n.panel > .table:first-child > thead:first-child > tr:first-child th:first-child,\n.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child th:first-child,\n.panel > .table:first-child > tbody:first-child > tr:first-child th:first-child,\n.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child th:first-child {\n  border-top-left-radius: 3px;\n}\n.panel > .table:first-child > thead:first-child > tr:first-child td:last-child,\n.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child td:last-child,\n.panel > .table:first-child > tbody:first-child > tr:first-child td:last-child,\n.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child td:last-child,\n.panel > .table:first-child > thead:first-child > tr:first-child th:last-child,\n.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child th:last-child,\n.panel > .table:first-child > tbody:first-child > tr:first-child th:last-child,\n.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child th:last-child {\n  border-top-right-radius: 3px;\n}\n.panel > .table:last-child,\n.panel > .table-responsive:last-child > .table:last-child {\n  border-bottom-right-radius: 3px;\n  border-bottom-left-radius: 3px;\n}\n.panel > .table:last-child > tbody:last-child > tr:last-child,\n.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child,\n.panel > .table:last-child > tfoot:last-child > tr:last-child,\n.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child {\n  border-bottom-right-radius: 3px;\n  border-bottom-left-radius: 3px;\n}\n.panel > .table:last-child > tbody:last-child > tr:last-child td:first-child,\n.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child td:first-child,\n.panel > .table:last-child > tfoot:last-child > tr:last-child td:first-child,\n.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child td:first-child,\n.panel > .table:last-child > tbody:last-child > tr:last-child th:first-child,\n.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child th:first-child,\n.panel > .table:last-child > tfoot:last-child > tr:last-child th:first-child,\n.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child th:first-child {\n  border-bottom-left-radius: 3px;\n}\n.panel > .table:last-child > tbody:last-child > tr:last-child td:last-child,\n.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child td:last-child,\n.panel > .table:last-child > tfoot:last-child > tr:last-child td:last-child,\n.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child td:last-child,\n.panel > .table:last-child > tbody:last-child > tr:last-child th:last-child,\n.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child th:last-child,\n.panel > .table:last-child > tfoot:last-child > tr:last-child th:last-child,\n.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child th:last-child {\n  border-bottom-right-radius: 3px;\n}\n.panel > .panel-body + .table,\n.panel > .panel-body + .table-responsive,\n.panel > .table + .panel-body,\n.panel > .table-responsive + .panel-body {\n  border-top: 1px solid #ddd;\n}\n.panel > .table > tbody:first-child > tr:first-child th,\n.panel > .table > tbody:first-child > tr:first-child td {\n  border-top: 0;\n}\n.panel > .table-bordered,\n.panel > .table-responsive > .table-bordered {\n  border: 0;\n}\n.panel > .table-bordered > thead > tr > th:first-child,\n.panel > .table-responsive > .table-bordered > thead > tr > th:first-child,\n.panel > .table-bordered > tbody > tr > th:first-child,\n.panel > .table-responsive > .table-bordered > tbody > tr > th:first-child,\n.panel > .table-bordered > tfoot > tr > th:first-child,\n.panel > .table-responsive > .table-bordered > tfoot > tr > th:first-child,\n.panel > .table-bordered > thead > tr > td:first-child,\n.panel > .table-responsive > .table-bordered > thead > tr > td:first-child,\n.panel > .table-bordered > tbody > tr > td:first-child,\n.panel > .table-responsive > .table-bordered > tbody > tr > td:first-child,\n.panel > .table-bordered > tfoot > tr > td:first-child,\n.panel > .table-responsive > .table-bordered > tfoot > tr > td:first-child {\n  border-left: 0;\n}\n.panel > .table-bordered > thead > tr > th:last-child,\n.panel > .table-responsive > .table-bordered > thead > tr > th:last-child,\n.panel > .table-bordered > tbody > tr > th:last-child,\n.panel > .table-responsive > .table-bordered > tbody > tr > th:last-child,\n.panel > .table-bordered > tfoot > tr > th:last-child,\n.panel > .table-responsive > .table-bordered > tfoot > tr > th:last-child,\n.panel > .table-bordered > thead > tr > td:last-child,\n.panel > .table-responsive > .table-bordered > thead > tr > td:last-child,\n.panel > .table-bordered > tbody > tr > td:last-child,\n.panel > .table-responsive > .table-bordered > tbody > tr > td:last-child,\n.panel > .table-bordered > tfoot > tr > td:last-child,\n.panel > .table-responsive > .table-bordered > tfoot > tr > td:last-child {\n  border-right: 0;\n}\n.panel > .table-bordered > thead > tr:first-child > td,\n.panel > .table-responsive > .table-bordered > thead > tr:first-child > td,\n.panel > .table-bordered > tbody > tr:first-child > td,\n.panel > .table-responsive > .table-bordered > tbody > tr:first-child > td,\n.panel > .table-bordered > thead > tr:first-child > th,\n.panel > .table-responsive > .table-bordered > thead > tr:first-child > th,\n.panel > .table-bordered > tbody > tr:first-child > th,\n.panel > .table-responsive > .table-bordered > tbody > tr:first-child > th {\n  border-bottom: 0;\n}\n.panel > .table-bordered > tbody > tr:last-child > td,\n.panel > .table-responsive > .table-bordered > tbody > tr:last-child > td,\n.panel > .table-bordered > tfoot > tr:last-child > td,\n.panel > .table-responsive > .table-bordered > tfoot > tr:last-child > td,\n.panel > .table-bordered > tbody > tr:last-child > th,\n.panel > .table-responsive > .table-bordered > tbody > tr:last-child > th,\n.panel > .table-bordered > tfoot > tr:last-child > th,\n.panel > .table-responsive > .table-bordered > tfoot > tr:last-child > th {\n  border-bottom: 0;\n}\n.panel > .table-responsive {\n  margin-bottom: 0;\n  border: 0;\n}\n.panel-group {\n  margin-bottom: 20px;\n}\n.panel-group .panel {\n  margin-bottom: 0;\n  border-radius: 4px;\n}\n.panel-group .panel + .panel {\n  margin-top: 5px;\n}\n.panel-group .panel-heading {\n  border-bottom: 0;\n}\n.panel-group .panel-heading + .panel-collapse > .panel-body,\n.panel-group .panel-heading + .panel-collapse > .list-group {\n  border-top: 1px solid #ddd;\n}\n.panel-group .panel-footer {\n  border-top: 0;\n}\n.panel-group .panel-footer + .panel-collapse .panel-body {\n  border-bottom: 1px solid #ddd;\n}\n.panel-default {\n  border-color: #ddd;\n}\n.panel-default > .panel-heading {\n  color: #333;\n  background-color: #f5f5f5;\n  border-color: #ddd;\n}\n.panel-default > .panel-heading + .panel-collapse > .panel-body {\n  border-top-color: #ddd;\n}\n.panel-default > .panel-heading .badge {\n  color: #f5f5f5;\n  background-color: #333;\n}\n.panel-default > .panel-footer + .panel-collapse > .panel-body {\n  border-bottom-color: #ddd;\n}\n.panel-primary {\n  border-color: #337ab7;\n}\n.panel-primary > .panel-heading {\n  color: #fff;\n  background-color: #337ab7;\n  border-color: #337ab7;\n}\n.panel-primary > .panel-heading + .panel-collapse > .panel-body {\n  border-top-color: #337ab7;\n}\n.panel-primary > .panel-heading .badge {\n  color: #337ab7;\n  background-color: #fff;\n}\n.panel-primary > .panel-footer + .panel-collapse > .panel-body {\n  border-bottom-color: #337ab7;\n}\n.panel-success {\n  border-color: #d6e9c6;\n}\n.panel-success > .panel-heading {\n  color: #3c763d;\n  background-color: #dff0d8;\n  border-color: #d6e9c6;\n}\n.panel-success > .panel-heading + .panel-collapse > .panel-body {\n  border-top-color: #d6e9c6;\n}\n.panel-success > .panel-heading .badge {\n  color: #dff0d8;\n  background-color: #3c763d;\n}\n.panel-success > .panel-footer + .panel-collapse > .panel-body {\n  border-bottom-color: #d6e9c6;\n}\n.panel-info {\n  border-color: #bce8f1;\n}\n.panel-info > .panel-heading {\n  color: #31708f;\n  background-color: #d9edf7;\n  border-color: #bce8f1;\n}\n.panel-info > .panel-heading + .panel-collapse > .panel-body {\n  border-top-color: #bce8f1;\n}\n.panel-info > .panel-heading .badge {\n  color: #d9edf7;\n  background-color: #31708f;\n}\n.panel-info > .panel-footer + .panel-collapse > .panel-body {\n  border-bottom-color: #bce8f1;\n}\n.panel-warning {\n  border-color: #faebcc;\n}\n.panel-warning > .panel-heading {\n  color: #8a6d3b;\n  background-color: #fcf8e3;\n  border-color: #faebcc;\n}\n.panel-warning > .panel-heading + .panel-collapse > .panel-body {\n  border-top-color: #faebcc;\n}\n.panel-warning > .panel-heading .badge {\n  color: #fcf8e3;\n  background-color: #8a6d3b;\n}\n.panel-warning > .panel-footer + .panel-collapse > .panel-body {\n  border-bottom-color: #faebcc;\n}\n.panel-danger {\n  border-color: #ebccd1;\n}\n.panel-danger > .panel-heading {\n  color: #a94442;\n  background-color: #f2dede;\n  border-color: #ebccd1;\n}\n.panel-danger > .panel-heading + .panel-collapse > .panel-body {\n  border-top-color: #ebccd1;\n}\n.panel-danger > .panel-heading .badge {\n  color: #f2dede;\n  background-color: #a94442;\n}\n.panel-danger > .panel-footer + .panel-collapse > .panel-body {\n  border-bottom-color: #ebccd1;\n}\n.embed-responsive {\n  position: relative;\n  display: block;\n  height: 0;\n  padding: 0;\n  overflow: hidden;\n}\n.embed-responsive .embed-responsive-item,\n.embed-responsive iframe,\n.embed-responsive embed,\n.embed-responsive object,\n.embed-responsive video {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  border: 0;\n}\n.embed-responsive-16by9 {\n  padding-bottom: 56.25%;\n}\n.embed-responsive-4by3 {\n  padding-bottom: 75%;\n}\n.well {\n  min-height: 20px;\n  padding: 19px;\n  margin-bottom: 20px;\n  background-color: #f5f5f5;\n  border: 1px solid #e3e3e3;\n  border-radius: 4px;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);\n}\n.well blockquote {\n  border-color: #ddd;\n  border-color: rgba(0, 0, 0, .15);\n}\n.well-lg {\n  padding: 24px;\n  border-radius: 6px;\n}\n.well-sm {\n  padding: 9px;\n  border-radius: 3px;\n}\n.close {\n  float: right;\n  font-size: 21px;\n  font-weight: bold;\n  line-height: 1;\n  color: #000;\n  text-shadow: 0 1px 0 #fff;\n  filter: alpha(opacity=20);\n  opacity: .2;\n}\n.close:hover,\n.close:focus {\n  color: #000;\n  text-decoration: none;\n  cursor: pointer;\n  filter: alpha(opacity=50);\n  opacity: .5;\n}\nbutton.close {\n  -webkit-appearance: none;\n  padding: 0;\n  cursor: pointer;\n  background: transparent;\n  border: 0;\n}\n.modal-open {\n  overflow: hidden;\n}\n.modal {\n  position: fixed;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n  z-index: 1050;\n  display: none;\n  overflow: hidden;\n  -webkit-overflow-scrolling: touch;\n  outline: 0;\n}\n.modal.fade .modal-dialog {\n  -webkit-transition: -webkit-transform .3s ease-out;\n       -o-transition:      -o-transform .3s ease-out;\n          transition:         transform .3s ease-out;\n  -webkit-transform: translate(0, -25%);\n      -ms-transform: translate(0, -25%);\n       -o-transform: translate(0, -25%);\n          transform: translate(0, -25%);\n}\n.modal.in .modal-dialog {\n  -webkit-transform: translate(0, 0);\n      -ms-transform: translate(0, 0);\n       -o-transform: translate(0, 0);\n          transform: translate(0, 0);\n}\n.modal-open .modal {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\n.modal-dialog {\n  position: relative;\n  width: auto;\n  margin: 10px;\n}\n.modal-content {\n  position: relative;\n  background-color: #fff;\n  -webkit-background-clip: padding-box;\n          background-clip: padding-box;\n  border: 1px solid #999;\n  border: 1px solid rgba(0, 0, 0, .2);\n  border-radius: 6px;\n  outline: 0;\n  -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);\n          box-shadow: 0 3px 9px rgba(0, 0, 0, .5);\n}\n.modal-backdrop {\n  position: fixed;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n  z-index: 1040;\n  background-color: #000;\n}\n.modal-backdrop.fade {\n  filter: alpha(opacity=0);\n  opacity: 0;\n}\n.modal-backdrop.in {\n  filter: alpha(opacity=50);\n  opacity: .5;\n}\n.modal-header {\n  padding: 15px;\n  border-bottom: 1px solid #e5e5e5;\n}\n.modal-header .close {\n  margin-top: -2px;\n}\n.modal-title {\n  margin: 0;\n  line-height: 1.42857143;\n}\n.modal-body {\n  position: relative;\n  padding: 15px;\n}\n.modal-footer {\n  padding: 15px;\n  text-align: right;\n  border-top: 1px solid #e5e5e5;\n}\n.modal-footer .btn + .btn {\n  margin-bottom: 0;\n  margin-left: 5px;\n}\n.modal-footer .btn-group .btn + .btn {\n  margin-left: -1px;\n}\n.modal-footer .btn-block + .btn-block {\n  margin-left: 0;\n}\n.modal-scrollbar-measure {\n  position: absolute;\n  top: -9999px;\n  width: 50px;\n  height: 50px;\n  overflow: scroll;\n}\n@media (min-width: 768px) {\n  .modal-dialog {\n    width: 600px;\n    margin: 30px auto;\n  }\n  .modal-content {\n    -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, .5);\n            box-shadow: 0 5px 15px rgba(0, 0, 0, .5);\n  }\n  .modal-sm {\n    width: 300px;\n  }\n}\n@media (min-width: 992px) {\n  .modal-lg {\n    width: 900px;\n  }\n}\n.tooltip {\n  position: absolute;\n  z-index: 1070;\n  display: block;\n  font-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n  font-size: 12px;\n  font-style: normal;\n  font-weight: normal;\n  line-height: 1.42857143;\n  text-align: left;\n  text-align: start;\n  text-decoration: none;\n  text-shadow: none;\n  text-transform: none;\n  letter-spacing: normal;\n  word-break: normal;\n  word-spacing: normal;\n  word-wrap: normal;\n  white-space: normal;\n  filter: alpha(opacity=0);\n  opacity: 0;\n\n  line-break: auto;\n}\n.tooltip.in {\n  filter: alpha(opacity=90);\n  opacity: .9;\n}\n.tooltip.top {\n  padding: 5px 0;\n  margin-top: -3px;\n}\n.tooltip.right {\n  padding: 0 5px;\n  margin-left: 3px;\n}\n.tooltip.bottom {\n  padding: 5px 0;\n  margin-top: 3px;\n}\n.tooltip.left {\n  padding: 0 5px;\n  margin-left: -3px;\n}\n.tooltip-inner {\n  max-width: 200px;\n  padding: 3px 8px;\n  color: #fff;\n  text-align: center;\n  background-color: #000;\n  border-radius: 4px;\n}\n.tooltip-arrow {\n  position: absolute;\n  width: 0;\n  height: 0;\n  border-color: transparent;\n  border-style: solid;\n}\n.tooltip.top .tooltip-arrow {\n  bottom: 0;\n  left: 50%;\n  margin-left: -5px;\n  border-width: 5px 5px 0;\n  border-top-color: #000;\n}\n.tooltip.top-left .tooltip-arrow {\n  right: 5px;\n  bottom: 0;\n  margin-bottom: -5px;\n  border-width: 5px 5px 0;\n  border-top-color: #000;\n}\n.tooltip.top-right .tooltip-arrow {\n  bottom: 0;\n  left: 5px;\n  margin-bottom: -5px;\n  border-width: 5px 5px 0;\n  border-top-color: #000;\n}\n.tooltip.right .tooltip-arrow {\n  top: 50%;\n  left: 0;\n  margin-top: -5px;\n  border-width: 5px 5px 5px 0;\n  border-right-color: #000;\n}\n.tooltip.left .tooltip-arrow {\n  top: 50%;\n  right: 0;\n  margin-top: -5px;\n  border-width: 5px 0 5px 5px;\n  border-left-color: #000;\n}\n.tooltip.bottom .tooltip-arrow {\n  top: 0;\n  left: 50%;\n  margin-left: -5px;\n  border-width: 0 5px 5px;\n  border-bottom-color: #000;\n}\n.tooltip.bottom-left .tooltip-arrow {\n  top: 0;\n  right: 5px;\n  margin-top: -5px;\n  border-width: 0 5px 5px;\n  border-bottom-color: #000;\n}\n.tooltip.bottom-right .tooltip-arrow {\n  top: 0;\n  left: 5px;\n  margin-top: -5px;\n  border-width: 0 5px 5px;\n  border-bottom-color: #000;\n}\n.popover {\n  position: absolute;\n  top: 0;\n  left: 0;\n  z-index: 1060;\n  display: none;\n  max-width: 276px;\n  padding: 1px;\n  font-family: \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n  font-size: 14px;\n  font-style: normal;\n  font-weight: normal;\n  line-height: 1.42857143;\n  text-align: left;\n  text-align: start;\n  text-decoration: none;\n  text-shadow: none;\n  text-transform: none;\n  letter-spacing: normal;\n  word-break: normal;\n  word-spacing: normal;\n  word-wrap: normal;\n  white-space: normal;\n  background-color: #fff;\n  -webkit-background-clip: padding-box;\n          background-clip: padding-box;\n  border: 1px solid #ccc;\n  border: 1px solid rgba(0, 0, 0, .2);\n  border-radius: 6px;\n  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);\n          box-shadow: 0 5px 10px rgba(0, 0, 0, .2);\n\n  line-break: auto;\n}\n.popover.top {\n  margin-top: -10px;\n}\n.popover.right {\n  margin-left: 10px;\n}\n.popover.bottom {\n  margin-top: 10px;\n}\n.popover.left {\n  margin-left: -10px;\n}\n.popover-title {\n  padding: 8px 14px;\n  margin: 0;\n  font-size: 14px;\n  background-color: #f7f7f7;\n  border-bottom: 1px solid #ebebeb;\n  border-radius: 5px 5px 0 0;\n}\n.popover-content {\n  padding: 9px 14px;\n}\n.popover > .arrow,\n.popover > .arrow:after {\n  position: absolute;\n  display: block;\n  width: 0;\n  height: 0;\n  border-color: transparent;\n  border-style: solid;\n}\n.popover > .arrow {\n  border-width: 11px;\n}\n.popover > .arrow:after {\n  content: \"\";\n  border-width: 10px;\n}\n.popover.top > .arrow {\n  bottom: -11px;\n  left: 50%;\n  margin-left: -11px;\n  border-top-color: #999;\n  border-top-color: rgba(0, 0, 0, .25);\n  border-bottom-width: 0;\n}\n.popover.top > .arrow:after {\n  bottom: 1px;\n  margin-left: -10px;\n  content: \" \";\n  border-top-color: #fff;\n  border-bottom-width: 0;\n}\n.popover.right > .arrow {\n  top: 50%;\n  left: -11px;\n  margin-top: -11px;\n  border-right-color: #999;\n  border-right-color: rgba(0, 0, 0, .25);\n  border-left-width: 0;\n}\n.popover.right > .arrow:after {\n  bottom: -10px;\n  left: 1px;\n  content: \" \";\n  border-right-color: #fff;\n  border-left-width: 0;\n}\n.popover.bottom > .arrow {\n  top: -11px;\n  left: 50%;\n  margin-left: -11px;\n  border-top-width: 0;\n  border-bottom-color: #999;\n  border-bottom-color: rgba(0, 0, 0, .25);\n}\n.popover.bottom > .arrow:after {\n  top: 1px;\n  margin-left: -10px;\n  content: \" \";\n  border-top-width: 0;\n  border-bottom-color: #fff;\n}\n.popover.left > .arrow {\n  top: 50%;\n  right: -11px;\n  margin-top: -11px;\n  border-right-width: 0;\n  border-left-color: #999;\n  border-left-color: rgba(0, 0, 0, .25);\n}\n.popover.left > .arrow:after {\n  right: 1px;\n  bottom: -10px;\n  content: \" \";\n  border-right-width: 0;\n  border-left-color: #fff;\n}\n.carousel {\n  position: relative;\n}\n.carousel-inner {\n  position: relative;\n  width: 100%;\n  overflow: hidden;\n}\n.carousel-inner > .item {\n  position: relative;\n  display: none;\n  -webkit-transition: .6s ease-in-out left;\n       -o-transition: .6s ease-in-out left;\n          transition: .6s ease-in-out left;\n}\n.carousel-inner > .item > img,\n.carousel-inner > .item > a > img {\n  line-height: 1;\n}\n@media all and (transform-3d), (-webkit-transform-3d) {\n  .carousel-inner > .item {\n    -webkit-transition: -webkit-transform .6s ease-in-out;\n         -o-transition:      -o-transform .6s ease-in-out;\n            transition:         transform .6s ease-in-out;\n\n    -webkit-backface-visibility: hidden;\n            backface-visibility: hidden;\n    -webkit-perspective: 1000px;\n            perspective: 1000px;\n  }\n  .carousel-inner > .item.next,\n  .carousel-inner > .item.active.right {\n    left: 0;\n    -webkit-transform: translate3d(100%, 0, 0);\n            transform: translate3d(100%, 0, 0);\n  }\n  .carousel-inner > .item.prev,\n  .carousel-inner > .item.active.left {\n    left: 0;\n    -webkit-transform: translate3d(-100%, 0, 0);\n            transform: translate3d(-100%, 0, 0);\n  }\n  .carousel-inner > .item.next.left,\n  .carousel-inner > .item.prev.right,\n  .carousel-inner > .item.active {\n    left: 0;\n    -webkit-transform: translate3d(0, 0, 0);\n            transform: translate3d(0, 0, 0);\n  }\n}\n.carousel-inner > .active,\n.carousel-inner > .next,\n.carousel-inner > .prev {\n  display: block;\n}\n.carousel-inner > .active {\n  left: 0;\n}\n.carousel-inner > .next,\n.carousel-inner > .prev {\n  position: absolute;\n  top: 0;\n  width: 100%;\n}\n.carousel-inner > .next {\n  left: 100%;\n}\n.carousel-inner > .prev {\n  left: -100%;\n}\n.carousel-inner > .next.left,\n.carousel-inner > .prev.right {\n  left: 0;\n}\n.carousel-inner > .active.left {\n  left: -100%;\n}\n.carousel-inner > .active.right {\n  left: 100%;\n}\n.carousel-control {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  width: 15%;\n  font-size: 20px;\n  color: #fff;\n  text-align: center;\n  text-shadow: 0 1px 2px rgba(0, 0, 0, .6);\n  background-color: rgba(0, 0, 0, 0);\n  filter: alpha(opacity=50);\n  opacity: .5;\n}\n.carousel-control.left {\n  background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, .5) 0%, rgba(0, 0, 0, .0001) 100%);\n  background-image:      -o-linear-gradient(left, rgba(0, 0, 0, .5) 0%, rgba(0, 0, 0, .0001) 100%);\n  background-image: -webkit-gradient(linear, left top, right top, from(rgba(0, 0, 0, .5)), to(rgba(0, 0, 0, .0001)));\n  background-image:         linear-gradient(to right, rgba(0, 0, 0, .5) 0%, rgba(0, 0, 0, .0001) 100%);\n  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80000000', endColorstr='#00000000', GradientType=1);\n  background-repeat: repeat-x;\n}\n.carousel-control.right {\n  right: 0;\n  left: auto;\n  background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, .0001) 0%, rgba(0, 0, 0, .5) 100%);\n  background-image:      -o-linear-gradient(left, rgba(0, 0, 0, .0001) 0%, rgba(0, 0, 0, .5) 100%);\n  background-image: -webkit-gradient(linear, left top, right top, from(rgba(0, 0, 0, .0001)), to(rgba(0, 0, 0, .5)));\n  background-image:         linear-gradient(to right, rgba(0, 0, 0, .0001) 0%, rgba(0, 0, 0, .5) 100%);\n  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#80000000', GradientType=1);\n  background-repeat: repeat-x;\n}\n.carousel-control:hover,\n.carousel-control:focus {\n  color: #fff;\n  text-decoration: none;\n  filter: alpha(opacity=90);\n  outline: 0;\n  opacity: .9;\n}\n.carousel-control .icon-prev,\n.carousel-control .icon-next,\n.carousel-control .glyphicon-chevron-left,\n.carousel-control .glyphicon-chevron-right {\n  position: absolute;\n  top: 50%;\n  z-index: 5;\n  display: inline-block;\n  margin-top: -10px;\n}\n.carousel-control .icon-prev,\n.carousel-control .glyphicon-chevron-left {\n  left: 50%;\n  margin-left: -10px;\n}\n.carousel-control .icon-next,\n.carousel-control .glyphicon-chevron-right {\n  right: 50%;\n  margin-right: -10px;\n}\n.carousel-control .icon-prev,\n.carousel-control .icon-next {\n  width: 20px;\n  height: 20px;\n  font-family: serif;\n  line-height: 1;\n}\n.carousel-control .icon-prev:before {\n  content: '\\2039';\n}\n.carousel-control .icon-next:before {\n  content: '\\203A';\n}\n.carousel-indicators {\n  position: absolute;\n  bottom: 10px;\n  left: 50%;\n  z-index: 15;\n  width: 60%;\n  padding-left: 0;\n  margin-left: -30%;\n  text-align: center;\n  list-style: none;\n}\n.carousel-indicators li {\n  display: inline-block;\n  width: 10px;\n  height: 10px;\n  margin: 1px;\n  text-indent: -999px;\n  cursor: pointer;\n  background-color: #000 \\9;\n  background-color: rgba(0, 0, 0, 0);\n  border: 1px solid #fff;\n  border-radius: 10px;\n}\n.carousel-indicators .active {\n  width: 12px;\n  height: 12px;\n  margin: 0;\n  background-color: #fff;\n}\n.carousel-caption {\n  position: absolute;\n  right: 15%;\n  bottom: 20px;\n  left: 15%;\n  z-index: 10;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  color: #fff;\n  text-align: center;\n  text-shadow: 0 1px 2px rgba(0, 0, 0, .6);\n}\n.carousel-caption .btn {\n  text-shadow: none;\n}\n@media screen and (min-width: 768px) {\n  .carousel-control .glyphicon-chevron-left,\n  .carousel-control .glyphicon-chevron-right,\n  .carousel-control .icon-prev,\n  .carousel-control .icon-next {\n    width: 30px;\n    height: 30px;\n    margin-top: -10px;\n    font-size: 30px;\n  }\n  .carousel-control .glyphicon-chevron-left,\n  .carousel-control .icon-prev {\n    margin-left: -10px;\n  }\n  .carousel-control .glyphicon-chevron-right,\n  .carousel-control .icon-next {\n    margin-right: -10px;\n  }\n  .carousel-caption {\n    right: 20%;\n    left: 20%;\n    padding-bottom: 30px;\n  }\n  .carousel-indicators {\n    bottom: 20px;\n  }\n}\n.clearfix:before,\n.clearfix:after,\n.dl-horizontal dd:before,\n.dl-horizontal dd:after,\n.container:before,\n.container:after,\n.container-fluid:before,\n.container-fluid:after,\n.row:before,\n.row:after,\n.form-horizontal .form-group:before,\n.form-horizontal .form-group:after,\n.btn-toolbar:before,\n.btn-toolbar:after,\n.btn-group-vertical > .btn-group:before,\n.btn-group-vertical > .btn-group:after,\n.nav:before,\n.nav:after,\n.navbar:before,\n.navbar:after,\n.navbar-header:before,\n.navbar-header:after,\n.navbar-collapse:before,\n.navbar-collapse:after,\n.pager:before,\n.pager:after,\n.panel-body:before,\n.panel-body:after,\n.modal-header:before,\n.modal-header:after,\n.modal-footer:before,\n.modal-footer:after {\n  display: table;\n  content: \" \";\n}\n.clearfix:after,\n.dl-horizontal dd:after,\n.container:after,\n.container-fluid:after,\n.row:after,\n.form-horizontal .form-group:after,\n.btn-toolbar:after,\n.btn-group-vertical > .btn-group:after,\n.nav:after,\n.navbar:after,\n.navbar-header:after,\n.navbar-collapse:after,\n.pager:after,\n.panel-body:after,\n.modal-header:after,\n.modal-footer:after {\n  clear: both;\n}\n.center-block {\n  display: block;\n  margin-right: auto;\n  margin-left: auto;\n}\n.pull-right {\n  float: right !important;\n}\n.pull-left {\n  float: left !important;\n}\n.hide {\n  display: none !important;\n}\n.show {\n  display: block !important;\n}\n.invisible {\n  visibility: hidden;\n}\n.text-hide {\n  font: 0/0 a;\n  color: transparent;\n  text-shadow: none;\n  background-color: transparent;\n  border: 0;\n}\n.hidden {\n  display: none !important;\n}\n.affix {\n  position: fixed;\n}\n@-ms-viewport {\n  width: device-width;\n}\n.visible-xs,\n.visible-sm,\n.visible-md,\n.visible-lg {\n  display: none !important;\n}\n.visible-xs-block,\n.visible-xs-inline,\n.visible-xs-inline-block,\n.visible-sm-block,\n.visible-sm-inline,\n.visible-sm-inline-block,\n.visible-md-block,\n.visible-md-inline,\n.visible-md-inline-block,\n.visible-lg-block,\n.visible-lg-inline,\n.visible-lg-inline-block {\n  display: none !important;\n}\n@media (max-width: 767px) {\n  .visible-xs {\n    display: block !important;\n  }\n  table.visible-xs {\n    display: table !important;\n  }\n  tr.visible-xs {\n    display: table-row !important;\n  }\n  th.visible-xs,\n  td.visible-xs {\n    display: table-cell !important;\n  }\n}\n@media (max-width: 767px) {\n  .visible-xs-block {\n    display: block !important;\n  }\n}\n@media (max-width: 767px) {\n  .visible-xs-inline {\n    display: inline !important;\n  }\n}\n@media (max-width: 767px) {\n  .visible-xs-inline-block {\n    display: inline-block !important;\n  }\n}\n@media (min-width: 768px) and (max-width: 991px) {\n  .visible-sm {\n    display: block !important;\n  }\n  table.visible-sm {\n    display: table !important;\n  }\n  tr.visible-sm {\n    display: table-row !important;\n  }\n  th.visible-sm,\n  td.visible-sm {\n    display: table-cell !important;\n  }\n}\n@media (min-width: 768px) and (max-width: 991px) {\n  .visible-sm-block {\n    display: block !important;\n  }\n}\n@media (min-width: 768px) and (max-width: 991px) {\n  .visible-sm-inline {\n    display: inline !important;\n  }\n}\n@media (min-width: 768px) and (max-width: 991px) {\n  .visible-sm-inline-block {\n    display: inline-block !important;\n  }\n}\n@media (min-width: 992px) and (max-width: 1199px) {\n  .visible-md {\n    display: block !important;\n  }\n  table.visible-md {\n    display: table !important;\n  }\n  tr.visible-md {\n    display: table-row !important;\n  }\n  th.visible-md,\n  td.visible-md {\n    display: table-cell !important;\n  }\n}\n@media (min-width: 992px) and (max-width: 1199px) {\n  .visible-md-block {\n    display: block !important;\n  }\n}\n@media (min-width: 992px) and (max-width: 1199px) {\n  .visible-md-inline {\n    display: inline !important;\n  }\n}\n@media (min-width: 992px) and (max-width: 1199px) {\n  .visible-md-inline-block {\n    display: inline-block !important;\n  }\n}\n@media (min-width: 1200px) {\n  .visible-lg {\n    display: block !important;\n  }\n  table.visible-lg {\n    display: table !important;\n  }\n  tr.visible-lg {\n    display: table-row !important;\n  }\n  th.visible-lg,\n  td.visible-lg {\n    display: table-cell !important;\n  }\n}\n@media (min-width: 1200px) {\n  .visible-lg-block {\n    display: block !important;\n  }\n}\n@media (min-width: 1200px) {\n  .visible-lg-inline {\n    display: inline !important;\n  }\n}\n@media (min-width: 1200px) {\n  .visible-lg-inline-block {\n    display: inline-block !important;\n  }\n}\n@media (max-width: 767px) {\n  .hidden-xs {\n    display: none !important;\n  }\n}\n@media (min-width: 768px) and (max-width: 991px) {\n  .hidden-sm {\n    display: none !important;\n  }\n}\n@media (min-width: 992px) and (max-width: 1199px) {\n  .hidden-md {\n    display: none !important;\n  }\n}\n@media (min-width: 1200px) {\n  .hidden-lg {\n    display: none !important;\n  }\n}\n.visible-print {\n  display: none !important;\n}\n@media print {\n  .visible-print {\n    display: block !important;\n  }\n  table.visible-print {\n    display: table !important;\n  }\n  tr.visible-print {\n    display: table-row !important;\n  }\n  th.visible-print,\n  td.visible-print {\n    display: table-cell !important;\n  }\n}\n.visible-print-block {\n  display: none !important;\n}\n@media print {\n  .visible-print-block {\n    display: block !important;\n  }\n}\n.visible-print-inline {\n  display: none !important;\n}\n@media print {\n  .visible-print-inline {\n    display: inline !important;\n  }\n}\n.visible-print-inline-block {\n  display: none !important;\n}\n@media print {\n  .visible-print-inline-block {\n    display: inline-block !important;\n  }\n}\n@media print {\n  .hidden-print {\n    display: none !important;\n  }\n}\n/*# sourceMappingURL=bootstrap.css.map */\n", ""]);
-	
-	// exports
-
-
-/***/ }),
-/* 288 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__.p + "f4769f9bdb7466be65088239c12046d1.eot";
-
-/***/ }),
-/* 289 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__.p + "448c34a56d699c29117adc64c43affeb.woff2";
-
-/***/ }),
-/* 290 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__.p + "fa2772327f55d8198301fdb8bcfc8158.woff";
-
-/***/ }),
-/* 291 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__.p + "e18bbf611f2a2e43afc071aa2f4e1512.ttf";
-
-/***/ }),
-/* 292 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__.p + "89889688147bd7575d6327160d64e760.svg";
-
-/***/ }),
-/* 293 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-	
-	// load the styles
-	var content = __webpack_require__(294);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(12)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../../css-loader/index.js!./bootstrap.css", function() {
-				var newContent = require("!!../../css-loader/index.js!./bootstrap.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ }),
-/* 294 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(11)();
-	// imports
-	exports.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Lato:400,700,400italic);", ""]);
-	
-	// module
-	exports.push([module.id, "/*!\n * bootswatch v3.3.7\n * Homepage: http://bootswatch.com\n * Copyright 2012-2016 Thomas Park\n * Licensed under MIT\n * Based on Bootstrap\n*/\n/*!\n * Bootstrap v3.3.7 (http://getbootstrap.com)\n * Copyright 2011-2016 Twitter, Inc.\n * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)\n */\n/*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */\nhtml {\n  font-family: sans-serif;\n  -ms-text-size-adjust: 100%;\n  -webkit-text-size-adjust: 100%;\n}\nbody {\n  margin: 0;\n}\narticle,\naside,\ndetails,\nfigcaption,\nfigure,\nfooter,\nheader,\nhgroup,\nmain,\nmenu,\nnav,\nsection,\nsummary {\n  display: block;\n}\naudio,\ncanvas,\nprogress,\nvideo {\n  display: inline-block;\n  vertical-align: baseline;\n}\naudio:not([controls]) {\n  display: none;\n  height: 0;\n}\n[hidden],\ntemplate {\n  display: none;\n}\na {\n  background-color: transparent;\n}\na:active,\na:hover {\n  outline: 0;\n}\nabbr[title] {\n  border-bottom: 1px dotted;\n}\nb,\nstrong {\n  font-weight: bold;\n}\ndfn {\n  font-style: italic;\n}\nh1 {\n  font-size: 2em;\n  margin: 0.67em 0;\n}\nmark {\n  background: #ff0;\n  color: #000;\n}\nsmall {\n  font-size: 80%;\n}\nsub,\nsup {\n  font-size: 75%;\n  line-height: 0;\n  position: relative;\n  vertical-align: baseline;\n}\nsup {\n  top: -0.5em;\n}\nsub {\n  bottom: -0.25em;\n}\nimg {\n  border: 0;\n}\nsvg:not(:root) {\n  overflow: hidden;\n}\nfigure {\n  margin: 1em 40px;\n}\nhr {\n  -webkit-box-sizing: content-box;\n     -moz-box-sizing: content-box;\n          box-sizing: content-box;\n  height: 0;\n}\npre {\n  overflow: auto;\n}\ncode,\nkbd,\npre,\nsamp {\n  font-family: monospace, monospace;\n  font-size: 1em;\n}\nbutton,\ninput,\noptgroup,\nselect,\ntextarea {\n  color: inherit;\n  font: inherit;\n  margin: 0;\n}\nbutton {\n  overflow: visible;\n}\nbutton,\nselect {\n  text-transform: none;\n}\nbutton,\nhtml input[type=\"button\"],\ninput[type=\"reset\"],\ninput[type=\"submit\"] {\n  -webkit-appearance: button;\n  cursor: pointer;\n}\nbutton[disabled],\nhtml input[disabled] {\n  cursor: default;\n}\nbutton::-moz-focus-inner,\ninput::-moz-focus-inner {\n  border: 0;\n  padding: 0;\n}\ninput {\n  line-height: normal;\n}\ninput[type=\"checkbox\"],\ninput[type=\"radio\"] {\n  -webkit-box-sizing: border-box;\n     -moz-box-sizing: border-box;\n          box-sizing: border-box;\n  padding: 0;\n}\ninput[type=\"number\"]::-webkit-inner-spin-button,\ninput[type=\"number\"]::-webkit-outer-spin-button {\n  height: auto;\n}\ninput[type=\"search\"] {\n  -webkit-appearance: textfield;\n  -webkit-box-sizing: content-box;\n     -moz-box-sizing: content-box;\n          box-sizing: content-box;\n}\ninput[type=\"search\"]::-webkit-search-cancel-button,\ninput[type=\"search\"]::-webkit-search-decoration {\n  -webkit-appearance: none;\n}\nfieldset {\n  border: 1px solid #c0c0c0;\n  margin: 0 2px;\n  padding: 0.35em 0.625em 0.75em;\n}\nlegend {\n  border: 0;\n  padding: 0;\n}\ntextarea {\n  overflow: auto;\n}\noptgroup {\n  font-weight: bold;\n}\ntable {\n  border-collapse: collapse;\n  border-spacing: 0;\n}\ntd,\nth {\n  padding: 0;\n}\n/*! Source: https://github.com/h5bp/html5-boilerplate/blob/master/src/css/main.css */\n@media print {\n  *,\n  *:before,\n  *:after {\n    background: transparent !important;\n    color: #000 !important;\n    -webkit-box-shadow: none !important;\n            box-shadow: none !important;\n    text-shadow: none !important;\n  }\n  a,\n  a:visited {\n    text-decoration: underline;\n  }\n  a[href]:after {\n    content: \" (\" attr(href) \")\";\n  }\n  abbr[title]:after {\n    content: \" (\" attr(title) \")\";\n  }\n  a[href^=\"#\"]:after,\n  a[href^=\"javascript:\"]:after {\n    content: \"\";\n  }\n  pre,\n  blockquote {\n    border: 1px solid #999;\n    page-break-inside: avoid;\n  }\n  thead {\n    display: table-header-group;\n  }\n  tr,\n  img {\n    page-break-inside: avoid;\n  }\n  img {\n    max-width: 100% !important;\n  }\n  p,\n  h2,\n  h3 {\n    orphans: 3;\n    widows: 3;\n  }\n  h2,\n  h3 {\n    page-break-after: avoid;\n  }\n  .navbar {\n    display: none;\n  }\n  .btn > .caret,\n  .dropup > .btn > .caret {\n    border-top-color: #000 !important;\n  }\n  .label {\n    border: 1px solid #000;\n  }\n  .table {\n    border-collapse: collapse !important;\n  }\n  .table td,\n  .table th {\n    background-color: #fff !important;\n  }\n  .table-bordered th,\n  .table-bordered td {\n    border: 1px solid #ddd !important;\n  }\n}\n@font-face {\n  font-family: 'Glyphicons Halflings';\n  src: url(" + __webpack_require__(295) + ");\n  src: url(" + __webpack_require__(295) + "?#iefix) format('embedded-opentype'), url(" + __webpack_require__(296) + ") format('woff2'), url(" + __webpack_require__(297) + ") format('woff'), url(" + __webpack_require__(298) + ") format('truetype'), url(" + __webpack_require__(299) + "#glyphicons_halflingsregular) format('svg');\n}\n.glyphicon {\n  position: relative;\n  top: 1px;\n  display: inline-block;\n  font-family: 'Glyphicons Halflings';\n  font-style: normal;\n  font-weight: normal;\n  line-height: 1;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.glyphicon-asterisk:before {\n  content: \"*\";\n}\n.glyphicon-plus:before {\n  content: \"+\";\n}\n.glyphicon-euro:before,\n.glyphicon-eur:before {\n  content: \"\\20AC\";\n}\n.glyphicon-minus:before {\n  content: \"\\2212\";\n}\n.glyphicon-cloud:before {\n  content: \"\\2601\";\n}\n.glyphicon-envelope:before {\n  content: \"\\2709\";\n}\n.glyphicon-pencil:before {\n  content: \"\\270F\";\n}\n.glyphicon-glass:before {\n  content: \"\\E001\";\n}\n.glyphicon-music:before {\n  content: \"\\E002\";\n}\n.glyphicon-search:before {\n  content: \"\\E003\";\n}\n.glyphicon-heart:before {\n  content: \"\\E005\";\n}\n.glyphicon-star:before {\n  content: \"\\E006\";\n}\n.glyphicon-star-empty:before {\n  content: \"\\E007\";\n}\n.glyphicon-user:before {\n  content: \"\\E008\";\n}\n.glyphicon-film:before {\n  content: \"\\E009\";\n}\n.glyphicon-th-large:before {\n  content: \"\\E010\";\n}\n.glyphicon-th:before {\n  content: \"\\E011\";\n}\n.glyphicon-th-list:before {\n  content: \"\\E012\";\n}\n.glyphicon-ok:before {\n  content: \"\\E013\";\n}\n.glyphicon-remove:before {\n  content: \"\\E014\";\n}\n.glyphicon-zoom-in:before {\n  content: \"\\E015\";\n}\n.glyphicon-zoom-out:before {\n  content: \"\\E016\";\n}\n.glyphicon-off:before {\n  content: \"\\E017\";\n}\n.glyphicon-signal:before {\n  content: \"\\E018\";\n}\n.glyphicon-cog:before {\n  content: \"\\E019\";\n}\n.glyphicon-trash:before {\n  content: \"\\E020\";\n}\n.glyphicon-home:before {\n  content: \"\\E021\";\n}\n.glyphicon-file:before {\n  content: \"\\E022\";\n}\n.glyphicon-time:before {\n  content: \"\\E023\";\n}\n.glyphicon-road:before {\n  content: \"\\E024\";\n}\n.glyphicon-download-alt:before {\n  content: \"\\E025\";\n}\n.glyphicon-download:before {\n  content: \"\\E026\";\n}\n.glyphicon-upload:before {\n  content: \"\\E027\";\n}\n.glyphicon-inbox:before {\n  content: \"\\E028\";\n}\n.glyphicon-play-circle:before {\n  content: \"\\E029\";\n}\n.glyphicon-repeat:before {\n  content: \"\\E030\";\n}\n.glyphicon-refresh:before {\n  content: \"\\E031\";\n}\n.glyphicon-list-alt:before {\n  content: \"\\E032\";\n}\n.glyphicon-lock:before {\n  content: \"\\E033\";\n}\n.glyphicon-flag:before {\n  content: \"\\E034\";\n}\n.glyphicon-headphones:before {\n  content: \"\\E035\";\n}\n.glyphicon-volume-off:before {\n  content: \"\\E036\";\n}\n.glyphicon-volume-down:before {\n  content: \"\\E037\";\n}\n.glyphicon-volume-up:before {\n  content: \"\\E038\";\n}\n.glyphicon-qrcode:before {\n  content: \"\\E039\";\n}\n.glyphicon-barcode:before {\n  content: \"\\E040\";\n}\n.glyphicon-tag:before {\n  content: \"\\E041\";\n}\n.glyphicon-tags:before {\n  content: \"\\E042\";\n}\n.glyphicon-book:before {\n  content: \"\\E043\";\n}\n.glyphicon-bookmark:before {\n  content: \"\\E044\";\n}\n.glyphicon-print:before {\n  content: \"\\E045\";\n}\n.glyphicon-camera:before {\n  content: \"\\E046\";\n}\n.glyphicon-font:before {\n  content: \"\\E047\";\n}\n.glyphicon-bold:before {\n  content: \"\\E048\";\n}\n.glyphicon-italic:before {\n  content: \"\\E049\";\n}\n.glyphicon-text-height:before {\n  content: \"\\E050\";\n}\n.glyphicon-text-width:before {\n  content: \"\\E051\";\n}\n.glyphicon-align-left:before {\n  content: \"\\E052\";\n}\n.glyphicon-align-center:before {\n  content: \"\\E053\";\n}\n.glyphicon-align-right:before {\n  content: \"\\E054\";\n}\n.glyphicon-align-justify:before {\n  content: \"\\E055\";\n}\n.glyphicon-list:before {\n  content: \"\\E056\";\n}\n.glyphicon-indent-left:before {\n  content: \"\\E057\";\n}\n.glyphicon-indent-right:before {\n  content: \"\\E058\";\n}\n.glyphicon-facetime-video:before {\n  content: \"\\E059\";\n}\n.glyphicon-picture:before {\n  content: \"\\E060\";\n}\n.glyphicon-map-marker:before {\n  content: \"\\E062\";\n}\n.glyphicon-adjust:before {\n  content: \"\\E063\";\n}\n.glyphicon-tint:before {\n  content: \"\\E064\";\n}\n.glyphicon-edit:before {\n  content: \"\\E065\";\n}\n.glyphicon-share:before {\n  content: \"\\E066\";\n}\n.glyphicon-check:before {\n  content: \"\\E067\";\n}\n.glyphicon-move:before {\n  content: \"\\E068\";\n}\n.glyphicon-step-backward:before {\n  content: \"\\E069\";\n}\n.glyphicon-fast-backward:before {\n  content: \"\\E070\";\n}\n.glyphicon-backward:before {\n  content: \"\\E071\";\n}\n.glyphicon-play:before {\n  content: \"\\E072\";\n}\n.glyphicon-pause:before {\n  content: \"\\E073\";\n}\n.glyphicon-stop:before {\n  content: \"\\E074\";\n}\n.glyphicon-forward:before {\n  content: \"\\E075\";\n}\n.glyphicon-fast-forward:before {\n  content: \"\\E076\";\n}\n.glyphicon-step-forward:before {\n  content: \"\\E077\";\n}\n.glyphicon-eject:before {\n  content: \"\\E078\";\n}\n.glyphicon-chevron-left:before {\n  content: \"\\E079\";\n}\n.glyphicon-chevron-right:before {\n  content: \"\\E080\";\n}\n.glyphicon-plus-sign:before {\n  content: \"\\E081\";\n}\n.glyphicon-minus-sign:before {\n  content: \"\\E082\";\n}\n.glyphicon-remove-sign:before {\n  content: \"\\E083\";\n}\n.glyphicon-ok-sign:before {\n  content: \"\\E084\";\n}\n.glyphicon-question-sign:before {\n  content: \"\\E085\";\n}\n.glyphicon-info-sign:before {\n  content: \"\\E086\";\n}\n.glyphicon-screenshot:before {\n  content: \"\\E087\";\n}\n.glyphicon-remove-circle:before {\n  content: \"\\E088\";\n}\n.glyphicon-ok-circle:before {\n  content: \"\\E089\";\n}\n.glyphicon-ban-circle:before {\n  content: \"\\E090\";\n}\n.glyphicon-arrow-left:before {\n  content: \"\\E091\";\n}\n.glyphicon-arrow-right:before {\n  content: \"\\E092\";\n}\n.glyphicon-arrow-up:before {\n  content: \"\\E093\";\n}\n.glyphicon-arrow-down:before {\n  content: \"\\E094\";\n}\n.glyphicon-share-alt:before {\n  content: \"\\E095\";\n}\n.glyphicon-resize-full:before {\n  content: \"\\E096\";\n}\n.glyphicon-resize-small:before {\n  content: \"\\E097\";\n}\n.glyphicon-exclamation-sign:before {\n  content: \"\\E101\";\n}\n.glyphicon-gift:before {\n  content: \"\\E102\";\n}\n.glyphicon-leaf:before {\n  content: \"\\E103\";\n}\n.glyphicon-fire:before {\n  content: \"\\E104\";\n}\n.glyphicon-eye-open:before {\n  content: \"\\E105\";\n}\n.glyphicon-eye-close:before {\n  content: \"\\E106\";\n}\n.glyphicon-warning-sign:before {\n  content: \"\\E107\";\n}\n.glyphicon-plane:before {\n  content: \"\\E108\";\n}\n.glyphicon-calendar:before {\n  content: \"\\E109\";\n}\n.glyphicon-random:before {\n  content: \"\\E110\";\n}\n.glyphicon-comment:before {\n  content: \"\\E111\";\n}\n.glyphicon-magnet:before {\n  content: \"\\E112\";\n}\n.glyphicon-chevron-up:before {\n  content: \"\\E113\";\n}\n.glyphicon-chevron-down:before {\n  content: \"\\E114\";\n}\n.glyphicon-retweet:before {\n  content: \"\\E115\";\n}\n.glyphicon-shopping-cart:before {\n  content: \"\\E116\";\n}\n.glyphicon-folder-close:before {\n  content: \"\\E117\";\n}\n.glyphicon-folder-open:before {\n  content: \"\\E118\";\n}\n.glyphicon-resize-vertical:before {\n  content: \"\\E119\";\n}\n.glyphicon-resize-horizontal:before {\n  content: \"\\E120\";\n}\n.glyphicon-hdd:before {\n  content: \"\\E121\";\n}\n.glyphicon-bullhorn:before {\n  content: \"\\E122\";\n}\n.glyphicon-bell:before {\n  content: \"\\E123\";\n}\n.glyphicon-certificate:before {\n  content: \"\\E124\";\n}\n.glyphicon-thumbs-up:before {\n  content: \"\\E125\";\n}\n.glyphicon-thumbs-down:before {\n  content: \"\\E126\";\n}\n.glyphicon-hand-right:before {\n  content: \"\\E127\";\n}\n.glyphicon-hand-left:before {\n  content: \"\\E128\";\n}\n.glyphicon-hand-up:before {\n  content: \"\\E129\";\n}\n.glyphicon-hand-down:before {\n  content: \"\\E130\";\n}\n.glyphicon-circle-arrow-right:before {\n  content: \"\\E131\";\n}\n.glyphicon-circle-arrow-left:before {\n  content: \"\\E132\";\n}\n.glyphicon-circle-arrow-up:before {\n  content: \"\\E133\";\n}\n.glyphicon-circle-arrow-down:before {\n  content: \"\\E134\";\n}\n.glyphicon-globe:before {\n  content: \"\\E135\";\n}\n.glyphicon-wrench:before {\n  content: \"\\E136\";\n}\n.glyphicon-tasks:before {\n  content: \"\\E137\";\n}\n.glyphicon-filter:before {\n  content: \"\\E138\";\n}\n.glyphicon-briefcase:before {\n  content: \"\\E139\";\n}\n.glyphicon-fullscreen:before {\n  content: \"\\E140\";\n}\n.glyphicon-dashboard:before {\n  content: \"\\E141\";\n}\n.glyphicon-paperclip:before {\n  content: \"\\E142\";\n}\n.glyphicon-heart-empty:before {\n  content: \"\\E143\";\n}\n.glyphicon-link:before {\n  content: \"\\E144\";\n}\n.glyphicon-phone:before {\n  content: \"\\E145\";\n}\n.glyphicon-pushpin:before {\n  content: \"\\E146\";\n}\n.glyphicon-usd:before {\n  content: \"\\E148\";\n}\n.glyphicon-gbp:before {\n  content: \"\\E149\";\n}\n.glyphicon-sort:before {\n  content: \"\\E150\";\n}\n.glyphicon-sort-by-alphabet:before {\n  content: \"\\E151\";\n}\n.glyphicon-sort-by-alphabet-alt:before {\n  content: \"\\E152\";\n}\n.glyphicon-sort-by-order:before {\n  content: \"\\E153\";\n}\n.glyphicon-sort-by-order-alt:before {\n  content: \"\\E154\";\n}\n.glyphicon-sort-by-attributes:before {\n  content: \"\\E155\";\n}\n.glyphicon-sort-by-attributes-alt:before {\n  content: \"\\E156\";\n}\n.glyphicon-unchecked:before {\n  content: \"\\E157\";\n}\n.glyphicon-expand:before {\n  content: \"\\E158\";\n}\n.glyphicon-collapse-down:before {\n  content: \"\\E159\";\n}\n.glyphicon-collapse-up:before {\n  content: \"\\E160\";\n}\n.glyphicon-log-in:before {\n  content: \"\\E161\";\n}\n.glyphicon-flash:before {\n  content: \"\\E162\";\n}\n.glyphicon-log-out:before {\n  content: \"\\E163\";\n}\n.glyphicon-new-window:before {\n  content: \"\\E164\";\n}\n.glyphicon-record:before {\n  content: \"\\E165\";\n}\n.glyphicon-save:before {\n  content: \"\\E166\";\n}\n.glyphicon-open:before {\n  content: \"\\E167\";\n}\n.glyphicon-saved:before {\n  content: \"\\E168\";\n}\n.glyphicon-import:before {\n  content: \"\\E169\";\n}\n.glyphicon-export:before {\n  content: \"\\E170\";\n}\n.glyphicon-send:before {\n  content: \"\\E171\";\n}\n.glyphicon-floppy-disk:before {\n  content: \"\\E172\";\n}\n.glyphicon-floppy-saved:before {\n  content: \"\\E173\";\n}\n.glyphicon-floppy-remove:before {\n  content: \"\\E174\";\n}\n.glyphicon-floppy-save:before {\n  content: \"\\E175\";\n}\n.glyphicon-floppy-open:before {\n  content: \"\\E176\";\n}\n.glyphicon-credit-card:before {\n  content: \"\\E177\";\n}\n.glyphicon-transfer:before {\n  content: \"\\E178\";\n}\n.glyphicon-cutlery:before {\n  content: \"\\E179\";\n}\n.glyphicon-header:before {\n  content: \"\\E180\";\n}\n.glyphicon-compressed:before {\n  content: \"\\E181\";\n}\n.glyphicon-earphone:before {\n  content: \"\\E182\";\n}\n.glyphicon-phone-alt:before {\n  content: \"\\E183\";\n}\n.glyphicon-tower:before {\n  content: \"\\E184\";\n}\n.glyphicon-stats:before {\n  content: \"\\E185\";\n}\n.glyphicon-sd-video:before {\n  content: \"\\E186\";\n}\n.glyphicon-hd-video:before {\n  content: \"\\E187\";\n}\n.glyphicon-subtitles:before {\n  content: \"\\E188\";\n}\n.glyphicon-sound-stereo:before {\n  content: \"\\E189\";\n}\n.glyphicon-sound-dolby:before {\n  content: \"\\E190\";\n}\n.glyphicon-sound-5-1:before {\n  content: \"\\E191\";\n}\n.glyphicon-sound-6-1:before {\n  content: \"\\E192\";\n}\n.glyphicon-sound-7-1:before {\n  content: \"\\E193\";\n}\n.glyphicon-copyright-mark:before {\n  content: \"\\E194\";\n}\n.glyphicon-registration-mark:before {\n  content: \"\\E195\";\n}\n.glyphicon-cloud-download:before {\n  content: \"\\E197\";\n}\n.glyphicon-cloud-upload:before {\n  content: \"\\E198\";\n}\n.glyphicon-tree-conifer:before {\n  content: \"\\E199\";\n}\n.glyphicon-tree-deciduous:before {\n  content: \"\\E200\";\n}\n.glyphicon-cd:before {\n  content: \"\\E201\";\n}\n.glyphicon-save-file:before {\n  content: \"\\E202\";\n}\n.glyphicon-open-file:before {\n  content: \"\\E203\";\n}\n.glyphicon-level-up:before {\n  content: \"\\E204\";\n}\n.glyphicon-copy:before {\n  content: \"\\E205\";\n}\n.glyphicon-paste:before {\n  content: \"\\E206\";\n}\n.glyphicon-alert:before {\n  content: \"\\E209\";\n}\n.glyphicon-equalizer:before {\n  content: \"\\E210\";\n}\n.glyphicon-king:before {\n  content: \"\\E211\";\n}\n.glyphicon-queen:before {\n  content: \"\\E212\";\n}\n.glyphicon-pawn:before {\n  content: \"\\E213\";\n}\n.glyphicon-bishop:before {\n  content: \"\\E214\";\n}\n.glyphicon-knight:before {\n  content: \"\\E215\";\n}\n.glyphicon-baby-formula:before {\n  content: \"\\E216\";\n}\n.glyphicon-tent:before {\n  content: \"\\26FA\";\n}\n.glyphicon-blackboard:before {\n  content: \"\\E218\";\n}\n.glyphicon-bed:before {\n  content: \"\\E219\";\n}\n.glyphicon-apple:before {\n  content: \"\\F8FF\";\n}\n.glyphicon-erase:before {\n  content: \"\\E221\";\n}\n.glyphicon-hourglass:before {\n  content: \"\\231B\";\n}\n.glyphicon-lamp:before {\n  content: \"\\E223\";\n}\n.glyphicon-duplicate:before {\n  content: \"\\E224\";\n}\n.glyphicon-piggy-bank:before {\n  content: \"\\E225\";\n}\n.glyphicon-scissors:before {\n  content: \"\\E226\";\n}\n.glyphicon-bitcoin:before {\n  content: \"\\E227\";\n}\n.glyphicon-btc:before {\n  content: \"\\E227\";\n}\n.glyphicon-xbt:before {\n  content: \"\\E227\";\n}\n.glyphicon-yen:before {\n  content: \"\\A5\";\n}\n.glyphicon-jpy:before {\n  content: \"\\A5\";\n}\n.glyphicon-ruble:before {\n  content: \"\\20BD\";\n}\n.glyphicon-rub:before {\n  content: \"\\20BD\";\n}\n.glyphicon-scale:before {\n  content: \"\\E230\";\n}\n.glyphicon-ice-lolly:before {\n  content: \"\\E231\";\n}\n.glyphicon-ice-lolly-tasted:before {\n  content: \"\\E232\";\n}\n.glyphicon-education:before {\n  content: \"\\E233\";\n}\n.glyphicon-option-horizontal:before {\n  content: \"\\E234\";\n}\n.glyphicon-option-vertical:before {\n  content: \"\\E235\";\n}\n.glyphicon-menu-hamburger:before {\n  content: \"\\E236\";\n}\n.glyphicon-modal-window:before {\n  content: \"\\E237\";\n}\n.glyphicon-oil:before {\n  content: \"\\E238\";\n}\n.glyphicon-grain:before {\n  content: \"\\E239\";\n}\n.glyphicon-sunglasses:before {\n  content: \"\\E240\";\n}\n.glyphicon-text-size:before {\n  content: \"\\E241\";\n}\n.glyphicon-text-color:before {\n  content: \"\\E242\";\n}\n.glyphicon-text-background:before {\n  content: \"\\E243\";\n}\n.glyphicon-object-align-top:before {\n  content: \"\\E244\";\n}\n.glyphicon-object-align-bottom:before {\n  content: \"\\E245\";\n}\n.glyphicon-object-align-horizontal:before {\n  content: \"\\E246\";\n}\n.glyphicon-object-align-left:before {\n  content: \"\\E247\";\n}\n.glyphicon-object-align-vertical:before {\n  content: \"\\E248\";\n}\n.glyphicon-object-align-right:before {\n  content: \"\\E249\";\n}\n.glyphicon-triangle-right:before {\n  content: \"\\E250\";\n}\n.glyphicon-triangle-left:before {\n  content: \"\\E251\";\n}\n.glyphicon-triangle-bottom:before {\n  content: \"\\E252\";\n}\n.glyphicon-triangle-top:before {\n  content: \"\\E253\";\n}\n.glyphicon-console:before {\n  content: \"\\E254\";\n}\n.glyphicon-superscript:before {\n  content: \"\\E255\";\n}\n.glyphicon-subscript:before {\n  content: \"\\E256\";\n}\n.glyphicon-menu-left:before {\n  content: \"\\E257\";\n}\n.glyphicon-menu-right:before {\n  content: \"\\E258\";\n}\n.glyphicon-menu-down:before {\n  content: \"\\E259\";\n}\n.glyphicon-menu-up:before {\n  content: \"\\E260\";\n}\n* {\n  -webkit-box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  box-sizing: border-box;\n}\n*:before,\n*:after {\n  -webkit-box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  box-sizing: border-box;\n}\nhtml {\n  font-size: 10px;\n  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);\n}\nbody {\n  font-family: \"Lato\", \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n  font-size: 15px;\n  line-height: 1.42857143;\n  color: #2c3e50;\n  background-color: #ffffff;\n}\ninput,\nbutton,\nselect,\ntextarea {\n  font-family: inherit;\n  font-size: inherit;\n  line-height: inherit;\n}\na {\n  color: #18bc9c;\n  text-decoration: none;\n}\na:hover,\na:focus {\n  color: #18bc9c;\n  text-decoration: underline;\n}\na:focus {\n  outline: 5px auto -webkit-focus-ring-color;\n  outline-offset: -2px;\n}\nfigure {\n  margin: 0;\n}\nimg {\n  vertical-align: middle;\n}\n.img-responsive,\n.thumbnail > img,\n.thumbnail a > img,\n.carousel-inner > .item > img,\n.carousel-inner > .item > a > img {\n  display: block;\n  max-width: 100%;\n  height: auto;\n}\n.img-rounded {\n  border-radius: 6px;\n}\n.img-thumbnail {\n  padding: 4px;\n  line-height: 1.42857143;\n  background-color: #ffffff;\n  border: 1px solid #ecf0f1;\n  border-radius: 4px;\n  -webkit-transition: all 0.2s ease-in-out;\n  -o-transition: all 0.2s ease-in-out;\n  transition: all 0.2s ease-in-out;\n  display: inline-block;\n  max-width: 100%;\n  height: auto;\n}\n.img-circle {\n  border-radius: 50%;\n}\nhr {\n  margin-top: 21px;\n  margin-bottom: 21px;\n  border: 0;\n  border-top: 1px solid #ecf0f1;\n}\n.sr-only {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  margin: -1px;\n  padding: 0;\n  overflow: hidden;\n  clip: rect(0, 0, 0, 0);\n  border: 0;\n}\n.sr-only-focusable:active,\n.sr-only-focusable:focus {\n  position: static;\n  width: auto;\n  height: auto;\n  margin: 0;\n  overflow: visible;\n  clip: auto;\n}\n[role=\"button\"] {\n  cursor: pointer;\n}\nh1,\nh2,\nh3,\nh4,\nh5,\nh6,\n.h1,\n.h2,\n.h3,\n.h4,\n.h5,\n.h6 {\n  font-family: \"Lato\", \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n  font-weight: 400;\n  line-height: 1.1;\n  color: inherit;\n}\nh1 small,\nh2 small,\nh3 small,\nh4 small,\nh5 small,\nh6 small,\n.h1 small,\n.h2 small,\n.h3 small,\n.h4 small,\n.h5 small,\n.h6 small,\nh1 .small,\nh2 .small,\nh3 .small,\nh4 .small,\nh5 .small,\nh6 .small,\n.h1 .small,\n.h2 .small,\n.h3 .small,\n.h4 .small,\n.h5 .small,\n.h6 .small {\n  font-weight: normal;\n  line-height: 1;\n  color: #b4bcc2;\n}\nh1,\n.h1,\nh2,\n.h2,\nh3,\n.h3 {\n  margin-top: 21px;\n  margin-bottom: 10.5px;\n}\nh1 small,\n.h1 small,\nh2 small,\n.h2 small,\nh3 small,\n.h3 small,\nh1 .small,\n.h1 .small,\nh2 .small,\n.h2 .small,\nh3 .small,\n.h3 .small {\n  font-size: 65%;\n}\nh4,\n.h4,\nh5,\n.h5,\nh6,\n.h6 {\n  margin-top: 10.5px;\n  margin-bottom: 10.5px;\n}\nh4 small,\n.h4 small,\nh5 small,\n.h5 small,\nh6 small,\n.h6 small,\nh4 .small,\n.h4 .small,\nh5 .small,\n.h5 .small,\nh6 .small,\n.h6 .small {\n  font-size: 75%;\n}\nh1,\n.h1 {\n  font-size: 39px;\n}\nh2,\n.h2 {\n  font-size: 32px;\n}\nh3,\n.h3 {\n  font-size: 26px;\n}\nh4,\n.h4 {\n  font-size: 19px;\n}\nh5,\n.h5 {\n  font-size: 15px;\n}\nh6,\n.h6 {\n  font-size: 13px;\n}\np {\n  margin: 0 0 10.5px;\n}\n.lead {\n  margin-bottom: 21px;\n  font-size: 17px;\n  font-weight: 300;\n  line-height: 1.4;\n}\n@media (min-width: 768px) {\n  .lead {\n    font-size: 22.5px;\n  }\n}\nsmall,\n.small {\n  font-size: 86%;\n}\nmark,\n.mark {\n  background-color: #f39c12;\n  padding: .2em;\n}\n.text-left {\n  text-align: left;\n}\n.text-right {\n  text-align: right;\n}\n.text-center {\n  text-align: center;\n}\n.text-justify {\n  text-align: justify;\n}\n.text-nowrap {\n  white-space: nowrap;\n}\n.text-lowercase {\n  text-transform: lowercase;\n}\n.text-uppercase {\n  text-transform: uppercase;\n}\n.text-capitalize {\n  text-transform: capitalize;\n}\n.text-muted {\n  color: #b4bcc2;\n}\n.text-primary {\n  color: #2c3e50;\n}\na.text-primary:hover,\na.text-primary:focus {\n  color: #1a242f;\n}\n.text-success {\n  color: #ffffff;\n}\na.text-success:hover,\na.text-success:focus {\n  color: #e6e6e6;\n}\n.text-info {\n  color: #ffffff;\n}\na.text-info:hover,\na.text-info:focus {\n  color: #e6e6e6;\n}\n.text-warning {\n  color: #ffffff;\n}\na.text-warning:hover,\na.text-warning:focus {\n  color: #e6e6e6;\n}\n.text-danger {\n  color: #ffffff;\n}\na.text-danger:hover,\na.text-danger:focus {\n  color: #e6e6e6;\n}\n.bg-primary {\n  color: #fff;\n  background-color: #2c3e50;\n}\na.bg-primary:hover,\na.bg-primary:focus {\n  background-color: #1a242f;\n}\n.bg-success {\n  background-color: #18bc9c;\n}\na.bg-success:hover,\na.bg-success:focus {\n  background-color: #128f76;\n}\n.bg-info {\n  background-color: #3498db;\n}\na.bg-info:hover,\na.bg-info:focus {\n  background-color: #217dbb;\n}\n.bg-warning {\n  background-color: #f39c12;\n}\na.bg-warning:hover,\na.bg-warning:focus {\n  background-color: #c87f0a;\n}\n.bg-danger {\n  background-color: #e74c3c;\n}\na.bg-danger:hover,\na.bg-danger:focus {\n  background-color: #d62c1a;\n}\n.page-header {\n  padding-bottom: 9.5px;\n  margin: 42px 0 21px;\n  border-bottom: 1px solid transparent;\n}\nul,\nol {\n  margin-top: 0;\n  margin-bottom: 10.5px;\n}\nul ul,\nol ul,\nul ol,\nol ol {\n  margin-bottom: 0;\n}\n.list-unstyled {\n  padding-left: 0;\n  list-style: none;\n}\n.list-inline {\n  padding-left: 0;\n  list-style: none;\n  margin-left: -5px;\n}\n.list-inline > li {\n  display: inline-block;\n  padding-left: 5px;\n  padding-right: 5px;\n}\ndl {\n  margin-top: 0;\n  margin-bottom: 21px;\n}\ndt,\ndd {\n  line-height: 1.42857143;\n}\ndt {\n  font-weight: bold;\n}\ndd {\n  margin-left: 0;\n}\n@media (min-width: 768px) {\n  .dl-horizontal dt {\n    float: left;\n    width: 160px;\n    clear: left;\n    text-align: right;\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n  }\n  .dl-horizontal dd {\n    margin-left: 180px;\n  }\n}\nabbr[title],\nabbr[data-original-title] {\n  cursor: help;\n  border-bottom: 1px dotted #b4bcc2;\n}\n.initialism {\n  font-size: 90%;\n  text-transform: uppercase;\n}\nblockquote {\n  padding: 10.5px 21px;\n  margin: 0 0 21px;\n  font-size: 18.75px;\n  border-left: 5px solid #ecf0f1;\n}\nblockquote p:last-child,\nblockquote ul:last-child,\nblockquote ol:last-child {\n  margin-bottom: 0;\n}\nblockquote footer,\nblockquote small,\nblockquote .small {\n  display: block;\n  font-size: 80%;\n  line-height: 1.42857143;\n  color: #b4bcc2;\n}\nblockquote footer:before,\nblockquote small:before,\nblockquote .small:before {\n  content: '\\2014   \\A0';\n}\n.blockquote-reverse,\nblockquote.pull-right {\n  padding-right: 15px;\n  padding-left: 0;\n  border-right: 5px solid #ecf0f1;\n  border-left: 0;\n  text-align: right;\n}\n.blockquote-reverse footer:before,\nblockquote.pull-right footer:before,\n.blockquote-reverse small:before,\nblockquote.pull-right small:before,\n.blockquote-reverse .small:before,\nblockquote.pull-right .small:before {\n  content: '';\n}\n.blockquote-reverse footer:after,\nblockquote.pull-right footer:after,\n.blockquote-reverse small:after,\nblockquote.pull-right small:after,\n.blockquote-reverse .small:after,\nblockquote.pull-right .small:after {\n  content: '\\A0   \\2014';\n}\naddress {\n  margin-bottom: 21px;\n  font-style: normal;\n  line-height: 1.42857143;\n}\ncode,\nkbd,\npre,\nsamp {\n  font-family: Menlo, Monaco, Consolas, \"Courier New\", monospace;\n}\ncode {\n  padding: 2px 4px;\n  font-size: 90%;\n  color: #c7254e;\n  background-color: #f9f2f4;\n  border-radius: 4px;\n}\nkbd {\n  padding: 2px 4px;\n  font-size: 90%;\n  color: #ffffff;\n  background-color: #333333;\n  border-radius: 3px;\n  -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);\n          box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);\n}\nkbd kbd {\n  padding: 0;\n  font-size: 100%;\n  font-weight: bold;\n  -webkit-box-shadow: none;\n          box-shadow: none;\n}\npre {\n  display: block;\n  padding: 10px;\n  margin: 0 0 10.5px;\n  font-size: 14px;\n  line-height: 1.42857143;\n  word-break: break-all;\n  word-wrap: break-word;\n  color: #7b8a8b;\n  background-color: #ecf0f1;\n  border: 1px solid #cccccc;\n  border-radius: 4px;\n}\npre code {\n  padding: 0;\n  font-size: inherit;\n  color: inherit;\n  white-space: pre-wrap;\n  background-color: transparent;\n  border-radius: 0;\n}\n.pre-scrollable {\n  max-height: 340px;\n  overflow-y: scroll;\n}\n.container {\n  margin-right: auto;\n  margin-left: auto;\n  padding-left: 15px;\n  padding-right: 15px;\n}\n@media (min-width: 768px) {\n  .container {\n    width: 750px;\n  }\n}\n@media (min-width: 992px) {\n  .container {\n    width: 970px;\n  }\n}\n@media (min-width: 1200px) {\n  .container {\n    width: 1170px;\n  }\n}\n.container-fluid {\n  margin-right: auto;\n  margin-left: auto;\n  padding-left: 15px;\n  padding-right: 15px;\n}\n.row {\n  margin-left: -15px;\n  margin-right: -15px;\n}\n.col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {\n  position: relative;\n  min-height: 1px;\n  padding-left: 15px;\n  padding-right: 15px;\n}\n.col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9, .col-xs-10, .col-xs-11, .col-xs-12 {\n  float: left;\n}\n.col-xs-12 {\n  width: 100%;\n}\n.col-xs-11 {\n  width: 91.66666667%;\n}\n.col-xs-10 {\n  width: 83.33333333%;\n}\n.col-xs-9 {\n  width: 75%;\n}\n.col-xs-8 {\n  width: 66.66666667%;\n}\n.col-xs-7 {\n  width: 58.33333333%;\n}\n.col-xs-6 {\n  width: 50%;\n}\n.col-xs-5 {\n  width: 41.66666667%;\n}\n.col-xs-4 {\n  width: 33.33333333%;\n}\n.col-xs-3 {\n  width: 25%;\n}\n.col-xs-2 {\n  width: 16.66666667%;\n}\n.col-xs-1 {\n  width: 8.33333333%;\n}\n.col-xs-pull-12 {\n  right: 100%;\n}\n.col-xs-pull-11 {\n  right: 91.66666667%;\n}\n.col-xs-pull-10 {\n  right: 83.33333333%;\n}\n.col-xs-pull-9 {\n  right: 75%;\n}\n.col-xs-pull-8 {\n  right: 66.66666667%;\n}\n.col-xs-pull-7 {\n  right: 58.33333333%;\n}\n.col-xs-pull-6 {\n  right: 50%;\n}\n.col-xs-pull-5 {\n  right: 41.66666667%;\n}\n.col-xs-pull-4 {\n  right: 33.33333333%;\n}\n.col-xs-pull-3 {\n  right: 25%;\n}\n.col-xs-pull-2 {\n  right: 16.66666667%;\n}\n.col-xs-pull-1 {\n  right: 8.33333333%;\n}\n.col-xs-pull-0 {\n  right: auto;\n}\n.col-xs-push-12 {\n  left: 100%;\n}\n.col-xs-push-11 {\n  left: 91.66666667%;\n}\n.col-xs-push-10 {\n  left: 83.33333333%;\n}\n.col-xs-push-9 {\n  left: 75%;\n}\n.col-xs-push-8 {\n  left: 66.66666667%;\n}\n.col-xs-push-7 {\n  left: 58.33333333%;\n}\n.col-xs-push-6 {\n  left: 50%;\n}\n.col-xs-push-5 {\n  left: 41.66666667%;\n}\n.col-xs-push-4 {\n  left: 33.33333333%;\n}\n.col-xs-push-3 {\n  left: 25%;\n}\n.col-xs-push-2 {\n  left: 16.66666667%;\n}\n.col-xs-push-1 {\n  left: 8.33333333%;\n}\n.col-xs-push-0 {\n  left: auto;\n}\n.col-xs-offset-12 {\n  margin-left: 100%;\n}\n.col-xs-offset-11 {\n  margin-left: 91.66666667%;\n}\n.col-xs-offset-10 {\n  margin-left: 83.33333333%;\n}\n.col-xs-offset-9 {\n  margin-left: 75%;\n}\n.col-xs-offset-8 {\n  margin-left: 66.66666667%;\n}\n.col-xs-offset-7 {\n  margin-left: 58.33333333%;\n}\n.col-xs-offset-6 {\n  margin-left: 50%;\n}\n.col-xs-offset-5 {\n  margin-left: 41.66666667%;\n}\n.col-xs-offset-4 {\n  margin-left: 33.33333333%;\n}\n.col-xs-offset-3 {\n  margin-left: 25%;\n}\n.col-xs-offset-2 {\n  margin-left: 16.66666667%;\n}\n.col-xs-offset-1 {\n  margin-left: 8.33333333%;\n}\n.col-xs-offset-0 {\n  margin-left: 0%;\n}\n@media (min-width: 768px) {\n  .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12 {\n    float: left;\n  }\n  .col-sm-12 {\n    width: 100%;\n  }\n  .col-sm-11 {\n    width: 91.66666667%;\n  }\n  .col-sm-10 {\n    width: 83.33333333%;\n  }\n  .col-sm-9 {\n    width: 75%;\n  }\n  .col-sm-8 {\n    width: 66.66666667%;\n  }\n  .col-sm-7 {\n    width: 58.33333333%;\n  }\n  .col-sm-6 {\n    width: 50%;\n  }\n  .col-sm-5 {\n    width: 41.66666667%;\n  }\n  .col-sm-4 {\n    width: 33.33333333%;\n  }\n  .col-sm-3 {\n    width: 25%;\n  }\n  .col-sm-2 {\n    width: 16.66666667%;\n  }\n  .col-sm-1 {\n    width: 8.33333333%;\n  }\n  .col-sm-pull-12 {\n    right: 100%;\n  }\n  .col-sm-pull-11 {\n    right: 91.66666667%;\n  }\n  .col-sm-pull-10 {\n    right: 83.33333333%;\n  }\n  .col-sm-pull-9 {\n    right: 75%;\n  }\n  .col-sm-pull-8 {\n    right: 66.66666667%;\n  }\n  .col-sm-pull-7 {\n    right: 58.33333333%;\n  }\n  .col-sm-pull-6 {\n    right: 50%;\n  }\n  .col-sm-pull-5 {\n    right: 41.66666667%;\n  }\n  .col-sm-pull-4 {\n    right: 33.33333333%;\n  }\n  .col-sm-pull-3 {\n    right: 25%;\n  }\n  .col-sm-pull-2 {\n    right: 16.66666667%;\n  }\n  .col-sm-pull-1 {\n    right: 8.33333333%;\n  }\n  .col-sm-pull-0 {\n    right: auto;\n  }\n  .col-sm-push-12 {\n    left: 100%;\n  }\n  .col-sm-push-11 {\n    left: 91.66666667%;\n  }\n  .col-sm-push-10 {\n    left: 83.33333333%;\n  }\n  .col-sm-push-9 {\n    left: 75%;\n  }\n  .col-sm-push-8 {\n    left: 66.66666667%;\n  }\n  .col-sm-push-7 {\n    left: 58.33333333%;\n  }\n  .col-sm-push-6 {\n    left: 50%;\n  }\n  .col-sm-push-5 {\n    left: 41.66666667%;\n  }\n  .col-sm-push-4 {\n    left: 33.33333333%;\n  }\n  .col-sm-push-3 {\n    left: 25%;\n  }\n  .col-sm-push-2 {\n    left: 16.66666667%;\n  }\n  .col-sm-push-1 {\n    left: 8.33333333%;\n  }\n  .col-sm-push-0 {\n    left: auto;\n  }\n  .col-sm-offset-12 {\n    margin-left: 100%;\n  }\n  .col-sm-offset-11 {\n    margin-left: 91.66666667%;\n  }\n  .col-sm-offset-10 {\n    margin-left: 83.33333333%;\n  }\n  .col-sm-offset-9 {\n    margin-left: 75%;\n  }\n  .col-sm-offset-8 {\n    margin-left: 66.66666667%;\n  }\n  .col-sm-offset-7 {\n    margin-left: 58.33333333%;\n  }\n  .col-sm-offset-6 {\n    margin-left: 50%;\n  }\n  .col-sm-offset-5 {\n    margin-left: 41.66666667%;\n  }\n  .col-sm-offset-4 {\n    margin-left: 33.33333333%;\n  }\n  .col-sm-offset-3 {\n    margin-left: 25%;\n  }\n  .col-sm-offset-2 {\n    margin-left: 16.66666667%;\n  }\n  .col-sm-offset-1 {\n    margin-left: 8.33333333%;\n  }\n  .col-sm-offset-0 {\n    margin-left: 0%;\n  }\n}\n@media (min-width: 992px) {\n  .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12 {\n    float: left;\n  }\n  .col-md-12 {\n    width: 100%;\n  }\n  .col-md-11 {\n    width: 91.66666667%;\n  }\n  .col-md-10 {\n    width: 83.33333333%;\n  }\n  .col-md-9 {\n    width: 75%;\n  }\n  .col-md-8 {\n    width: 66.66666667%;\n  }\n  .col-md-7 {\n    width: 58.33333333%;\n  }\n  .col-md-6 {\n    width: 50%;\n  }\n  .col-md-5 {\n    width: 41.66666667%;\n  }\n  .col-md-4 {\n    width: 33.33333333%;\n  }\n  .col-md-3 {\n    width: 25%;\n  }\n  .col-md-2 {\n    width: 16.66666667%;\n  }\n  .col-md-1 {\n    width: 8.33333333%;\n  }\n  .col-md-pull-12 {\n    right: 100%;\n  }\n  .col-md-pull-11 {\n    right: 91.66666667%;\n  }\n  .col-md-pull-10 {\n    right: 83.33333333%;\n  }\n  .col-md-pull-9 {\n    right: 75%;\n  }\n  .col-md-pull-8 {\n    right: 66.66666667%;\n  }\n  .col-md-pull-7 {\n    right: 58.33333333%;\n  }\n  .col-md-pull-6 {\n    right: 50%;\n  }\n  .col-md-pull-5 {\n    right: 41.66666667%;\n  }\n  .col-md-pull-4 {\n    right: 33.33333333%;\n  }\n  .col-md-pull-3 {\n    right: 25%;\n  }\n  .col-md-pull-2 {\n    right: 16.66666667%;\n  }\n  .col-md-pull-1 {\n    right: 8.33333333%;\n  }\n  .col-md-pull-0 {\n    right: auto;\n  }\n  .col-md-push-12 {\n    left: 100%;\n  }\n  .col-md-push-11 {\n    left: 91.66666667%;\n  }\n  .col-md-push-10 {\n    left: 83.33333333%;\n  }\n  .col-md-push-9 {\n    left: 75%;\n  }\n  .col-md-push-8 {\n    left: 66.66666667%;\n  }\n  .col-md-push-7 {\n    left: 58.33333333%;\n  }\n  .col-md-push-6 {\n    left: 50%;\n  }\n  .col-md-push-5 {\n    left: 41.66666667%;\n  }\n  .col-md-push-4 {\n    left: 33.33333333%;\n  }\n  .col-md-push-3 {\n    left: 25%;\n  }\n  .col-md-push-2 {\n    left: 16.66666667%;\n  }\n  .col-md-push-1 {\n    left: 8.33333333%;\n  }\n  .col-md-push-0 {\n    left: auto;\n  }\n  .col-md-offset-12 {\n    margin-left: 100%;\n  }\n  .col-md-offset-11 {\n    margin-left: 91.66666667%;\n  }\n  .col-md-offset-10 {\n    margin-left: 83.33333333%;\n  }\n  .col-md-offset-9 {\n    margin-left: 75%;\n  }\n  .col-md-offset-8 {\n    margin-left: 66.66666667%;\n  }\n  .col-md-offset-7 {\n    margin-left: 58.33333333%;\n  }\n  .col-md-offset-6 {\n    margin-left: 50%;\n  }\n  .col-md-offset-5 {\n    margin-left: 41.66666667%;\n  }\n  .col-md-offset-4 {\n    margin-left: 33.33333333%;\n  }\n  .col-md-offset-3 {\n    margin-left: 25%;\n  }\n  .col-md-offset-2 {\n    margin-left: 16.66666667%;\n  }\n  .col-md-offset-1 {\n    margin-left: 8.33333333%;\n  }\n  .col-md-offset-0 {\n    margin-left: 0%;\n  }\n}\n@media (min-width: 1200px) {\n  .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12 {\n    float: left;\n  }\n  .col-lg-12 {\n    width: 100%;\n  }\n  .col-lg-11 {\n    width: 91.66666667%;\n  }\n  .col-lg-10 {\n    width: 83.33333333%;\n  }\n  .col-lg-9 {\n    width: 75%;\n  }\n  .col-lg-8 {\n    width: 66.66666667%;\n  }\n  .col-lg-7 {\n    width: 58.33333333%;\n  }\n  .col-lg-6 {\n    width: 50%;\n  }\n  .col-lg-5 {\n    width: 41.66666667%;\n  }\n  .col-lg-4 {\n    width: 33.33333333%;\n  }\n  .col-lg-3 {\n    width: 25%;\n  }\n  .col-lg-2 {\n    width: 16.66666667%;\n  }\n  .col-lg-1 {\n    width: 8.33333333%;\n  }\n  .col-lg-pull-12 {\n    right: 100%;\n  }\n  .col-lg-pull-11 {\n    right: 91.66666667%;\n  }\n  .col-lg-pull-10 {\n    right: 83.33333333%;\n  }\n  .col-lg-pull-9 {\n    right: 75%;\n  }\n  .col-lg-pull-8 {\n    right: 66.66666667%;\n  }\n  .col-lg-pull-7 {\n    right: 58.33333333%;\n  }\n  .col-lg-pull-6 {\n    right: 50%;\n  }\n  .col-lg-pull-5 {\n    right: 41.66666667%;\n  }\n  .col-lg-pull-4 {\n    right: 33.33333333%;\n  }\n  .col-lg-pull-3 {\n    right: 25%;\n  }\n  .col-lg-pull-2 {\n    right: 16.66666667%;\n  }\n  .col-lg-pull-1 {\n    right: 8.33333333%;\n  }\n  .col-lg-pull-0 {\n    right: auto;\n  }\n  .col-lg-push-12 {\n    left: 100%;\n  }\n  .col-lg-push-11 {\n    left: 91.66666667%;\n  }\n  .col-lg-push-10 {\n    left: 83.33333333%;\n  }\n  .col-lg-push-9 {\n    left: 75%;\n  }\n  .col-lg-push-8 {\n    left: 66.66666667%;\n  }\n  .col-lg-push-7 {\n    left: 58.33333333%;\n  }\n  .col-lg-push-6 {\n    left: 50%;\n  }\n  .col-lg-push-5 {\n    left: 41.66666667%;\n  }\n  .col-lg-push-4 {\n    left: 33.33333333%;\n  }\n  .col-lg-push-3 {\n    left: 25%;\n  }\n  .col-lg-push-2 {\n    left: 16.66666667%;\n  }\n  .col-lg-push-1 {\n    left: 8.33333333%;\n  }\n  .col-lg-push-0 {\n    left: auto;\n  }\n  .col-lg-offset-12 {\n    margin-left: 100%;\n  }\n  .col-lg-offset-11 {\n    margin-left: 91.66666667%;\n  }\n  .col-lg-offset-10 {\n    margin-left: 83.33333333%;\n  }\n  .col-lg-offset-9 {\n    margin-left: 75%;\n  }\n  .col-lg-offset-8 {\n    margin-left: 66.66666667%;\n  }\n  .col-lg-offset-7 {\n    margin-left: 58.33333333%;\n  }\n  .col-lg-offset-6 {\n    margin-left: 50%;\n  }\n  .col-lg-offset-5 {\n    margin-left: 41.66666667%;\n  }\n  .col-lg-offset-4 {\n    margin-left: 33.33333333%;\n  }\n  .col-lg-offset-3 {\n    margin-left: 25%;\n  }\n  .col-lg-offset-2 {\n    margin-left: 16.66666667%;\n  }\n  .col-lg-offset-1 {\n    margin-left: 8.33333333%;\n  }\n  .col-lg-offset-0 {\n    margin-left: 0%;\n  }\n}\ntable {\n  background-color: transparent;\n}\ncaption {\n  padding-top: 8px;\n  padding-bottom: 8px;\n  color: #b4bcc2;\n  text-align: left;\n}\nth {\n  text-align: left;\n}\n.table {\n  width: 100%;\n  max-width: 100%;\n  margin-bottom: 21px;\n}\n.table > thead > tr > th,\n.table > tbody > tr > th,\n.table > tfoot > tr > th,\n.table > thead > tr > td,\n.table > tbody > tr > td,\n.table > tfoot > tr > td {\n  padding: 8px;\n  line-height: 1.42857143;\n  vertical-align: top;\n  border-top: 1px solid #ecf0f1;\n}\n.table > thead > tr > th {\n  vertical-align: bottom;\n  border-bottom: 2px solid #ecf0f1;\n}\n.table > caption + thead > tr:first-child > th,\n.table > colgroup + thead > tr:first-child > th,\n.table > thead:first-child > tr:first-child > th,\n.table > caption + thead > tr:first-child > td,\n.table > colgroup + thead > tr:first-child > td,\n.table > thead:first-child > tr:first-child > td {\n  border-top: 0;\n}\n.table > tbody + tbody {\n  border-top: 2px solid #ecf0f1;\n}\n.table .table {\n  background-color: #ffffff;\n}\n.table-condensed > thead > tr > th,\n.table-condensed > tbody > tr > th,\n.table-condensed > tfoot > tr > th,\n.table-condensed > thead > tr > td,\n.table-condensed > tbody > tr > td,\n.table-condensed > tfoot > tr > td {\n  padding: 5px;\n}\n.table-bordered {\n  border: 1px solid #ecf0f1;\n}\n.table-bordered > thead > tr > th,\n.table-bordered > tbody > tr > th,\n.table-bordered > tfoot > tr > th,\n.table-bordered > thead > tr > td,\n.table-bordered > tbody > tr > td,\n.table-bordered > tfoot > tr > td {\n  border: 1px solid #ecf0f1;\n}\n.table-bordered > thead > tr > th,\n.table-bordered > thead > tr > td {\n  border-bottom-width: 2px;\n}\n.table-striped > tbody > tr:nth-of-type(odd) {\n  background-color: #f9f9f9;\n}\n.table-hover > tbody > tr:hover {\n  background-color: #ecf0f1;\n}\ntable col[class*=\"col-\"] {\n  position: static;\n  float: none;\n  display: table-column;\n}\ntable td[class*=\"col-\"],\ntable th[class*=\"col-\"] {\n  position: static;\n  float: none;\n  display: table-cell;\n}\n.table > thead > tr > td.active,\n.table > tbody > tr > td.active,\n.table > tfoot > tr > td.active,\n.table > thead > tr > th.active,\n.table > tbody > tr > th.active,\n.table > tfoot > tr > th.active,\n.table > thead > tr.active > td,\n.table > tbody > tr.active > td,\n.table > tfoot > tr.active > td,\n.table > thead > tr.active > th,\n.table > tbody > tr.active > th,\n.table > tfoot > tr.active > th {\n  background-color: #ecf0f1;\n}\n.table-hover > tbody > tr > td.active:hover,\n.table-hover > tbody > tr > th.active:hover,\n.table-hover > tbody > tr.active:hover > td,\n.table-hover > tbody > tr:hover > .active,\n.table-hover > tbody > tr.active:hover > th {\n  background-color: #dde4e6;\n}\n.table > thead > tr > td.success,\n.table > tbody > tr > td.success,\n.table > tfoot > tr > td.success,\n.table > thead > tr > th.success,\n.table > tbody > tr > th.success,\n.table > tfoot > tr > th.success,\n.table > thead > tr.success > td,\n.table > tbody > tr.success > td,\n.table > tfoot > tr.success > td,\n.table > thead > tr.success > th,\n.table > tbody > tr.success > th,\n.table > tfoot > tr.success > th {\n  background-color: #18bc9c;\n}\n.table-hover > tbody > tr > td.success:hover,\n.table-hover > tbody > tr > th.success:hover,\n.table-hover > tbody > tr.success:hover > td,\n.table-hover > tbody > tr:hover > .success,\n.table-hover > tbody > tr.success:hover > th {\n  background-color: #15a589;\n}\n.table > thead > tr > td.info,\n.table > tbody > tr > td.info,\n.table > tfoot > tr > td.info,\n.table > thead > tr > th.info,\n.table > tbody > tr > th.info,\n.table > tfoot > tr > th.info,\n.table > thead > tr.info > td,\n.table > tbody > tr.info > td,\n.table > tfoot > tr.info > td,\n.table > thead > tr.info > th,\n.table > tbody > tr.info > th,\n.table > tfoot > tr.info > th {\n  background-color: #3498db;\n}\n.table-hover > tbody > tr > td.info:hover,\n.table-hover > tbody > tr > th.info:hover,\n.table-hover > tbody > tr.info:hover > td,\n.table-hover > tbody > tr:hover > .info,\n.table-hover > tbody > tr.info:hover > th {\n  background-color: #258cd1;\n}\n.table > thead > tr > td.warning,\n.table > tbody > tr > td.warning,\n.table > tfoot > tr > td.warning,\n.table > thead > tr > th.warning,\n.table > tbody > tr > th.warning,\n.table > tfoot > tr > th.warning,\n.table > thead > tr.warning > td,\n.table > tbody > tr.warning > td,\n.table > tfoot > tr.warning > td,\n.table > thead > tr.warning > th,\n.table > tbody > tr.warning > th,\n.table > tfoot > tr.warning > th {\n  background-color: #f39c12;\n}\n.table-hover > tbody > tr > td.warning:hover,\n.table-hover > tbody > tr > th.warning:hover,\n.table-hover > tbody > tr.warning:hover > td,\n.table-hover > tbody > tr:hover > .warning,\n.table-hover > tbody > tr.warning:hover > th {\n  background-color: #e08e0b;\n}\n.table > thead > tr > td.danger,\n.table > tbody > tr > td.danger,\n.table > tfoot > tr > td.danger,\n.table > thead > tr > th.danger,\n.table > tbody > tr > th.danger,\n.table > tfoot > tr > th.danger,\n.table > thead > tr.danger > td,\n.table > tbody > tr.danger > td,\n.table > tfoot > tr.danger > td,\n.table > thead > tr.danger > th,\n.table > tbody > tr.danger > th,\n.table > tfoot > tr.danger > th {\n  background-color: #e74c3c;\n}\n.table-hover > tbody > tr > td.danger:hover,\n.table-hover > tbody > tr > th.danger:hover,\n.table-hover > tbody > tr.danger:hover > td,\n.table-hover > tbody > tr:hover > .danger,\n.table-hover > tbody > tr.danger:hover > th {\n  background-color: #e43725;\n}\n.table-responsive {\n  overflow-x: auto;\n  min-height: 0.01%;\n}\n@media screen and (max-width: 767px) {\n  .table-responsive {\n    width: 100%;\n    margin-bottom: 15.75px;\n    overflow-y: hidden;\n    -ms-overflow-style: -ms-autohiding-scrollbar;\n    border: 1px solid #ecf0f1;\n  }\n  .table-responsive > .table {\n    margin-bottom: 0;\n  }\n  .table-responsive > .table > thead > tr > th,\n  .table-responsive > .table > tbody > tr > th,\n  .table-responsive > .table > tfoot > tr > th,\n  .table-responsive > .table > thead > tr > td,\n  .table-responsive > .table > tbody > tr > td,\n  .table-responsive > .table > tfoot > tr > td {\n    white-space: nowrap;\n  }\n  .table-responsive > .table-bordered {\n    border: 0;\n  }\n  .table-responsive > .table-bordered > thead > tr > th:first-child,\n  .table-responsive > .table-bordered > tbody > tr > th:first-child,\n  .table-responsive > .table-bordered > tfoot > tr > th:first-child,\n  .table-responsive > .table-bordered > thead > tr > td:first-child,\n  .table-responsive > .table-bordered > tbody > tr > td:first-child,\n  .table-responsive > .table-bordered > tfoot > tr > td:first-child {\n    border-left: 0;\n  }\n  .table-responsive > .table-bordered > thead > tr > th:last-child,\n  .table-responsive > .table-bordered > tbody > tr > th:last-child,\n  .table-responsive > .table-bordered > tfoot > tr > th:last-child,\n  .table-responsive > .table-bordered > thead > tr > td:last-child,\n  .table-responsive > .table-bordered > tbody > tr > td:last-child,\n  .table-responsive > .table-bordered > tfoot > tr > td:last-child {\n    border-right: 0;\n  }\n  .table-responsive > .table-bordered > tbody > tr:last-child > th,\n  .table-responsive > .table-bordered > tfoot > tr:last-child > th,\n  .table-responsive > .table-bordered > tbody > tr:last-child > td,\n  .table-responsive > .table-bordered > tfoot > tr:last-child > td {\n    border-bottom: 0;\n  }\n}\nfieldset {\n  padding: 0;\n  margin: 0;\n  border: 0;\n  min-width: 0;\n}\nlegend {\n  display: block;\n  width: 100%;\n  padding: 0;\n  margin-bottom: 21px;\n  font-size: 22.5px;\n  line-height: inherit;\n  color: #2c3e50;\n  border: 0;\n  border-bottom: 1px solid transparent;\n}\nlabel {\n  display: inline-block;\n  max-width: 100%;\n  margin-bottom: 5px;\n  font-weight: bold;\n}\ninput[type=\"search\"] {\n  -webkit-box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  box-sizing: border-box;\n}\ninput[type=\"radio\"],\ninput[type=\"checkbox\"] {\n  margin: 4px 0 0;\n  margin-top: 1px \\9;\n  line-height: normal;\n}\ninput[type=\"file\"] {\n  display: block;\n}\ninput[type=\"range\"] {\n  display: block;\n  width: 100%;\n}\nselect[multiple],\nselect[size] {\n  height: auto;\n}\ninput[type=\"file\"]:focus,\ninput[type=\"radio\"]:focus,\ninput[type=\"checkbox\"]:focus {\n  outline: 5px auto -webkit-focus-ring-color;\n  outline-offset: -2px;\n}\noutput {\n  display: block;\n  padding-top: 11px;\n  font-size: 15px;\n  line-height: 1.42857143;\n  color: #2c3e50;\n}\n.form-control {\n  display: block;\n  width: 100%;\n  height: 45px;\n  padding: 10px 15px;\n  font-size: 15px;\n  line-height: 1.42857143;\n  color: #2c3e50;\n  background-color: #ffffff;\n  background-image: none;\n  border: 1px solid #dce4ec;\n  border-radius: 4px;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\n  -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;\n  -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;\n  transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;\n}\n.form-control:focus {\n  border-color: #2c3e50;\n  outline: 0;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(44, 62, 80, 0.6);\n  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(44, 62, 80, 0.6);\n}\n.form-control::-moz-placeholder {\n  color: #acb6c0;\n  opacity: 1;\n}\n.form-control:-ms-input-placeholder {\n  color: #acb6c0;\n}\n.form-control::-webkit-input-placeholder {\n  color: #acb6c0;\n}\n.form-control::-ms-expand {\n  border: 0;\n  background-color: transparent;\n}\n.form-control[disabled],\n.form-control[readonly],\nfieldset[disabled] .form-control {\n  background-color: #ecf0f1;\n  opacity: 1;\n}\n.form-control[disabled],\nfieldset[disabled] .form-control {\n  cursor: not-allowed;\n}\ntextarea.form-control {\n  height: auto;\n}\ninput[type=\"search\"] {\n  -webkit-appearance: none;\n}\n@media screen and (-webkit-min-device-pixel-ratio: 0) {\n  input[type=\"date\"].form-control,\n  input[type=\"time\"].form-control,\n  input[type=\"datetime-local\"].form-control,\n  input[type=\"month\"].form-control {\n    line-height: 45px;\n  }\n  input[type=\"date\"].input-sm,\n  input[type=\"time\"].input-sm,\n  input[type=\"datetime-local\"].input-sm,\n  input[type=\"month\"].input-sm,\n  .input-group-sm input[type=\"date\"],\n  .input-group-sm input[type=\"time\"],\n  .input-group-sm input[type=\"datetime-local\"],\n  .input-group-sm input[type=\"month\"] {\n    line-height: 35px;\n  }\n  input[type=\"date\"].input-lg,\n  input[type=\"time\"].input-lg,\n  input[type=\"datetime-local\"].input-lg,\n  input[type=\"month\"].input-lg,\n  .input-group-lg input[type=\"date\"],\n  .input-group-lg input[type=\"time\"],\n  .input-group-lg input[type=\"datetime-local\"],\n  .input-group-lg input[type=\"month\"] {\n    line-height: 66px;\n  }\n}\n.form-group {\n  margin-bottom: 15px;\n}\n.radio,\n.checkbox {\n  position: relative;\n  display: block;\n  margin-top: 10px;\n  margin-bottom: 10px;\n}\n.radio label,\n.checkbox label {\n  min-height: 21px;\n  padding-left: 20px;\n  margin-bottom: 0;\n  font-weight: normal;\n  cursor: pointer;\n}\n.radio input[type=\"radio\"],\n.radio-inline input[type=\"radio\"],\n.checkbox input[type=\"checkbox\"],\n.checkbox-inline input[type=\"checkbox\"] {\n  position: absolute;\n  margin-left: -20px;\n  margin-top: 4px \\9;\n}\n.radio + .radio,\n.checkbox + .checkbox {\n  margin-top: -5px;\n}\n.radio-inline,\n.checkbox-inline {\n  position: relative;\n  display: inline-block;\n  padding-left: 20px;\n  margin-bottom: 0;\n  vertical-align: middle;\n  font-weight: normal;\n  cursor: pointer;\n}\n.radio-inline + .radio-inline,\n.checkbox-inline + .checkbox-inline {\n  margin-top: 0;\n  margin-left: 10px;\n}\ninput[type=\"radio\"][disabled],\ninput[type=\"checkbox\"][disabled],\ninput[type=\"radio\"].disabled,\ninput[type=\"checkbox\"].disabled,\nfieldset[disabled] input[type=\"radio\"],\nfieldset[disabled] input[type=\"checkbox\"] {\n  cursor: not-allowed;\n}\n.radio-inline.disabled,\n.checkbox-inline.disabled,\nfieldset[disabled] .radio-inline,\nfieldset[disabled] .checkbox-inline {\n  cursor: not-allowed;\n}\n.radio.disabled label,\n.checkbox.disabled label,\nfieldset[disabled] .radio label,\nfieldset[disabled] .checkbox label {\n  cursor: not-allowed;\n}\n.form-control-static {\n  padding-top: 11px;\n  padding-bottom: 11px;\n  margin-bottom: 0;\n  min-height: 36px;\n}\n.form-control-static.input-lg,\n.form-control-static.input-sm {\n  padding-left: 0;\n  padding-right: 0;\n}\n.input-sm {\n  height: 35px;\n  padding: 6px 9px;\n  font-size: 13px;\n  line-height: 1.5;\n  border-radius: 3px;\n}\nselect.input-sm {\n  height: 35px;\n  line-height: 35px;\n}\ntextarea.input-sm,\nselect[multiple].input-sm {\n  height: auto;\n}\n.form-group-sm .form-control {\n  height: 35px;\n  padding: 6px 9px;\n  font-size: 13px;\n  line-height: 1.5;\n  border-radius: 3px;\n}\n.form-group-sm select.form-control {\n  height: 35px;\n  line-height: 35px;\n}\n.form-group-sm textarea.form-control,\n.form-group-sm select[multiple].form-control {\n  height: auto;\n}\n.form-group-sm .form-control-static {\n  height: 35px;\n  min-height: 34px;\n  padding: 7px 9px;\n  font-size: 13px;\n  line-height: 1.5;\n}\n.input-lg {\n  height: 66px;\n  padding: 18px 27px;\n  font-size: 19px;\n  line-height: 1.3333333;\n  border-radius: 6px;\n}\nselect.input-lg {\n  height: 66px;\n  line-height: 66px;\n}\ntextarea.input-lg,\nselect[multiple].input-lg {\n  height: auto;\n}\n.form-group-lg .form-control {\n  height: 66px;\n  padding: 18px 27px;\n  font-size: 19px;\n  line-height: 1.3333333;\n  border-radius: 6px;\n}\n.form-group-lg select.form-control {\n  height: 66px;\n  line-height: 66px;\n}\n.form-group-lg textarea.form-control,\n.form-group-lg select[multiple].form-control {\n  height: auto;\n}\n.form-group-lg .form-control-static {\n  height: 66px;\n  min-height: 40px;\n  padding: 19px 27px;\n  font-size: 19px;\n  line-height: 1.3333333;\n}\n.has-feedback {\n  position: relative;\n}\n.has-feedback .form-control {\n  padding-right: 56.25px;\n}\n.form-control-feedback {\n  position: absolute;\n  top: 0;\n  right: 0;\n  z-index: 2;\n  display: block;\n  width: 45px;\n  height: 45px;\n  line-height: 45px;\n  text-align: center;\n  pointer-events: none;\n}\n.input-lg + .form-control-feedback,\n.input-group-lg + .form-control-feedback,\n.form-group-lg .form-control + .form-control-feedback {\n  width: 66px;\n  height: 66px;\n  line-height: 66px;\n}\n.input-sm + .form-control-feedback,\n.input-group-sm + .form-control-feedback,\n.form-group-sm .form-control + .form-control-feedback {\n  width: 35px;\n  height: 35px;\n  line-height: 35px;\n}\n.has-success .help-block,\n.has-success .control-label,\n.has-success .radio,\n.has-success .checkbox,\n.has-success .radio-inline,\n.has-success .checkbox-inline,\n.has-success.radio label,\n.has-success.checkbox label,\n.has-success.radio-inline label,\n.has-success.checkbox-inline label {\n  color: #ffffff;\n}\n.has-success .form-control {\n  border-color: #ffffff;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\n}\n.has-success .form-control:focus {\n  border-color: #e6e6e6;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ffffff;\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ffffff;\n}\n.has-success .input-group-addon {\n  color: #ffffff;\n  border-color: #ffffff;\n  background-color: #18bc9c;\n}\n.has-success .form-control-feedback {\n  color: #ffffff;\n}\n.has-warning .help-block,\n.has-warning .control-label,\n.has-warning .radio,\n.has-warning .checkbox,\n.has-warning .radio-inline,\n.has-warning .checkbox-inline,\n.has-warning.radio label,\n.has-warning.checkbox label,\n.has-warning.radio-inline label,\n.has-warning.checkbox-inline label {\n  color: #ffffff;\n}\n.has-warning .form-control {\n  border-color: #ffffff;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\n}\n.has-warning .form-control:focus {\n  border-color: #e6e6e6;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ffffff;\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ffffff;\n}\n.has-warning .input-group-addon {\n  color: #ffffff;\n  border-color: #ffffff;\n  background-color: #f39c12;\n}\n.has-warning .form-control-feedback {\n  color: #ffffff;\n}\n.has-error .help-block,\n.has-error .control-label,\n.has-error .radio,\n.has-error .checkbox,\n.has-error .radio-inline,\n.has-error .checkbox-inline,\n.has-error.radio label,\n.has-error.checkbox label,\n.has-error.radio-inline label,\n.has-error.checkbox-inline label {\n  color: #ffffff;\n}\n.has-error .form-control {\n  border-color: #ffffff;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\n}\n.has-error .form-control:focus {\n  border-color: #e6e6e6;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ffffff;\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ffffff;\n}\n.has-error .input-group-addon {\n  color: #ffffff;\n  border-color: #ffffff;\n  background-color: #e74c3c;\n}\n.has-error .form-control-feedback {\n  color: #ffffff;\n}\n.has-feedback label ~ .form-control-feedback {\n  top: 26px;\n}\n.has-feedback label.sr-only ~ .form-control-feedback {\n  top: 0;\n}\n.help-block {\n  display: block;\n  margin-top: 5px;\n  margin-bottom: 10px;\n  color: #597ea2;\n}\n@media (min-width: 768px) {\n  .form-inline .form-group {\n    display: inline-block;\n    margin-bottom: 0;\n    vertical-align: middle;\n  }\n  .form-inline .form-control {\n    display: inline-block;\n    width: auto;\n    vertical-align: middle;\n  }\n  .form-inline .form-control-static {\n    display: inline-block;\n  }\n  .form-inline .input-group {\n    display: inline-table;\n    vertical-align: middle;\n  }\n  .form-inline .input-group .input-group-addon,\n  .form-inline .input-group .input-group-btn,\n  .form-inline .input-group .form-control {\n    width: auto;\n  }\n  .form-inline .input-group > .form-control {\n    width: 100%;\n  }\n  .form-inline .control-label {\n    margin-bottom: 0;\n    vertical-align: middle;\n  }\n  .form-inline .radio,\n  .form-inline .checkbox {\n    display: inline-block;\n    margin-top: 0;\n    margin-bottom: 0;\n    vertical-align: middle;\n  }\n  .form-inline .radio label,\n  .form-inline .checkbox label {\n    padding-left: 0;\n  }\n  .form-inline .radio input[type=\"radio\"],\n  .form-inline .checkbox input[type=\"checkbox\"] {\n    position: relative;\n    margin-left: 0;\n  }\n  .form-inline .has-feedback .form-control-feedback {\n    top: 0;\n  }\n}\n.form-horizontal .radio,\n.form-horizontal .checkbox,\n.form-horizontal .radio-inline,\n.form-horizontal .checkbox-inline {\n  margin-top: 0;\n  margin-bottom: 0;\n  padding-top: 11px;\n}\n.form-horizontal .radio,\n.form-horizontal .checkbox {\n  min-height: 32px;\n}\n.form-horizontal .form-group {\n  margin-left: -15px;\n  margin-right: -15px;\n}\n@media (min-width: 768px) {\n  .form-horizontal .control-label {\n    text-align: right;\n    margin-bottom: 0;\n    padding-top: 11px;\n  }\n}\n.form-horizontal .has-feedback .form-control-feedback {\n  right: 15px;\n}\n@media (min-width: 768px) {\n  .form-horizontal .form-group-lg .control-label {\n    padding-top: 19px;\n    font-size: 19px;\n  }\n}\n@media (min-width: 768px) {\n  .form-horizontal .form-group-sm .control-label {\n    padding-top: 7px;\n    font-size: 13px;\n  }\n}\n.btn {\n  display: inline-block;\n  margin-bottom: 0;\n  font-weight: normal;\n  text-align: center;\n  vertical-align: middle;\n  -ms-touch-action: manipulation;\n      touch-action: manipulation;\n  cursor: pointer;\n  background-image: none;\n  border: 1px solid transparent;\n  white-space: nowrap;\n  padding: 10px 15px;\n  font-size: 15px;\n  line-height: 1.42857143;\n  border-radius: 4px;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n}\n.btn:focus,\n.btn:active:focus,\n.btn.active:focus,\n.btn.focus,\n.btn:active.focus,\n.btn.active.focus {\n  outline: 5px auto -webkit-focus-ring-color;\n  outline-offset: -2px;\n}\n.btn:hover,\n.btn:focus,\n.btn.focus {\n  color: #ffffff;\n  text-decoration: none;\n}\n.btn:active,\n.btn.active {\n  outline: 0;\n  background-image: none;\n  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);\n  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);\n}\n.btn.disabled,\n.btn[disabled],\nfieldset[disabled] .btn {\n  cursor: not-allowed;\n  opacity: 0.65;\n  filter: alpha(opacity=65);\n  -webkit-box-shadow: none;\n  box-shadow: none;\n}\na.btn.disabled,\nfieldset[disabled] a.btn {\n  pointer-events: none;\n}\n.btn-default {\n  color: #ffffff;\n  background-color: #95a5a6;\n  border-color: #95a5a6;\n}\n.btn-default:focus,\n.btn-default.focus {\n  color: #ffffff;\n  background-color: #798d8f;\n  border-color: #566566;\n}\n.btn-default:hover {\n  color: #ffffff;\n  background-color: #798d8f;\n  border-color: #74898a;\n}\n.btn-default:active,\n.btn-default.active,\n.open > .dropdown-toggle.btn-default {\n  color: #ffffff;\n  background-color: #798d8f;\n  border-color: #74898a;\n}\n.btn-default:active:hover,\n.btn-default.active:hover,\n.open > .dropdown-toggle.btn-default:hover,\n.btn-default:active:focus,\n.btn-default.active:focus,\n.open > .dropdown-toggle.btn-default:focus,\n.btn-default:active.focus,\n.btn-default.active.focus,\n.open > .dropdown-toggle.btn-default.focus {\n  color: #ffffff;\n  background-color: #687b7c;\n  border-color: #566566;\n}\n.btn-default:active,\n.btn-default.active,\n.open > .dropdown-toggle.btn-default {\n  background-image: none;\n}\n.btn-default.disabled:hover,\n.btn-default[disabled]:hover,\nfieldset[disabled] .btn-default:hover,\n.btn-default.disabled:focus,\n.btn-default[disabled]:focus,\nfieldset[disabled] .btn-default:focus,\n.btn-default.disabled.focus,\n.btn-default[disabled].focus,\nfieldset[disabled] .btn-default.focus {\n  background-color: #95a5a6;\n  border-color: #95a5a6;\n}\n.btn-default .badge {\n  color: #95a5a6;\n  background-color: #ffffff;\n}\n.btn-primary {\n  color: #ffffff;\n  background-color: #2c3e50;\n  border-color: #2c3e50;\n}\n.btn-primary:focus,\n.btn-primary.focus {\n  color: #ffffff;\n  background-color: #1a242f;\n  border-color: #000000;\n}\n.btn-primary:hover {\n  color: #ffffff;\n  background-color: #1a242f;\n  border-color: #161f29;\n}\n.btn-primary:active,\n.btn-primary.active,\n.open > .dropdown-toggle.btn-primary {\n  color: #ffffff;\n  background-color: #1a242f;\n  border-color: #161f29;\n}\n.btn-primary:active:hover,\n.btn-primary.active:hover,\n.open > .dropdown-toggle.btn-primary:hover,\n.btn-primary:active:focus,\n.btn-primary.active:focus,\n.open > .dropdown-toggle.btn-primary:focus,\n.btn-primary:active.focus,\n.btn-primary.active.focus,\n.open > .dropdown-toggle.btn-primary.focus {\n  color: #ffffff;\n  background-color: #0d1318;\n  border-color: #000000;\n}\n.btn-primary:active,\n.btn-primary.active,\n.open > .dropdown-toggle.btn-primary {\n  background-image: none;\n}\n.btn-primary.disabled:hover,\n.btn-primary[disabled]:hover,\nfieldset[disabled] .btn-primary:hover,\n.btn-primary.disabled:focus,\n.btn-primary[disabled]:focus,\nfieldset[disabled] .btn-primary:focus,\n.btn-primary.disabled.focus,\n.btn-primary[disabled].focus,\nfieldset[disabled] .btn-primary.focus {\n  background-color: #2c3e50;\n  border-color: #2c3e50;\n}\n.btn-primary .badge {\n  color: #2c3e50;\n  background-color: #ffffff;\n}\n.btn-success {\n  color: #ffffff;\n  background-color: #18bc9c;\n  border-color: #18bc9c;\n}\n.btn-success:focus,\n.btn-success.focus {\n  color: #ffffff;\n  background-color: #128f76;\n  border-color: #0a4b3e;\n}\n.btn-success:hover {\n  color: #ffffff;\n  background-color: #128f76;\n  border-color: #11866f;\n}\n.btn-success:active,\n.btn-success.active,\n.open > .dropdown-toggle.btn-success {\n  color: #ffffff;\n  background-color: #128f76;\n  border-color: #11866f;\n}\n.btn-success:active:hover,\n.btn-success.active:hover,\n.open > .dropdown-toggle.btn-success:hover,\n.btn-success:active:focus,\n.btn-success.active:focus,\n.open > .dropdown-toggle.btn-success:focus,\n.btn-success:active.focus,\n.btn-success.active.focus,\n.open > .dropdown-toggle.btn-success.focus {\n  color: #ffffff;\n  background-color: #0e6f5c;\n  border-color: #0a4b3e;\n}\n.btn-success:active,\n.btn-success.active,\n.open > .dropdown-toggle.btn-success {\n  background-image: none;\n}\n.btn-success.disabled:hover,\n.btn-success[disabled]:hover,\nfieldset[disabled] .btn-success:hover,\n.btn-success.disabled:focus,\n.btn-success[disabled]:focus,\nfieldset[disabled] .btn-success:focus,\n.btn-success.disabled.focus,\n.btn-success[disabled].focus,\nfieldset[disabled] .btn-success.focus {\n  background-color: #18bc9c;\n  border-color: #18bc9c;\n}\n.btn-success .badge {\n  color: #18bc9c;\n  background-color: #ffffff;\n}\n.btn-info {\n  color: #ffffff;\n  background-color: #3498db;\n  border-color: #3498db;\n}\n.btn-info:focus,\n.btn-info.focus {\n  color: #ffffff;\n  background-color: #217dbb;\n  border-color: #16527a;\n}\n.btn-info:hover {\n  color: #ffffff;\n  background-color: #217dbb;\n  border-color: #2077b2;\n}\n.btn-info:active,\n.btn-info.active,\n.open > .dropdown-toggle.btn-info {\n  color: #ffffff;\n  background-color: #217dbb;\n  border-color: #2077b2;\n}\n.btn-info:active:hover,\n.btn-info.active:hover,\n.open > .dropdown-toggle.btn-info:hover,\n.btn-info:active:focus,\n.btn-info.active:focus,\n.open > .dropdown-toggle.btn-info:focus,\n.btn-info:active.focus,\n.btn-info.active.focus,\n.open > .dropdown-toggle.btn-info.focus {\n  color: #ffffff;\n  background-color: #1c699d;\n  border-color: #16527a;\n}\n.btn-info:active,\n.btn-info.active,\n.open > .dropdown-toggle.btn-info {\n  background-image: none;\n}\n.btn-info.disabled:hover,\n.btn-info[disabled]:hover,\nfieldset[disabled] .btn-info:hover,\n.btn-info.disabled:focus,\n.btn-info[disabled]:focus,\nfieldset[disabled] .btn-info:focus,\n.btn-info.disabled.focus,\n.btn-info[disabled].focus,\nfieldset[disabled] .btn-info.focus {\n  background-color: #3498db;\n  border-color: #3498db;\n}\n.btn-info .badge {\n  color: #3498db;\n  background-color: #ffffff;\n}\n.btn-warning {\n  color: #ffffff;\n  background-color: #f39c12;\n  border-color: #f39c12;\n}\n.btn-warning:focus,\n.btn-warning.focus {\n  color: #ffffff;\n  background-color: #c87f0a;\n  border-color: #7f5006;\n}\n.btn-warning:hover {\n  color: #ffffff;\n  background-color: #c87f0a;\n  border-color: #be780a;\n}\n.btn-warning:active,\n.btn-warning.active,\n.open > .dropdown-toggle.btn-warning {\n  color: #ffffff;\n  background-color: #c87f0a;\n  border-color: #be780a;\n}\n.btn-warning:active:hover,\n.btn-warning.active:hover,\n.open > .dropdown-toggle.btn-warning:hover,\n.btn-warning:active:focus,\n.btn-warning.active:focus,\n.open > .dropdown-toggle.btn-warning:focus,\n.btn-warning:active.focus,\n.btn-warning.active.focus,\n.open > .dropdown-toggle.btn-warning.focus {\n  color: #ffffff;\n  background-color: #a66908;\n  border-color: #7f5006;\n}\n.btn-warning:active,\n.btn-warning.active,\n.open > .dropdown-toggle.btn-warning {\n  background-image: none;\n}\n.btn-warning.disabled:hover,\n.btn-warning[disabled]:hover,\nfieldset[disabled] .btn-warning:hover,\n.btn-warning.disabled:focus,\n.btn-warning[disabled]:focus,\nfieldset[disabled] .btn-warning:focus,\n.btn-warning.disabled.focus,\n.btn-warning[disabled].focus,\nfieldset[disabled] .btn-warning.focus {\n  background-color: #f39c12;\n  border-color: #f39c12;\n}\n.btn-warning .badge {\n  color: #f39c12;\n  background-color: #ffffff;\n}\n.btn-danger {\n  color: #ffffff;\n  background-color: #e74c3c;\n  border-color: #e74c3c;\n}\n.btn-danger:focus,\n.btn-danger.focus {\n  color: #ffffff;\n  background-color: #d62c1a;\n  border-color: #921e12;\n}\n.btn-danger:hover {\n  color: #ffffff;\n  background-color: #d62c1a;\n  border-color: #cd2a19;\n}\n.btn-danger:active,\n.btn-danger.active,\n.open > .dropdown-toggle.btn-danger {\n  color: #ffffff;\n  background-color: #d62c1a;\n  border-color: #cd2a19;\n}\n.btn-danger:active:hover,\n.btn-danger.active:hover,\n.open > .dropdown-toggle.btn-danger:hover,\n.btn-danger:active:focus,\n.btn-danger.active:focus,\n.open > .dropdown-toggle.btn-danger:focus,\n.btn-danger:active.focus,\n.btn-danger.active.focus,\n.open > .dropdown-toggle.btn-danger.focus {\n  color: #ffffff;\n  background-color: #b62516;\n  border-color: #921e12;\n}\n.btn-danger:active,\n.btn-danger.active,\n.open > .dropdown-toggle.btn-danger {\n  background-image: none;\n}\n.btn-danger.disabled:hover,\n.btn-danger[disabled]:hover,\nfieldset[disabled] .btn-danger:hover,\n.btn-danger.disabled:focus,\n.btn-danger[disabled]:focus,\nfieldset[disabled] .btn-danger:focus,\n.btn-danger.disabled.focus,\n.btn-danger[disabled].focus,\nfieldset[disabled] .btn-danger.focus {\n  background-color: #e74c3c;\n  border-color: #e74c3c;\n}\n.btn-danger .badge {\n  color: #e74c3c;\n  background-color: #ffffff;\n}\n.btn-link {\n  color: #18bc9c;\n  font-weight: normal;\n  border-radius: 0;\n}\n.btn-link,\n.btn-link:active,\n.btn-link.active,\n.btn-link[disabled],\nfieldset[disabled] .btn-link {\n  background-color: transparent;\n  -webkit-box-shadow: none;\n  box-shadow: none;\n}\n.btn-link,\n.btn-link:hover,\n.btn-link:focus,\n.btn-link:active {\n  border-color: transparent;\n}\n.btn-link:hover,\n.btn-link:focus {\n  color: #18bc9c;\n  text-decoration: underline;\n  background-color: transparent;\n}\n.btn-link[disabled]:hover,\nfieldset[disabled] .btn-link:hover,\n.btn-link[disabled]:focus,\nfieldset[disabled] .btn-link:focus {\n  color: #b4bcc2;\n  text-decoration: none;\n}\n.btn-lg,\n.btn-group-lg > .btn {\n  padding: 18px 27px;\n  font-size: 19px;\n  line-height: 1.3333333;\n  border-radius: 6px;\n}\n.btn-sm,\n.btn-group-sm > .btn {\n  padding: 6px 9px;\n  font-size: 13px;\n  line-height: 1.5;\n  border-radius: 3px;\n}\n.btn-xs,\n.btn-group-xs > .btn {\n  padding: 1px 5px;\n  font-size: 13px;\n  line-height: 1.5;\n  border-radius: 3px;\n}\n.btn-block {\n  display: block;\n  width: 100%;\n}\n.btn-block + .btn-block {\n  margin-top: 5px;\n}\ninput[type=\"submit\"].btn-block,\ninput[type=\"reset\"].btn-block,\ninput[type=\"button\"].btn-block {\n  width: 100%;\n}\n.fade {\n  opacity: 0;\n  -webkit-transition: opacity 0.15s linear;\n  -o-transition: opacity 0.15s linear;\n  transition: opacity 0.15s linear;\n}\n.fade.in {\n  opacity: 1;\n}\n.collapse {\n  display: none;\n}\n.collapse.in {\n  display: block;\n}\ntr.collapse.in {\n  display: table-row;\n}\ntbody.collapse.in {\n  display: table-row-group;\n}\n.collapsing {\n  position: relative;\n  height: 0;\n  overflow: hidden;\n  -webkit-transition-property: height, visibility;\n  -o-transition-property: height, visibility;\n     transition-property: height, visibility;\n  -webkit-transition-duration: 0.35s;\n  -o-transition-duration: 0.35s;\n     transition-duration: 0.35s;\n  -webkit-transition-timing-function: ease;\n  -o-transition-timing-function: ease;\n     transition-timing-function: ease;\n}\n.caret {\n  display: inline-block;\n  width: 0;\n  height: 0;\n  margin-left: 2px;\n  vertical-align: middle;\n  border-top: 4px dashed;\n  border-top: 4px solid \\9;\n  border-right: 4px solid transparent;\n  border-left: 4px solid transparent;\n}\n.dropup,\n.dropdown {\n  position: relative;\n}\n.dropdown-toggle:focus {\n  outline: 0;\n}\n.dropdown-menu {\n  position: absolute;\n  top: 100%;\n  left: 0;\n  z-index: 1000;\n  display: none;\n  float: left;\n  min-width: 160px;\n  padding: 5px 0;\n  margin: 2px 0 0;\n  list-style: none;\n  font-size: 15px;\n  text-align: left;\n  background-color: #ffffff;\n  border: 1px solid #cccccc;\n  border: 1px solid rgba(0, 0, 0, 0.15);\n  border-radius: 4px;\n  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);\n  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);\n  -webkit-background-clip: padding-box;\n          background-clip: padding-box;\n}\n.dropdown-menu.pull-right {\n  right: 0;\n  left: auto;\n}\n.dropdown-menu .divider {\n  height: 1px;\n  margin: 9.5px 0;\n  overflow: hidden;\n  background-color: #e5e5e5;\n}\n.dropdown-menu > li > a {\n  display: block;\n  padding: 3px 20px;\n  clear: both;\n  font-weight: normal;\n  line-height: 1.42857143;\n  color: #7b8a8b;\n  white-space: nowrap;\n}\n.dropdown-menu > li > a:hover,\n.dropdown-menu > li > a:focus {\n  text-decoration: none;\n  color: #ffffff;\n  background-color: #2c3e50;\n}\n.dropdown-menu > .active > a,\n.dropdown-menu > .active > a:hover,\n.dropdown-menu > .active > a:focus {\n  color: #ffffff;\n  text-decoration: none;\n  outline: 0;\n  background-color: #2c3e50;\n}\n.dropdown-menu > .disabled > a,\n.dropdown-menu > .disabled > a:hover,\n.dropdown-menu > .disabled > a:focus {\n  color: #b4bcc2;\n}\n.dropdown-menu > .disabled > a:hover,\n.dropdown-menu > .disabled > a:focus {\n  text-decoration: none;\n  background-color: transparent;\n  background-image: none;\n  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);\n  cursor: not-allowed;\n}\n.open > .dropdown-menu {\n  display: block;\n}\n.open > a {\n  outline: 0;\n}\n.dropdown-menu-right {\n  left: auto;\n  right: 0;\n}\n.dropdown-menu-left {\n  left: 0;\n  right: auto;\n}\n.dropdown-header {\n  display: block;\n  padding: 3px 20px;\n  font-size: 13px;\n  line-height: 1.42857143;\n  color: #b4bcc2;\n  white-space: nowrap;\n}\n.dropdown-backdrop {\n  position: fixed;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  top: 0;\n  z-index: 990;\n}\n.pull-right > .dropdown-menu {\n  right: 0;\n  left: auto;\n}\n.dropup .caret,\n.navbar-fixed-bottom .dropdown .caret {\n  border-top: 0;\n  border-bottom: 4px dashed;\n  border-bottom: 4px solid \\9;\n  content: \"\";\n}\n.dropup .dropdown-menu,\n.navbar-fixed-bottom .dropdown .dropdown-menu {\n  top: auto;\n  bottom: 100%;\n  margin-bottom: 2px;\n}\n@media (min-width: 768px) {\n  .navbar-right .dropdown-menu {\n    left: auto;\n    right: 0;\n  }\n  .navbar-right .dropdown-menu-left {\n    left: 0;\n    right: auto;\n  }\n}\n.btn-group,\n.btn-group-vertical {\n  position: relative;\n  display: inline-block;\n  vertical-align: middle;\n}\n.btn-group > .btn,\n.btn-group-vertical > .btn {\n  position: relative;\n  float: left;\n}\n.btn-group > .btn:hover,\n.btn-group-vertical > .btn:hover,\n.btn-group > .btn:focus,\n.btn-group-vertical > .btn:focus,\n.btn-group > .btn:active,\n.btn-group-vertical > .btn:active,\n.btn-group > .btn.active,\n.btn-group-vertical > .btn.active {\n  z-index: 2;\n}\n.btn-group .btn + .btn,\n.btn-group .btn + .btn-group,\n.btn-group .btn-group + .btn,\n.btn-group .btn-group + .btn-group {\n  margin-left: -1px;\n}\n.btn-toolbar {\n  margin-left: -5px;\n}\n.btn-toolbar .btn,\n.btn-toolbar .btn-group,\n.btn-toolbar .input-group {\n  float: left;\n}\n.btn-toolbar > .btn,\n.btn-toolbar > .btn-group,\n.btn-toolbar > .input-group {\n  margin-left: 5px;\n}\n.btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {\n  border-radius: 0;\n}\n.btn-group > .btn:first-child {\n  margin-left: 0;\n}\n.btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle) {\n  border-bottom-right-radius: 0;\n  border-top-right-radius: 0;\n}\n.btn-group > .btn:last-child:not(:first-child),\n.btn-group > .dropdown-toggle:not(:first-child) {\n  border-bottom-left-radius: 0;\n  border-top-left-radius: 0;\n}\n.btn-group > .btn-group {\n  float: left;\n}\n.btn-group > .btn-group:not(:first-child):not(:last-child) > .btn {\n  border-radius: 0;\n}\n.btn-group > .btn-group:first-child:not(:last-child) > .btn:last-child,\n.btn-group > .btn-group:first-child:not(:last-child) > .dropdown-toggle {\n  border-bottom-right-radius: 0;\n  border-top-right-radius: 0;\n}\n.btn-group > .btn-group:last-child:not(:first-child) > .btn:first-child {\n  border-bottom-left-radius: 0;\n  border-top-left-radius: 0;\n}\n.btn-group .dropdown-toggle:active,\n.btn-group.open .dropdown-toggle {\n  outline: 0;\n}\n.btn-group > .btn + .dropdown-toggle {\n  padding-left: 8px;\n  padding-right: 8px;\n}\n.btn-group > .btn-lg + .dropdown-toggle {\n  padding-left: 12px;\n  padding-right: 12px;\n}\n.btn-group.open .dropdown-toggle {\n  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);\n  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);\n}\n.btn-group.open .dropdown-toggle.btn-link {\n  -webkit-box-shadow: none;\n  box-shadow: none;\n}\n.btn .caret {\n  margin-left: 0;\n}\n.btn-lg .caret {\n  border-width: 5px 5px 0;\n  border-bottom-width: 0;\n}\n.dropup .btn-lg .caret {\n  border-width: 0 5px 5px;\n}\n.btn-group-vertical > .btn,\n.btn-group-vertical > .btn-group,\n.btn-group-vertical > .btn-group > .btn {\n  display: block;\n  float: none;\n  width: 100%;\n  max-width: 100%;\n}\n.btn-group-vertical > .btn-group > .btn {\n  float: none;\n}\n.btn-group-vertical > .btn + .btn,\n.btn-group-vertical > .btn + .btn-group,\n.btn-group-vertical > .btn-group + .btn,\n.btn-group-vertical > .btn-group + .btn-group {\n  margin-top: -1px;\n  margin-left: 0;\n}\n.btn-group-vertical > .btn:not(:first-child):not(:last-child) {\n  border-radius: 0;\n}\n.btn-group-vertical > .btn:first-child:not(:last-child) {\n  border-top-right-radius: 4px;\n  border-top-left-radius: 4px;\n  border-bottom-right-radius: 0;\n  border-bottom-left-radius: 0;\n}\n.btn-group-vertical > .btn:last-child:not(:first-child) {\n  border-top-right-radius: 0;\n  border-top-left-radius: 0;\n  border-bottom-right-radius: 4px;\n  border-bottom-left-radius: 4px;\n}\n.btn-group-vertical > .btn-group:not(:first-child):not(:last-child) > .btn {\n  border-radius: 0;\n}\n.btn-group-vertical > .btn-group:first-child:not(:last-child) > .btn:last-child,\n.btn-group-vertical > .btn-group:first-child:not(:last-child) > .dropdown-toggle {\n  border-bottom-right-radius: 0;\n  border-bottom-left-radius: 0;\n}\n.btn-group-vertical > .btn-group:last-child:not(:first-child) > .btn:first-child {\n  border-top-right-radius: 0;\n  border-top-left-radius: 0;\n}\n.btn-group-justified {\n  display: table;\n  width: 100%;\n  table-layout: fixed;\n  border-collapse: separate;\n}\n.btn-group-justified > .btn,\n.btn-group-justified > .btn-group {\n  float: none;\n  display: table-cell;\n  width: 1%;\n}\n.btn-group-justified > .btn-group .btn {\n  width: 100%;\n}\n.btn-group-justified > .btn-group .dropdown-menu {\n  left: auto;\n}\n[data-toggle=\"buttons\"] > .btn input[type=\"radio\"],\n[data-toggle=\"buttons\"] > .btn-group > .btn input[type=\"radio\"],\n[data-toggle=\"buttons\"] > .btn input[type=\"checkbox\"],\n[data-toggle=\"buttons\"] > .btn-group > .btn input[type=\"checkbox\"] {\n  position: absolute;\n  clip: rect(0, 0, 0, 0);\n  pointer-events: none;\n}\n.input-group {\n  position: relative;\n  display: table;\n  border-collapse: separate;\n}\n.input-group[class*=\"col-\"] {\n  float: none;\n  padding-left: 0;\n  padding-right: 0;\n}\n.input-group .form-control {\n  position: relative;\n  z-index: 2;\n  float: left;\n  width: 100%;\n  margin-bottom: 0;\n}\n.input-group .form-control:focus {\n  z-index: 3;\n}\n.input-group-lg > .form-control,\n.input-group-lg > .input-group-addon,\n.input-group-lg > .input-group-btn > .btn {\n  height: 66px;\n  padding: 18px 27px;\n  font-size: 19px;\n  line-height: 1.3333333;\n  border-radius: 6px;\n}\nselect.input-group-lg > .form-control,\nselect.input-group-lg > .input-group-addon,\nselect.input-group-lg > .input-group-btn > .btn {\n  height: 66px;\n  line-height: 66px;\n}\ntextarea.input-group-lg > .form-control,\ntextarea.input-group-lg > .input-group-addon,\ntextarea.input-group-lg > .input-group-btn > .btn,\nselect[multiple].input-group-lg > .form-control,\nselect[multiple].input-group-lg > .input-group-addon,\nselect[multiple].input-group-lg > .input-group-btn > .btn {\n  height: auto;\n}\n.input-group-sm > .form-control,\n.input-group-sm > .input-group-addon,\n.input-group-sm > .input-group-btn > .btn {\n  height: 35px;\n  padding: 6px 9px;\n  font-size: 13px;\n  line-height: 1.5;\n  border-radius: 3px;\n}\nselect.input-group-sm > .form-control,\nselect.input-group-sm > .input-group-addon,\nselect.input-group-sm > .input-group-btn > .btn {\n  height: 35px;\n  line-height: 35px;\n}\ntextarea.input-group-sm > .form-control,\ntextarea.input-group-sm > .input-group-addon,\ntextarea.input-group-sm > .input-group-btn > .btn,\nselect[multiple].input-group-sm > .form-control,\nselect[multiple].input-group-sm > .input-group-addon,\nselect[multiple].input-group-sm > .input-group-btn > .btn {\n  height: auto;\n}\n.input-group-addon,\n.input-group-btn,\n.input-group .form-control {\n  display: table-cell;\n}\n.input-group-addon:not(:first-child):not(:last-child),\n.input-group-btn:not(:first-child):not(:last-child),\n.input-group .form-control:not(:first-child):not(:last-child) {\n  border-radius: 0;\n}\n.input-group-addon,\n.input-group-btn {\n  width: 1%;\n  white-space: nowrap;\n  vertical-align: middle;\n}\n.input-group-addon {\n  padding: 10px 15px;\n  font-size: 15px;\n  font-weight: normal;\n  line-height: 1;\n  color: #2c3e50;\n  text-align: center;\n  background-color: #ecf0f1;\n  border: 1px solid #dce4ec;\n  border-radius: 4px;\n}\n.input-group-addon.input-sm {\n  padding: 6px 9px;\n  font-size: 13px;\n  border-radius: 3px;\n}\n.input-group-addon.input-lg {\n  padding: 18px 27px;\n  font-size: 19px;\n  border-radius: 6px;\n}\n.input-group-addon input[type=\"radio\"],\n.input-group-addon input[type=\"checkbox\"] {\n  margin-top: 0;\n}\n.input-group .form-control:first-child,\n.input-group-addon:first-child,\n.input-group-btn:first-child > .btn,\n.input-group-btn:first-child > .btn-group > .btn,\n.input-group-btn:first-child > .dropdown-toggle,\n.input-group-btn:last-child > .btn:not(:last-child):not(.dropdown-toggle),\n.input-group-btn:last-child > .btn-group:not(:last-child) > .btn {\n  border-bottom-right-radius: 0;\n  border-top-right-radius: 0;\n}\n.input-group-addon:first-child {\n  border-right: 0;\n}\n.input-group .form-control:last-child,\n.input-group-addon:last-child,\n.input-group-btn:last-child > .btn,\n.input-group-btn:last-child > .btn-group > .btn,\n.input-group-btn:last-child > .dropdown-toggle,\n.input-group-btn:first-child > .btn:not(:first-child),\n.input-group-btn:first-child > .btn-group:not(:first-child) > .btn {\n  border-bottom-left-radius: 0;\n  border-top-left-radius: 0;\n}\n.input-group-addon:last-child {\n  border-left: 0;\n}\n.input-group-btn {\n  position: relative;\n  font-size: 0;\n  white-space: nowrap;\n}\n.input-group-btn > .btn {\n  position: relative;\n}\n.input-group-btn > .btn + .btn {\n  margin-left: -1px;\n}\n.input-group-btn > .btn:hover,\n.input-group-btn > .btn:focus,\n.input-group-btn > .btn:active {\n  z-index: 2;\n}\n.input-group-btn:first-child > .btn,\n.input-group-btn:first-child > .btn-group {\n  margin-right: -1px;\n}\n.input-group-btn:last-child > .btn,\n.input-group-btn:last-child > .btn-group {\n  z-index: 2;\n  margin-left: -1px;\n}\n.nav {\n  margin-bottom: 0;\n  padding-left: 0;\n  list-style: none;\n}\n.nav > li {\n  position: relative;\n  display: block;\n}\n.nav > li > a {\n  position: relative;\n  display: block;\n  padding: 10px 15px;\n}\n.nav > li > a:hover,\n.nav > li > a:focus {\n  text-decoration: none;\n  background-color: #ecf0f1;\n}\n.nav > li.disabled > a {\n  color: #b4bcc2;\n}\n.nav > li.disabled > a:hover,\n.nav > li.disabled > a:focus {\n  color: #b4bcc2;\n  text-decoration: none;\n  background-color: transparent;\n  cursor: not-allowed;\n}\n.nav .open > a,\n.nav .open > a:hover,\n.nav .open > a:focus {\n  background-color: #ecf0f1;\n  border-color: #18bc9c;\n}\n.nav .nav-divider {\n  height: 1px;\n  margin: 9.5px 0;\n  overflow: hidden;\n  background-color: #e5e5e5;\n}\n.nav > li > a > img {\n  max-width: none;\n}\n.nav-tabs {\n  border-bottom: 1px solid #ecf0f1;\n}\n.nav-tabs > li {\n  float: left;\n  margin-bottom: -1px;\n}\n.nav-tabs > li > a {\n  margin-right: 2px;\n  line-height: 1.42857143;\n  border: 1px solid transparent;\n  border-radius: 4px 4px 0 0;\n}\n.nav-tabs > li > a:hover {\n  border-color: #ecf0f1 #ecf0f1 #ecf0f1;\n}\n.nav-tabs > li.active > a,\n.nav-tabs > li.active > a:hover,\n.nav-tabs > li.active > a:focus {\n  color: #2c3e50;\n  background-color: #ffffff;\n  border: 1px solid #ecf0f1;\n  border-bottom-color: transparent;\n  cursor: default;\n}\n.nav-tabs.nav-justified {\n  width: 100%;\n  border-bottom: 0;\n}\n.nav-tabs.nav-justified > li {\n  float: none;\n}\n.nav-tabs.nav-justified > li > a {\n  text-align: center;\n  margin-bottom: 5px;\n}\n.nav-tabs.nav-justified > .dropdown .dropdown-menu {\n  top: auto;\n  left: auto;\n}\n@media (min-width: 768px) {\n  .nav-tabs.nav-justified > li {\n    display: table-cell;\n    width: 1%;\n  }\n  .nav-tabs.nav-justified > li > a {\n    margin-bottom: 0;\n  }\n}\n.nav-tabs.nav-justified > li > a {\n  margin-right: 0;\n  border-radius: 4px;\n}\n.nav-tabs.nav-justified > .active > a,\n.nav-tabs.nav-justified > .active > a:hover,\n.nav-tabs.nav-justified > .active > a:focus {\n  border: 1px solid #ecf0f1;\n}\n@media (min-width: 768px) {\n  .nav-tabs.nav-justified > li > a {\n    border-bottom: 1px solid #ecf0f1;\n    border-radius: 4px 4px 0 0;\n  }\n  .nav-tabs.nav-justified > .active > a,\n  .nav-tabs.nav-justified > .active > a:hover,\n  .nav-tabs.nav-justified > .active > a:focus {\n    border-bottom-color: #ffffff;\n  }\n}\n.nav-pills > li {\n  float: left;\n}\n.nav-pills > li > a {\n  border-radius: 4px;\n}\n.nav-pills > li + li {\n  margin-left: 2px;\n}\n.nav-pills > li.active > a,\n.nav-pills > li.active > a:hover,\n.nav-pills > li.active > a:focus {\n  color: #ffffff;\n  background-color: #2c3e50;\n}\n.nav-stacked > li {\n  float: none;\n}\n.nav-stacked > li + li {\n  margin-top: 2px;\n  margin-left: 0;\n}\n.nav-justified {\n  width: 100%;\n}\n.nav-justified > li {\n  float: none;\n}\n.nav-justified > li > a {\n  text-align: center;\n  margin-bottom: 5px;\n}\n.nav-justified > .dropdown .dropdown-menu {\n  top: auto;\n  left: auto;\n}\n@media (min-width: 768px) {\n  .nav-justified > li {\n    display: table-cell;\n    width: 1%;\n  }\n  .nav-justified > li > a {\n    margin-bottom: 0;\n  }\n}\n.nav-tabs-justified {\n  border-bottom: 0;\n}\n.nav-tabs-justified > li > a {\n  margin-right: 0;\n  border-radius: 4px;\n}\n.nav-tabs-justified > .active > a,\n.nav-tabs-justified > .active > a:hover,\n.nav-tabs-justified > .active > a:focus {\n  border: 1px solid #ecf0f1;\n}\n@media (min-width: 768px) {\n  .nav-tabs-justified > li > a {\n    border-bottom: 1px solid #ecf0f1;\n    border-radius: 4px 4px 0 0;\n  }\n  .nav-tabs-justified > .active > a,\n  .nav-tabs-justified > .active > a:hover,\n  .nav-tabs-justified > .active > a:focus {\n    border-bottom-color: #ffffff;\n  }\n}\n.tab-content > .tab-pane {\n  display: none;\n}\n.tab-content > .active {\n  display: block;\n}\n.nav-tabs .dropdown-menu {\n  margin-top: -1px;\n  border-top-right-radius: 0;\n  border-top-left-radius: 0;\n}\n.navbar {\n  position: relative;\n  min-height: 60px;\n  margin-bottom: 21px;\n  border: 1px solid transparent;\n}\n@media (min-width: 768px) {\n  .navbar {\n    border-radius: 4px;\n  }\n}\n@media (min-width: 768px) {\n  .navbar-header {\n    float: left;\n  }\n}\n.navbar-collapse {\n  overflow-x: visible;\n  padding-right: 15px;\n  padding-left: 15px;\n  border-top: 1px solid transparent;\n  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);\n          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);\n  -webkit-overflow-scrolling: touch;\n}\n.navbar-collapse.in {\n  overflow-y: auto;\n}\n@media (min-width: 768px) {\n  .navbar-collapse {\n    width: auto;\n    border-top: 0;\n    -webkit-box-shadow: none;\n            box-shadow: none;\n  }\n  .navbar-collapse.collapse {\n    display: block !important;\n    height: auto !important;\n    padding-bottom: 0;\n    overflow: visible !important;\n  }\n  .navbar-collapse.in {\n    overflow-y: visible;\n  }\n  .navbar-fixed-top .navbar-collapse,\n  .navbar-static-top .navbar-collapse,\n  .navbar-fixed-bottom .navbar-collapse {\n    padding-left: 0;\n    padding-right: 0;\n  }\n}\n.navbar-fixed-top .navbar-collapse,\n.navbar-fixed-bottom .navbar-collapse {\n  max-height: 340px;\n}\n@media (max-device-width: 480px) and (orientation: landscape) {\n  .navbar-fixed-top .navbar-collapse,\n  .navbar-fixed-bottom .navbar-collapse {\n    max-height: 200px;\n  }\n}\n.container > .navbar-header,\n.container-fluid > .navbar-header,\n.container > .navbar-collapse,\n.container-fluid > .navbar-collapse {\n  margin-right: -15px;\n  margin-left: -15px;\n}\n@media (min-width: 768px) {\n  .container > .navbar-header,\n  .container-fluid > .navbar-header,\n  .container > .navbar-collapse,\n  .container-fluid > .navbar-collapse {\n    margin-right: 0;\n    margin-left: 0;\n  }\n}\n.navbar-static-top {\n  z-index: 1000;\n  border-width: 0 0 1px;\n}\n@media (min-width: 768px) {\n  .navbar-static-top {\n    border-radius: 0;\n  }\n}\n.navbar-fixed-top,\n.navbar-fixed-bottom {\n  position: fixed;\n  right: 0;\n  left: 0;\n  z-index: 1030;\n}\n@media (min-width: 768px) {\n  .navbar-fixed-top,\n  .navbar-fixed-bottom {\n    border-radius: 0;\n  }\n}\n.navbar-fixed-top {\n  top: 0;\n  border-width: 0 0 1px;\n}\n.navbar-fixed-bottom {\n  bottom: 0;\n  margin-bottom: 0;\n  border-width: 1px 0 0;\n}\n.navbar-brand {\n  float: left;\n  padding: 19.5px 15px;\n  font-size: 19px;\n  line-height: 21px;\n  height: 60px;\n}\n.navbar-brand:hover,\n.navbar-brand:focus {\n  text-decoration: none;\n}\n.navbar-brand > img {\n  display: block;\n}\n@media (min-width: 768px) {\n  .navbar > .container .navbar-brand,\n  .navbar > .container-fluid .navbar-brand {\n    margin-left: -15px;\n  }\n}\n.navbar-toggle {\n  position: relative;\n  float: right;\n  margin-right: 15px;\n  padding: 9px 10px;\n  margin-top: 13px;\n  margin-bottom: 13px;\n  background-color: transparent;\n  background-image: none;\n  border: 1px solid transparent;\n  border-radius: 4px;\n}\n.navbar-toggle:focus {\n  outline: 0;\n}\n.navbar-toggle .icon-bar {\n  display: block;\n  width: 22px;\n  height: 2px;\n  border-radius: 1px;\n}\n.navbar-toggle .icon-bar + .icon-bar {\n  margin-top: 4px;\n}\n@media (min-width: 768px) {\n  .navbar-toggle {\n    display: none;\n  }\n}\n.navbar-nav {\n  margin: 9.75px -15px;\n}\n.navbar-nav > li > a {\n  padding-top: 10px;\n  padding-bottom: 10px;\n  line-height: 21px;\n}\n@media (max-width: 767px) {\n  .navbar-nav .open .dropdown-menu {\n    position: static;\n    float: none;\n    width: auto;\n    margin-top: 0;\n    background-color: transparent;\n    border: 0;\n    -webkit-box-shadow: none;\n            box-shadow: none;\n  }\n  .navbar-nav .open .dropdown-menu > li > a,\n  .navbar-nav .open .dropdown-menu .dropdown-header {\n    padding: 5px 15px 5px 25px;\n  }\n  .navbar-nav .open .dropdown-menu > li > a {\n    line-height: 21px;\n  }\n  .navbar-nav .open .dropdown-menu > li > a:hover,\n  .navbar-nav .open .dropdown-menu > li > a:focus {\n    background-image: none;\n  }\n}\n@media (min-width: 768px) {\n  .navbar-nav {\n    float: left;\n    margin: 0;\n  }\n  .navbar-nav > li {\n    float: left;\n  }\n  .navbar-nav > li > a {\n    padding-top: 19.5px;\n    padding-bottom: 19.5px;\n  }\n}\n.navbar-form {\n  margin-left: -15px;\n  margin-right: -15px;\n  padding: 10px 15px;\n  border-top: 1px solid transparent;\n  border-bottom: 1px solid transparent;\n  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1);\n  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1);\n  margin-top: 7.5px;\n  margin-bottom: 7.5px;\n}\n@media (min-width: 768px) {\n  .navbar-form .form-group {\n    display: inline-block;\n    margin-bottom: 0;\n    vertical-align: middle;\n  }\n  .navbar-form .form-control {\n    display: inline-block;\n    width: auto;\n    vertical-align: middle;\n  }\n  .navbar-form .form-control-static {\n    display: inline-block;\n  }\n  .navbar-form .input-group {\n    display: inline-table;\n    vertical-align: middle;\n  }\n  .navbar-form .input-group .input-group-addon,\n  .navbar-form .input-group .input-group-btn,\n  .navbar-form .input-group .form-control {\n    width: auto;\n  }\n  .navbar-form .input-group > .form-control {\n    width: 100%;\n  }\n  .navbar-form .control-label {\n    margin-bottom: 0;\n    vertical-align: middle;\n  }\n  .navbar-form .radio,\n  .navbar-form .checkbox {\n    display: inline-block;\n    margin-top: 0;\n    margin-bottom: 0;\n    vertical-align: middle;\n  }\n  .navbar-form .radio label,\n  .navbar-form .checkbox label {\n    padding-left: 0;\n  }\n  .navbar-form .radio input[type=\"radio\"],\n  .navbar-form .checkbox input[type=\"checkbox\"] {\n    position: relative;\n    margin-left: 0;\n  }\n  .navbar-form .has-feedback .form-control-feedback {\n    top: 0;\n  }\n}\n@media (max-width: 767px) {\n  .navbar-form .form-group {\n    margin-bottom: 5px;\n  }\n  .navbar-form .form-group:last-child {\n    margin-bottom: 0;\n  }\n}\n@media (min-width: 768px) {\n  .navbar-form {\n    width: auto;\n    border: 0;\n    margin-left: 0;\n    margin-right: 0;\n    padding-top: 0;\n    padding-bottom: 0;\n    -webkit-box-shadow: none;\n    box-shadow: none;\n  }\n}\n.navbar-nav > li > .dropdown-menu {\n  margin-top: 0;\n  border-top-right-radius: 0;\n  border-top-left-radius: 0;\n}\n.navbar-fixed-bottom .navbar-nav > li > .dropdown-menu {\n  margin-bottom: 0;\n  border-top-right-radius: 4px;\n  border-top-left-radius: 4px;\n  border-bottom-right-radius: 0;\n  border-bottom-left-radius: 0;\n}\n.navbar-btn {\n  margin-top: 7.5px;\n  margin-bottom: 7.5px;\n}\n.navbar-btn.btn-sm {\n  margin-top: 12.5px;\n  margin-bottom: 12.5px;\n}\n.navbar-btn.btn-xs {\n  margin-top: 19px;\n  margin-bottom: 19px;\n}\n.navbar-text {\n  margin-top: 19.5px;\n  margin-bottom: 19.5px;\n}\n@media (min-width: 768px) {\n  .navbar-text {\n    float: left;\n    margin-left: 15px;\n    margin-right: 15px;\n  }\n}\n@media (min-width: 768px) {\n  .navbar-left {\n    float: left !important;\n  }\n  .navbar-right {\n    float: right !important;\n    margin-right: -15px;\n  }\n  .navbar-right ~ .navbar-right {\n    margin-right: 0;\n  }\n}\n.navbar-default {\n  background-color: #2c3e50;\n  border-color: transparent;\n}\n.navbar-default .navbar-brand {\n  color: #ffffff;\n}\n.navbar-default .navbar-brand:hover,\n.navbar-default .navbar-brand:focus {\n  color: #18bc9c;\n  background-color: transparent;\n}\n.navbar-default .navbar-text {\n  color: #ffffff;\n}\n.navbar-default .navbar-nav > li > a {\n  color: #ffffff;\n}\n.navbar-default .navbar-nav > li > a:hover,\n.navbar-default .navbar-nav > li > a:focus {\n  color: #18bc9c;\n  background-color: transparent;\n}\n.navbar-default .navbar-nav > .active > a,\n.navbar-default .navbar-nav > .active > a:hover,\n.navbar-default .navbar-nav > .active > a:focus {\n  color: #ffffff;\n  background-color: #1a242f;\n}\n.navbar-default .navbar-nav > .disabled > a,\n.navbar-default .navbar-nav > .disabled > a:hover,\n.navbar-default .navbar-nav > .disabled > a:focus {\n  color: #cccccc;\n  background-color: transparent;\n}\n.navbar-default .navbar-toggle {\n  border-color: #1a242f;\n}\n.navbar-default .navbar-toggle:hover,\n.navbar-default .navbar-toggle:focus {\n  background-color: #1a242f;\n}\n.navbar-default .navbar-toggle .icon-bar {\n  background-color: #ffffff;\n}\n.navbar-default .navbar-collapse,\n.navbar-default .navbar-form {\n  border-color: transparent;\n}\n.navbar-default .navbar-nav > .open > a,\n.navbar-default .navbar-nav > .open > a:hover,\n.navbar-default .navbar-nav > .open > a:focus {\n  background-color: #1a242f;\n  color: #ffffff;\n}\n@media (max-width: 767px) {\n  .navbar-default .navbar-nav .open .dropdown-menu > li > a {\n    color: #ffffff;\n  }\n  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,\n  .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {\n    color: #18bc9c;\n    background-color: transparent;\n  }\n  .navbar-default .navbar-nav .open .dropdown-menu > .active > a,\n  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,\n  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {\n    color: #ffffff;\n    background-color: #1a242f;\n  }\n  .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a,\n  .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:hover,\n  .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:focus {\n    color: #cccccc;\n    background-color: transparent;\n  }\n}\n.navbar-default .navbar-link {\n  color: #ffffff;\n}\n.navbar-default .navbar-link:hover {\n  color: #18bc9c;\n}\n.navbar-default .btn-link {\n  color: #ffffff;\n}\n.navbar-default .btn-link:hover,\n.navbar-default .btn-link:focus {\n  color: #18bc9c;\n}\n.navbar-default .btn-link[disabled]:hover,\nfieldset[disabled] .navbar-default .btn-link:hover,\n.navbar-default .btn-link[disabled]:focus,\nfieldset[disabled] .navbar-default .btn-link:focus {\n  color: #cccccc;\n}\n.navbar-inverse {\n  background-color: #18bc9c;\n  border-color: transparent;\n}\n.navbar-inverse .navbar-brand {\n  color: #ffffff;\n}\n.navbar-inverse .navbar-brand:hover,\n.navbar-inverse .navbar-brand:focus {\n  color: #2c3e50;\n  background-color: transparent;\n}\n.navbar-inverse .navbar-text {\n  color: #ffffff;\n}\n.navbar-inverse .navbar-nav > li > a {\n  color: #ffffff;\n}\n.navbar-inverse .navbar-nav > li > a:hover,\n.navbar-inverse .navbar-nav > li > a:focus {\n  color: #2c3e50;\n  background-color: transparent;\n}\n.navbar-inverse .navbar-nav > .active > a,\n.navbar-inverse .navbar-nav > .active > a:hover,\n.navbar-inverse .navbar-nav > .active > a:focus {\n  color: #ffffff;\n  background-color: #15a589;\n}\n.navbar-inverse .navbar-nav > .disabled > a,\n.navbar-inverse .navbar-nav > .disabled > a:hover,\n.navbar-inverse .navbar-nav > .disabled > a:focus {\n  color: #cccccc;\n  background-color: transparent;\n}\n.navbar-inverse .navbar-toggle {\n  border-color: #128f76;\n}\n.navbar-inverse .navbar-toggle:hover,\n.navbar-inverse .navbar-toggle:focus {\n  background-color: #128f76;\n}\n.navbar-inverse .navbar-toggle .icon-bar {\n  background-color: #ffffff;\n}\n.navbar-inverse .navbar-collapse,\n.navbar-inverse .navbar-form {\n  border-color: #149c82;\n}\n.navbar-inverse .navbar-nav > .open > a,\n.navbar-inverse .navbar-nav > .open > a:hover,\n.navbar-inverse .navbar-nav > .open > a:focus {\n  background-color: #15a589;\n  color: #ffffff;\n}\n@media (max-width: 767px) {\n  .navbar-inverse .navbar-nav .open .dropdown-menu > .dropdown-header {\n    border-color: transparent;\n  }\n  .navbar-inverse .navbar-nav .open .dropdown-menu .divider {\n    background-color: transparent;\n  }\n  .navbar-inverse .navbar-nav .open .dropdown-menu > li > a {\n    color: #ffffff;\n  }\n  .navbar-inverse .navbar-nav .open .dropdown-menu > li > a:hover,\n  .navbar-inverse .navbar-nav .open .dropdown-menu > li > a:focus {\n    color: #2c3e50;\n    background-color: transparent;\n  }\n  .navbar-inverse .navbar-nav .open .dropdown-menu > .active > a,\n  .navbar-inverse .navbar-nav .open .dropdown-menu > .active > a:hover,\n  .navbar-inverse .navbar-nav .open .dropdown-menu > .active > a:focus {\n    color: #ffffff;\n    background-color: #15a589;\n  }\n  .navbar-inverse .navbar-nav .open .dropdown-menu > .disabled > a,\n  .navbar-inverse .navbar-nav .open .dropdown-menu > .disabled > a:hover,\n  .navbar-inverse .navbar-nav .open .dropdown-menu > .disabled > a:focus {\n    color: #cccccc;\n    background-color: transparent;\n  }\n}\n.navbar-inverse .navbar-link {\n  color: #ffffff;\n}\n.navbar-inverse .navbar-link:hover {\n  color: #2c3e50;\n}\n.navbar-inverse .btn-link {\n  color: #ffffff;\n}\n.navbar-inverse .btn-link:hover,\n.navbar-inverse .btn-link:focus {\n  color: #2c3e50;\n}\n.navbar-inverse .btn-link[disabled]:hover,\nfieldset[disabled] .navbar-inverse .btn-link:hover,\n.navbar-inverse .btn-link[disabled]:focus,\nfieldset[disabled] .navbar-inverse .btn-link:focus {\n  color: #cccccc;\n}\n.breadcrumb {\n  padding: 8px 15px;\n  margin-bottom: 21px;\n  list-style: none;\n  background-color: #ecf0f1;\n  border-radius: 4px;\n}\n.breadcrumb > li {\n  display: inline-block;\n}\n.breadcrumb > li + li:before {\n  content: \"/\\A0\";\n  padding: 0 5px;\n  color: #cccccc;\n}\n.breadcrumb > .active {\n  color: #95a5a6;\n}\n.pagination {\n  display: inline-block;\n  padding-left: 0;\n  margin: 21px 0;\n  border-radius: 4px;\n}\n.pagination > li {\n  display: inline;\n}\n.pagination > li > a,\n.pagination > li > span {\n  position: relative;\n  float: left;\n  padding: 10px 15px;\n  line-height: 1.42857143;\n  text-decoration: none;\n  color: #ffffff;\n  background-color: #18bc9c;\n  border: 1px solid transparent;\n  margin-left: -1px;\n}\n.pagination > li:first-child > a,\n.pagination > li:first-child > span {\n  margin-left: 0;\n  border-bottom-left-radius: 4px;\n  border-top-left-radius: 4px;\n}\n.pagination > li:last-child > a,\n.pagination > li:last-child > span {\n  border-bottom-right-radius: 4px;\n  border-top-right-radius: 4px;\n}\n.pagination > li > a:hover,\n.pagination > li > span:hover,\n.pagination > li > a:focus,\n.pagination > li > span:focus {\n  z-index: 2;\n  color: #ffffff;\n  background-color: #0f7864;\n  border-color: transparent;\n}\n.pagination > .active > a,\n.pagination > .active > span,\n.pagination > .active > a:hover,\n.pagination > .active > span:hover,\n.pagination > .active > a:focus,\n.pagination > .active > span:focus {\n  z-index: 3;\n  color: #ffffff;\n  background-color: #0f7864;\n  border-color: transparent;\n  cursor: default;\n}\n.pagination > .disabled > span,\n.pagination > .disabled > span:hover,\n.pagination > .disabled > span:focus,\n.pagination > .disabled > a,\n.pagination > .disabled > a:hover,\n.pagination > .disabled > a:focus {\n  color: #ecf0f1;\n  background-color: #3be6c4;\n  border-color: transparent;\n  cursor: not-allowed;\n}\n.pagination-lg > li > a,\n.pagination-lg > li > span {\n  padding: 18px 27px;\n  font-size: 19px;\n  line-height: 1.3333333;\n}\n.pagination-lg > li:first-child > a,\n.pagination-lg > li:first-child > span {\n  border-bottom-left-radius: 6px;\n  border-top-left-radius: 6px;\n}\n.pagination-lg > li:last-child > a,\n.pagination-lg > li:last-child > span {\n  border-bottom-right-radius: 6px;\n  border-top-right-radius: 6px;\n}\n.pagination-sm > li > a,\n.pagination-sm > li > span {\n  padding: 6px 9px;\n  font-size: 13px;\n  line-height: 1.5;\n}\n.pagination-sm > li:first-child > a,\n.pagination-sm > li:first-child > span {\n  border-bottom-left-radius: 3px;\n  border-top-left-radius: 3px;\n}\n.pagination-sm > li:last-child > a,\n.pagination-sm > li:last-child > span {\n  border-bottom-right-radius: 3px;\n  border-top-right-radius: 3px;\n}\n.pager {\n  padding-left: 0;\n  margin: 21px 0;\n  list-style: none;\n  text-align: center;\n}\n.pager li {\n  display: inline;\n}\n.pager li > a,\n.pager li > span {\n  display: inline-block;\n  padding: 5px 14px;\n  background-color: #18bc9c;\n  border: 1px solid transparent;\n  border-radius: 15px;\n}\n.pager li > a:hover,\n.pager li > a:focus {\n  text-decoration: none;\n  background-color: #0f7864;\n}\n.pager .next > a,\n.pager .next > span {\n  float: right;\n}\n.pager .previous > a,\n.pager .previous > span {\n  float: left;\n}\n.pager .disabled > a,\n.pager .disabled > a:hover,\n.pager .disabled > a:focus,\n.pager .disabled > span {\n  color: #ffffff;\n  background-color: #18bc9c;\n  cursor: not-allowed;\n}\n.label {\n  display: inline;\n  padding: .2em .6em .3em;\n  font-size: 75%;\n  font-weight: bold;\n  line-height: 1;\n  color: #ffffff;\n  text-align: center;\n  white-space: nowrap;\n  vertical-align: baseline;\n  border-radius: .25em;\n}\na.label:hover,\na.label:focus {\n  color: #ffffff;\n  text-decoration: none;\n  cursor: pointer;\n}\n.label:empty {\n  display: none;\n}\n.btn .label {\n  position: relative;\n  top: -1px;\n}\n.label-default {\n  background-color: #95a5a6;\n}\n.label-default[href]:hover,\n.label-default[href]:focus {\n  background-color: #798d8f;\n}\n.label-primary {\n  background-color: #2c3e50;\n}\n.label-primary[href]:hover,\n.label-primary[href]:focus {\n  background-color: #1a242f;\n}\n.label-success {\n  background-color: #18bc9c;\n}\n.label-success[href]:hover,\n.label-success[href]:focus {\n  background-color: #128f76;\n}\n.label-info {\n  background-color: #3498db;\n}\n.label-info[href]:hover,\n.label-info[href]:focus {\n  background-color: #217dbb;\n}\n.label-warning {\n  background-color: #f39c12;\n}\n.label-warning[href]:hover,\n.label-warning[href]:focus {\n  background-color: #c87f0a;\n}\n.label-danger {\n  background-color: #e74c3c;\n}\n.label-danger[href]:hover,\n.label-danger[href]:focus {\n  background-color: #d62c1a;\n}\n.badge {\n  display: inline-block;\n  min-width: 10px;\n  padding: 3px 7px;\n  font-size: 13px;\n  font-weight: bold;\n  color: #ffffff;\n  line-height: 1;\n  vertical-align: middle;\n  white-space: nowrap;\n  text-align: center;\n  background-color: #2c3e50;\n  border-radius: 10px;\n}\n.badge:empty {\n  display: none;\n}\n.btn .badge {\n  position: relative;\n  top: -1px;\n}\n.btn-xs .badge,\n.btn-group-xs > .btn .badge {\n  top: 0;\n  padding: 1px 5px;\n}\na.badge:hover,\na.badge:focus {\n  color: #ffffff;\n  text-decoration: none;\n  cursor: pointer;\n}\n.list-group-item.active > .badge,\n.nav-pills > .active > a > .badge {\n  color: #2c3e50;\n  background-color: #ffffff;\n}\n.list-group-item > .badge {\n  float: right;\n}\n.list-group-item > .badge + .badge {\n  margin-right: 5px;\n}\n.nav-pills > li > a > .badge {\n  margin-left: 3px;\n}\n.jumbotron {\n  padding-top: 30px;\n  padding-bottom: 30px;\n  margin-bottom: 30px;\n  color: inherit;\n  background-color: #ecf0f1;\n}\n.jumbotron h1,\n.jumbotron .h1 {\n  color: inherit;\n}\n.jumbotron p {\n  margin-bottom: 15px;\n  font-size: 23px;\n  font-weight: 200;\n}\n.jumbotron > hr {\n  border-top-color: #cfd9db;\n}\n.container .jumbotron,\n.container-fluid .jumbotron {\n  border-radius: 6px;\n  padding-left: 15px;\n  padding-right: 15px;\n}\n.jumbotron .container {\n  max-width: 100%;\n}\n@media screen and (min-width: 768px) {\n  .jumbotron {\n    padding-top: 48px;\n    padding-bottom: 48px;\n  }\n  .container .jumbotron,\n  .container-fluid .jumbotron {\n    padding-left: 60px;\n    padding-right: 60px;\n  }\n  .jumbotron h1,\n  .jumbotron .h1 {\n    font-size: 68px;\n  }\n}\n.thumbnail {\n  display: block;\n  padding: 4px;\n  margin-bottom: 21px;\n  line-height: 1.42857143;\n  background-color: #ffffff;\n  border: 1px solid #ecf0f1;\n  border-radius: 4px;\n  -webkit-transition: border 0.2s ease-in-out;\n  -o-transition: border 0.2s ease-in-out;\n  transition: border 0.2s ease-in-out;\n}\n.thumbnail > img,\n.thumbnail a > img {\n  margin-left: auto;\n  margin-right: auto;\n}\na.thumbnail:hover,\na.thumbnail:focus,\na.thumbnail.active {\n  border-color: #18bc9c;\n}\n.thumbnail .caption {\n  padding: 9px;\n  color: #2c3e50;\n}\n.alert {\n  padding: 15px;\n  margin-bottom: 21px;\n  border: 1px solid transparent;\n  border-radius: 4px;\n}\n.alert h4 {\n  margin-top: 0;\n  color: inherit;\n}\n.alert .alert-link {\n  font-weight: bold;\n}\n.alert > p,\n.alert > ul {\n  margin-bottom: 0;\n}\n.alert > p + p {\n  margin-top: 5px;\n}\n.alert-dismissable,\n.alert-dismissible {\n  padding-right: 35px;\n}\n.alert-dismissable .close,\n.alert-dismissible .close {\n  position: relative;\n  top: -2px;\n  right: -21px;\n  color: inherit;\n}\n.alert-success {\n  background-color: #18bc9c;\n  border-color: #18bc9c;\n  color: #ffffff;\n}\n.alert-success hr {\n  border-top-color: #15a589;\n}\n.alert-success .alert-link {\n  color: #e6e6e6;\n}\n.alert-info {\n  background-color: #3498db;\n  border-color: #3498db;\n  color: #ffffff;\n}\n.alert-info hr {\n  border-top-color: #258cd1;\n}\n.alert-info .alert-link {\n  color: #e6e6e6;\n}\n.alert-warning {\n  background-color: #f39c12;\n  border-color: #f39c12;\n  color: #ffffff;\n}\n.alert-warning hr {\n  border-top-color: #e08e0b;\n}\n.alert-warning .alert-link {\n  color: #e6e6e6;\n}\n.alert-danger {\n  background-color: #e74c3c;\n  border-color: #e74c3c;\n  color: #ffffff;\n}\n.alert-danger hr {\n  border-top-color: #e43725;\n}\n.alert-danger .alert-link {\n  color: #e6e6e6;\n}\n@-webkit-keyframes progress-bar-stripes {\n  from {\n    background-position: 40px 0;\n  }\n  to {\n    background-position: 0 0;\n  }\n}\n@-o-keyframes progress-bar-stripes {\n  from {\n    background-position: 40px 0;\n  }\n  to {\n    background-position: 0 0;\n  }\n}\n@keyframes progress-bar-stripes {\n  from {\n    background-position: 40px 0;\n  }\n  to {\n    background-position: 0 0;\n  }\n}\n.progress {\n  overflow: hidden;\n  height: 21px;\n  margin-bottom: 21px;\n  background-color: #ecf0f1;\n  border-radius: 4px;\n  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);\n  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);\n}\n.progress-bar {\n  float: left;\n  width: 0%;\n  height: 100%;\n  font-size: 13px;\n  line-height: 21px;\n  color: #ffffff;\n  text-align: center;\n  background-color: #2c3e50;\n  -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);\n  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);\n  -webkit-transition: width 0.6s ease;\n  -o-transition: width 0.6s ease;\n  transition: width 0.6s ease;\n}\n.progress-striped .progress-bar,\n.progress-bar-striped {\n  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);\n  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);\n  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);\n  -webkit-background-size: 40px 40px;\n          background-size: 40px 40px;\n}\n.progress.active .progress-bar,\n.progress-bar.active {\n  -webkit-animation: progress-bar-stripes 2s linear infinite;\n  -o-animation: progress-bar-stripes 2s linear infinite;\n  animation: progress-bar-stripes 2s linear infinite;\n}\n.progress-bar-success {\n  background-color: #18bc9c;\n}\n.progress-striped .progress-bar-success {\n  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);\n  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);\n  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);\n}\n.progress-bar-info {\n  background-color: #3498db;\n}\n.progress-striped .progress-bar-info {\n  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);\n  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);\n  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);\n}\n.progress-bar-warning {\n  background-color: #f39c12;\n}\n.progress-striped .progress-bar-warning {\n  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);\n  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);\n  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);\n}\n.progress-bar-danger {\n  background-color: #e74c3c;\n}\n.progress-striped .progress-bar-danger {\n  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);\n  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);\n  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);\n}\n.media {\n  margin-top: 15px;\n}\n.media:first-child {\n  margin-top: 0;\n}\n.media,\n.media-body {\n  zoom: 1;\n  overflow: hidden;\n}\n.media-body {\n  width: 10000px;\n}\n.media-object {\n  display: block;\n}\n.media-object.img-thumbnail {\n  max-width: none;\n}\n.media-right,\n.media > .pull-right {\n  padding-left: 10px;\n}\n.media-left,\n.media > .pull-left {\n  padding-right: 10px;\n}\n.media-left,\n.media-right,\n.media-body {\n  display: table-cell;\n  vertical-align: top;\n}\n.media-middle {\n  vertical-align: middle;\n}\n.media-bottom {\n  vertical-align: bottom;\n}\n.media-heading {\n  margin-top: 0;\n  margin-bottom: 5px;\n}\n.media-list {\n  padding-left: 0;\n  list-style: none;\n}\n.list-group {\n  margin-bottom: 20px;\n  padding-left: 0;\n}\n.list-group-item {\n  position: relative;\n  display: block;\n  padding: 10px 15px;\n  margin-bottom: -1px;\n  background-color: #ffffff;\n  border: 1px solid #ecf0f1;\n}\n.list-group-item:first-child {\n  border-top-right-radius: 4px;\n  border-top-left-radius: 4px;\n}\n.list-group-item:last-child {\n  margin-bottom: 0;\n  border-bottom-right-radius: 4px;\n  border-bottom-left-radius: 4px;\n}\na.list-group-item,\nbutton.list-group-item {\n  color: #555555;\n}\na.list-group-item .list-group-item-heading,\nbutton.list-group-item .list-group-item-heading {\n  color: #333333;\n}\na.list-group-item:hover,\nbutton.list-group-item:hover,\na.list-group-item:focus,\nbutton.list-group-item:focus {\n  text-decoration: none;\n  color: #555555;\n  background-color: #ecf0f1;\n}\nbutton.list-group-item {\n  width: 100%;\n  text-align: left;\n}\n.list-group-item.disabled,\n.list-group-item.disabled:hover,\n.list-group-item.disabled:focus {\n  background-color: #ecf0f1;\n  color: #b4bcc2;\n  cursor: not-allowed;\n}\n.list-group-item.disabled .list-group-item-heading,\n.list-group-item.disabled:hover .list-group-item-heading,\n.list-group-item.disabled:focus .list-group-item-heading {\n  color: inherit;\n}\n.list-group-item.disabled .list-group-item-text,\n.list-group-item.disabled:hover .list-group-item-text,\n.list-group-item.disabled:focus .list-group-item-text {\n  color: #b4bcc2;\n}\n.list-group-item.active,\n.list-group-item.active:hover,\n.list-group-item.active:focus {\n  z-index: 2;\n  color: #ffffff;\n  background-color: #2c3e50;\n  border-color: #2c3e50;\n}\n.list-group-item.active .list-group-item-heading,\n.list-group-item.active:hover .list-group-item-heading,\n.list-group-item.active:focus .list-group-item-heading,\n.list-group-item.active .list-group-item-heading > small,\n.list-group-item.active:hover .list-group-item-heading > small,\n.list-group-item.active:focus .list-group-item-heading > small,\n.list-group-item.active .list-group-item-heading > .small,\n.list-group-item.active:hover .list-group-item-heading > .small,\n.list-group-item.active:focus .list-group-item-heading > .small {\n  color: inherit;\n}\n.list-group-item.active .list-group-item-text,\n.list-group-item.active:hover .list-group-item-text,\n.list-group-item.active:focus .list-group-item-text {\n  color: #8aa4be;\n}\n.list-group-item-success {\n  color: #ffffff;\n  background-color: #18bc9c;\n}\na.list-group-item-success,\nbutton.list-group-item-success {\n  color: #ffffff;\n}\na.list-group-item-success .list-group-item-heading,\nbutton.list-group-item-success .list-group-item-heading {\n  color: inherit;\n}\na.list-group-item-success:hover,\nbutton.list-group-item-success:hover,\na.list-group-item-success:focus,\nbutton.list-group-item-success:focus {\n  color: #ffffff;\n  background-color: #15a589;\n}\na.list-group-item-success.active,\nbutton.list-group-item-success.active,\na.list-group-item-success.active:hover,\nbutton.list-group-item-success.active:hover,\na.list-group-item-success.active:focus,\nbutton.list-group-item-success.active:focus {\n  color: #fff;\n  background-color: #ffffff;\n  border-color: #ffffff;\n}\n.list-group-item-info {\n  color: #ffffff;\n  background-color: #3498db;\n}\na.list-group-item-info,\nbutton.list-group-item-info {\n  color: #ffffff;\n}\na.list-group-item-info .list-group-item-heading,\nbutton.list-group-item-info .list-group-item-heading {\n  color: inherit;\n}\na.list-group-item-info:hover,\nbutton.list-group-item-info:hover,\na.list-group-item-info:focus,\nbutton.list-group-item-info:focus {\n  color: #ffffff;\n  background-color: #258cd1;\n}\na.list-group-item-info.active,\nbutton.list-group-item-info.active,\na.list-group-item-info.active:hover,\nbutton.list-group-item-info.active:hover,\na.list-group-item-info.active:focus,\nbutton.list-group-item-info.active:focus {\n  color: #fff;\n  background-color: #ffffff;\n  border-color: #ffffff;\n}\n.list-group-item-warning {\n  color: #ffffff;\n  background-color: #f39c12;\n}\na.list-group-item-warning,\nbutton.list-group-item-warning {\n  color: #ffffff;\n}\na.list-group-item-warning .list-group-item-heading,\nbutton.list-group-item-warning .list-group-item-heading {\n  color: inherit;\n}\na.list-group-item-warning:hover,\nbutton.list-group-item-warning:hover,\na.list-group-item-warning:focus,\nbutton.list-group-item-warning:focus {\n  color: #ffffff;\n  background-color: #e08e0b;\n}\na.list-group-item-warning.active,\nbutton.list-group-item-warning.active,\na.list-group-item-warning.active:hover,\nbutton.list-group-item-warning.active:hover,\na.list-group-item-warning.active:focus,\nbutton.list-group-item-warning.active:focus {\n  color: #fff;\n  background-color: #ffffff;\n  border-color: #ffffff;\n}\n.list-group-item-danger {\n  color: #ffffff;\n  background-color: #e74c3c;\n}\na.list-group-item-danger,\nbutton.list-group-item-danger {\n  color: #ffffff;\n}\na.list-group-item-danger .list-group-item-heading,\nbutton.list-group-item-danger .list-group-item-heading {\n  color: inherit;\n}\na.list-group-item-danger:hover,\nbutton.list-group-item-danger:hover,\na.list-group-item-danger:focus,\nbutton.list-group-item-danger:focus {\n  color: #ffffff;\n  background-color: #e43725;\n}\na.list-group-item-danger.active,\nbutton.list-group-item-danger.active,\na.list-group-item-danger.active:hover,\nbutton.list-group-item-danger.active:hover,\na.list-group-item-danger.active:focus,\nbutton.list-group-item-danger.active:focus {\n  color: #fff;\n  background-color: #ffffff;\n  border-color: #ffffff;\n}\n.list-group-item-heading {\n  margin-top: 0;\n  margin-bottom: 5px;\n}\n.list-group-item-text {\n  margin-bottom: 0;\n  line-height: 1.3;\n}\n.panel {\n  margin-bottom: 21px;\n  background-color: #ffffff;\n  border: 1px solid transparent;\n  border-radius: 4px;\n  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);\n  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);\n}\n.panel-body {\n  padding: 15px;\n}\n.panel-heading {\n  padding: 10px 15px;\n  border-bottom: 1px solid transparent;\n  border-top-right-radius: 3px;\n  border-top-left-radius: 3px;\n}\n.panel-heading > .dropdown .dropdown-toggle {\n  color: inherit;\n}\n.panel-title {\n  margin-top: 0;\n  margin-bottom: 0;\n  font-size: 17px;\n  color: inherit;\n}\n.panel-title > a,\n.panel-title > small,\n.panel-title > .small,\n.panel-title > small > a,\n.panel-title > .small > a {\n  color: inherit;\n}\n.panel-footer {\n  padding: 10px 15px;\n  background-color: #ecf0f1;\n  border-top: 1px solid #ecf0f1;\n  border-bottom-right-radius: 3px;\n  border-bottom-left-radius: 3px;\n}\n.panel > .list-group,\n.panel > .panel-collapse > .list-group {\n  margin-bottom: 0;\n}\n.panel > .list-group .list-group-item,\n.panel > .panel-collapse > .list-group .list-group-item {\n  border-width: 1px 0;\n  border-radius: 0;\n}\n.panel > .list-group:first-child .list-group-item:first-child,\n.panel > .panel-collapse > .list-group:first-child .list-group-item:first-child {\n  border-top: 0;\n  border-top-right-radius: 3px;\n  border-top-left-radius: 3px;\n}\n.panel > .list-group:last-child .list-group-item:last-child,\n.panel > .panel-collapse > .list-group:last-child .list-group-item:last-child {\n  border-bottom: 0;\n  border-bottom-right-radius: 3px;\n  border-bottom-left-radius: 3px;\n}\n.panel > .panel-heading + .panel-collapse > .list-group .list-group-item:first-child {\n  border-top-right-radius: 0;\n  border-top-left-radius: 0;\n}\n.panel-heading + .list-group .list-group-item:first-child {\n  border-top-width: 0;\n}\n.list-group + .panel-footer {\n  border-top-width: 0;\n}\n.panel > .table,\n.panel > .table-responsive > .table,\n.panel > .panel-collapse > .table {\n  margin-bottom: 0;\n}\n.panel > .table caption,\n.panel > .table-responsive > .table caption,\n.panel > .panel-collapse > .table caption {\n  padding-left: 15px;\n  padding-right: 15px;\n}\n.panel > .table:first-child,\n.panel > .table-responsive:first-child > .table:first-child {\n  border-top-right-radius: 3px;\n  border-top-left-radius: 3px;\n}\n.panel > .table:first-child > thead:first-child > tr:first-child,\n.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child,\n.panel > .table:first-child > tbody:first-child > tr:first-child,\n.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child {\n  border-top-left-radius: 3px;\n  border-top-right-radius: 3px;\n}\n.panel > .table:first-child > thead:first-child > tr:first-child td:first-child,\n.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child td:first-child,\n.panel > .table:first-child > tbody:first-child > tr:first-child td:first-child,\n.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child td:first-child,\n.panel > .table:first-child > thead:first-child > tr:first-child th:first-child,\n.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child th:first-child,\n.panel > .table:first-child > tbody:first-child > tr:first-child th:first-child,\n.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child th:first-child {\n  border-top-left-radius: 3px;\n}\n.panel > .table:first-child > thead:first-child > tr:first-child td:last-child,\n.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child td:last-child,\n.panel > .table:first-child > tbody:first-child > tr:first-child td:last-child,\n.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child td:last-child,\n.panel > .table:first-child > thead:first-child > tr:first-child th:last-child,\n.panel > .table-responsive:first-child > .table:first-child > thead:first-child > tr:first-child th:last-child,\n.panel > .table:first-child > tbody:first-child > tr:first-child th:last-child,\n.panel > .table-responsive:first-child > .table:first-child > tbody:first-child > tr:first-child th:last-child {\n  border-top-right-radius: 3px;\n}\n.panel > .table:last-child,\n.panel > .table-responsive:last-child > .table:last-child {\n  border-bottom-right-radius: 3px;\n  border-bottom-left-radius: 3px;\n}\n.panel > .table:last-child > tbody:last-child > tr:last-child,\n.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child,\n.panel > .table:last-child > tfoot:last-child > tr:last-child,\n.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child {\n  border-bottom-left-radius: 3px;\n  border-bottom-right-radius: 3px;\n}\n.panel > .table:last-child > tbody:last-child > tr:last-child td:first-child,\n.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child td:first-child,\n.panel > .table:last-child > tfoot:last-child > tr:last-child td:first-child,\n.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child td:first-child,\n.panel > .table:last-child > tbody:last-child > tr:last-child th:first-child,\n.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child th:first-child,\n.panel > .table:last-child > tfoot:last-child > tr:last-child th:first-child,\n.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child th:first-child {\n  border-bottom-left-radius: 3px;\n}\n.panel > .table:last-child > tbody:last-child > tr:last-child td:last-child,\n.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child td:last-child,\n.panel > .table:last-child > tfoot:last-child > tr:last-child td:last-child,\n.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child td:last-child,\n.panel > .table:last-child > tbody:last-child > tr:last-child th:last-child,\n.panel > .table-responsive:last-child > .table:last-child > tbody:last-child > tr:last-child th:last-child,\n.panel > .table:last-child > tfoot:last-child > tr:last-child th:last-child,\n.panel > .table-responsive:last-child > .table:last-child > tfoot:last-child > tr:last-child th:last-child {\n  border-bottom-right-radius: 3px;\n}\n.panel > .panel-body + .table,\n.panel > .panel-body + .table-responsive,\n.panel > .table + .panel-body,\n.panel > .table-responsive + .panel-body {\n  border-top: 1px solid #ecf0f1;\n}\n.panel > .table > tbody:first-child > tr:first-child th,\n.panel > .table > tbody:first-child > tr:first-child td {\n  border-top: 0;\n}\n.panel > .table-bordered,\n.panel > .table-responsive > .table-bordered {\n  border: 0;\n}\n.panel > .table-bordered > thead > tr > th:first-child,\n.panel > .table-responsive > .table-bordered > thead > tr > th:first-child,\n.panel > .table-bordered > tbody > tr > th:first-child,\n.panel > .table-responsive > .table-bordered > tbody > tr > th:first-child,\n.panel > .table-bordered > tfoot > tr > th:first-child,\n.panel > .table-responsive > .table-bordered > tfoot > tr > th:first-child,\n.panel > .table-bordered > thead > tr > td:first-child,\n.panel > .table-responsive > .table-bordered > thead > tr > td:first-child,\n.panel > .table-bordered > tbody > tr > td:first-child,\n.panel > .table-responsive > .table-bordered > tbody > tr > td:first-child,\n.panel > .table-bordered > tfoot > tr > td:first-child,\n.panel > .table-responsive > .table-bordered > tfoot > tr > td:first-child {\n  border-left: 0;\n}\n.panel > .table-bordered > thead > tr > th:last-child,\n.panel > .table-responsive > .table-bordered > thead > tr > th:last-child,\n.panel > .table-bordered > tbody > tr > th:last-child,\n.panel > .table-responsive > .table-bordered > tbody > tr > th:last-child,\n.panel > .table-bordered > tfoot > tr > th:last-child,\n.panel > .table-responsive > .table-bordered > tfoot > tr > th:last-child,\n.panel > .table-bordered > thead > tr > td:last-child,\n.panel > .table-responsive > .table-bordered > thead > tr > td:last-child,\n.panel > .table-bordered > tbody > tr > td:last-child,\n.panel > .table-responsive > .table-bordered > tbody > tr > td:last-child,\n.panel > .table-bordered > tfoot > tr > td:last-child,\n.panel > .table-responsive > .table-bordered > tfoot > tr > td:last-child {\n  border-right: 0;\n}\n.panel > .table-bordered > thead > tr:first-child > td,\n.panel > .table-responsive > .table-bordered > thead > tr:first-child > td,\n.panel > .table-bordered > tbody > tr:first-child > td,\n.panel > .table-responsive > .table-bordered > tbody > tr:first-child > td,\n.panel > .table-bordered > thead > tr:first-child > th,\n.panel > .table-responsive > .table-bordered > thead > tr:first-child > th,\n.panel > .table-bordered > tbody > tr:first-child > th,\n.panel > .table-responsive > .table-bordered > tbody > tr:first-child > th {\n  border-bottom: 0;\n}\n.panel > .table-bordered > tbody > tr:last-child > td,\n.panel > .table-responsive > .table-bordered > tbody > tr:last-child > td,\n.panel > .table-bordered > tfoot > tr:last-child > td,\n.panel > .table-responsive > .table-bordered > tfoot > tr:last-child > td,\n.panel > .table-bordered > tbody > tr:last-child > th,\n.panel > .table-responsive > .table-bordered > tbody > tr:last-child > th,\n.panel > .table-bordered > tfoot > tr:last-child > th,\n.panel > .table-responsive > .table-bordered > tfoot > tr:last-child > th {\n  border-bottom: 0;\n}\n.panel > .table-responsive {\n  border: 0;\n  margin-bottom: 0;\n}\n.panel-group {\n  margin-bottom: 21px;\n}\n.panel-group .panel {\n  margin-bottom: 0;\n  border-radius: 4px;\n}\n.panel-group .panel + .panel {\n  margin-top: 5px;\n}\n.panel-group .panel-heading {\n  border-bottom: 0;\n}\n.panel-group .panel-heading + .panel-collapse > .panel-body,\n.panel-group .panel-heading + .panel-collapse > .list-group {\n  border-top: 1px solid #ecf0f1;\n}\n.panel-group .panel-footer {\n  border-top: 0;\n}\n.panel-group .panel-footer + .panel-collapse .panel-body {\n  border-bottom: 1px solid #ecf0f1;\n}\n.panel-default {\n  border-color: #ecf0f1;\n}\n.panel-default > .panel-heading {\n  color: #2c3e50;\n  background-color: #ecf0f1;\n  border-color: #ecf0f1;\n}\n.panel-default > .panel-heading + .panel-collapse > .panel-body {\n  border-top-color: #ecf0f1;\n}\n.panel-default > .panel-heading .badge {\n  color: #ecf0f1;\n  background-color: #2c3e50;\n}\n.panel-default > .panel-footer + .panel-collapse > .panel-body {\n  border-bottom-color: #ecf0f1;\n}\n.panel-primary {\n  border-color: #2c3e50;\n}\n.panel-primary > .panel-heading {\n  color: #ffffff;\n  background-color: #2c3e50;\n  border-color: #2c3e50;\n}\n.panel-primary > .panel-heading + .panel-collapse > .panel-body {\n  border-top-color: #2c3e50;\n}\n.panel-primary > .panel-heading .badge {\n  color: #2c3e50;\n  background-color: #ffffff;\n}\n.panel-primary > .panel-footer + .panel-collapse > .panel-body {\n  border-bottom-color: #2c3e50;\n}\n.panel-success {\n  border-color: #18bc9c;\n}\n.panel-success > .panel-heading {\n  color: #ffffff;\n  background-color: #18bc9c;\n  border-color: #18bc9c;\n}\n.panel-success > .panel-heading + .panel-collapse > .panel-body {\n  border-top-color: #18bc9c;\n}\n.panel-success > .panel-heading .badge {\n  color: #18bc9c;\n  background-color: #ffffff;\n}\n.panel-success > .panel-footer + .panel-collapse > .panel-body {\n  border-bottom-color: #18bc9c;\n}\n.panel-info {\n  border-color: #3498db;\n}\n.panel-info > .panel-heading {\n  color: #ffffff;\n  background-color: #3498db;\n  border-color: #3498db;\n}\n.panel-info > .panel-heading + .panel-collapse > .panel-body {\n  border-top-color: #3498db;\n}\n.panel-info > .panel-heading .badge {\n  color: #3498db;\n  background-color: #ffffff;\n}\n.panel-info > .panel-footer + .panel-collapse > .panel-body {\n  border-bottom-color: #3498db;\n}\n.panel-warning {\n  border-color: #f39c12;\n}\n.panel-warning > .panel-heading {\n  color: #ffffff;\n  background-color: #f39c12;\n  border-color: #f39c12;\n}\n.panel-warning > .panel-heading + .panel-collapse > .panel-body {\n  border-top-color: #f39c12;\n}\n.panel-warning > .panel-heading .badge {\n  color: #f39c12;\n  background-color: #ffffff;\n}\n.panel-warning > .panel-footer + .panel-collapse > .panel-body {\n  border-bottom-color: #f39c12;\n}\n.panel-danger {\n  border-color: #e74c3c;\n}\n.panel-danger > .panel-heading {\n  color: #ffffff;\n  background-color: #e74c3c;\n  border-color: #e74c3c;\n}\n.panel-danger > .panel-heading + .panel-collapse > .panel-body {\n  border-top-color: #e74c3c;\n}\n.panel-danger > .panel-heading .badge {\n  color: #e74c3c;\n  background-color: #ffffff;\n}\n.panel-danger > .panel-footer + .panel-collapse > .panel-body {\n  border-bottom-color: #e74c3c;\n}\n.embed-responsive {\n  position: relative;\n  display: block;\n  height: 0;\n  padding: 0;\n  overflow: hidden;\n}\n.embed-responsive .embed-responsive-item,\n.embed-responsive iframe,\n.embed-responsive embed,\n.embed-responsive object,\n.embed-responsive video {\n  position: absolute;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  height: 100%;\n  width: 100%;\n  border: 0;\n}\n.embed-responsive-16by9 {\n  padding-bottom: 56.25%;\n}\n.embed-responsive-4by3 {\n  padding-bottom: 75%;\n}\n.well {\n  min-height: 20px;\n  padding: 19px;\n  margin-bottom: 20px;\n  background-color: #ecf0f1;\n  border: 1px solid transparent;\n  border-radius: 4px;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);\n}\n.well blockquote {\n  border-color: #ddd;\n  border-color: rgba(0, 0, 0, 0.15);\n}\n.well-lg {\n  padding: 24px;\n  border-radius: 6px;\n}\n.well-sm {\n  padding: 9px;\n  border-radius: 3px;\n}\n.close {\n  float: right;\n  font-size: 22.5px;\n  font-weight: bold;\n  line-height: 1;\n  color: #000000;\n  text-shadow: none;\n  opacity: 0.2;\n  filter: alpha(opacity=20);\n}\n.close:hover,\n.close:focus {\n  color: #000000;\n  text-decoration: none;\n  cursor: pointer;\n  opacity: 0.5;\n  filter: alpha(opacity=50);\n}\nbutton.close {\n  padding: 0;\n  cursor: pointer;\n  background: transparent;\n  border: 0;\n  -webkit-appearance: none;\n}\n.modal-open {\n  overflow: hidden;\n}\n.modal {\n  display: none;\n  overflow: hidden;\n  position: fixed;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n  z-index: 1050;\n  -webkit-overflow-scrolling: touch;\n  outline: 0;\n}\n.modal.fade .modal-dialog {\n  -webkit-transform: translate(0, -25%);\n  -ms-transform: translate(0, -25%);\n  -o-transform: translate(0, -25%);\n  transform: translate(0, -25%);\n  -webkit-transition: -webkit-transform 0.3s ease-out;\n  -o-transition: -o-transform 0.3s ease-out;\n  transition: transform 0.3s ease-out;\n}\n.modal.in .modal-dialog {\n  -webkit-transform: translate(0, 0);\n  -ms-transform: translate(0, 0);\n  -o-transform: translate(0, 0);\n  transform: translate(0, 0);\n}\n.modal-open .modal {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\n.modal-dialog {\n  position: relative;\n  width: auto;\n  margin: 10px;\n}\n.modal-content {\n  position: relative;\n  background-color: #ffffff;\n  border: 1px solid #999999;\n  border: 1px solid rgba(0, 0, 0, 0.2);\n  border-radius: 6px;\n  -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);\n  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);\n  -webkit-background-clip: padding-box;\n          background-clip: padding-box;\n  outline: 0;\n}\n.modal-backdrop {\n  position: fixed;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n  z-index: 1040;\n  background-color: #000000;\n}\n.modal-backdrop.fade {\n  opacity: 0;\n  filter: alpha(opacity=0);\n}\n.modal-backdrop.in {\n  opacity: 0.5;\n  filter: alpha(opacity=50);\n}\n.modal-header {\n  padding: 15px;\n  border-bottom: 1px solid #e5e5e5;\n}\n.modal-header .close {\n  margin-top: -2px;\n}\n.modal-title {\n  margin: 0;\n  line-height: 1.42857143;\n}\n.modal-body {\n  position: relative;\n  padding: 20px;\n}\n.modal-footer {\n  padding: 20px;\n  text-align: right;\n  border-top: 1px solid #e5e5e5;\n}\n.modal-footer .btn + .btn {\n  margin-left: 5px;\n  margin-bottom: 0;\n}\n.modal-footer .btn-group .btn + .btn {\n  margin-left: -1px;\n}\n.modal-footer .btn-block + .btn-block {\n  margin-left: 0;\n}\n.modal-scrollbar-measure {\n  position: absolute;\n  top: -9999px;\n  width: 50px;\n  height: 50px;\n  overflow: scroll;\n}\n@media (min-width: 768px) {\n  .modal-dialog {\n    width: 600px;\n    margin: 30px auto;\n  }\n  .modal-content {\n    -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);\n    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);\n  }\n  .modal-sm {\n    width: 300px;\n  }\n}\n@media (min-width: 992px) {\n  .modal-lg {\n    width: 900px;\n  }\n}\n.tooltip {\n  position: absolute;\n  z-index: 1070;\n  display: block;\n  font-family: \"Lato\", \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n  font-style: normal;\n  font-weight: normal;\n  letter-spacing: normal;\n  line-break: auto;\n  line-height: 1.42857143;\n  text-align: left;\n  text-align: start;\n  text-decoration: none;\n  text-shadow: none;\n  text-transform: none;\n  white-space: normal;\n  word-break: normal;\n  word-spacing: normal;\n  word-wrap: normal;\n  font-size: 13px;\n  opacity: 0;\n  filter: alpha(opacity=0);\n}\n.tooltip.in {\n  opacity: 0.9;\n  filter: alpha(opacity=90);\n}\n.tooltip.top {\n  margin-top: -3px;\n  padding: 5px 0;\n}\n.tooltip.right {\n  margin-left: 3px;\n  padding: 0 5px;\n}\n.tooltip.bottom {\n  margin-top: 3px;\n  padding: 5px 0;\n}\n.tooltip.left {\n  margin-left: -3px;\n  padding: 0 5px;\n}\n.tooltip-inner {\n  max-width: 200px;\n  padding: 3px 8px;\n  color: #ffffff;\n  text-align: center;\n  background-color: #000000;\n  border-radius: 4px;\n}\n.tooltip-arrow {\n  position: absolute;\n  width: 0;\n  height: 0;\n  border-color: transparent;\n  border-style: solid;\n}\n.tooltip.top .tooltip-arrow {\n  bottom: 0;\n  left: 50%;\n  margin-left: -5px;\n  border-width: 5px 5px 0;\n  border-top-color: #000000;\n}\n.tooltip.top-left .tooltip-arrow {\n  bottom: 0;\n  right: 5px;\n  margin-bottom: -5px;\n  border-width: 5px 5px 0;\n  border-top-color: #000000;\n}\n.tooltip.top-right .tooltip-arrow {\n  bottom: 0;\n  left: 5px;\n  margin-bottom: -5px;\n  border-width: 5px 5px 0;\n  border-top-color: #000000;\n}\n.tooltip.right .tooltip-arrow {\n  top: 50%;\n  left: 0;\n  margin-top: -5px;\n  border-width: 5px 5px 5px 0;\n  border-right-color: #000000;\n}\n.tooltip.left .tooltip-arrow {\n  top: 50%;\n  right: 0;\n  margin-top: -5px;\n  border-width: 5px 0 5px 5px;\n  border-left-color: #000000;\n}\n.tooltip.bottom .tooltip-arrow {\n  top: 0;\n  left: 50%;\n  margin-left: -5px;\n  border-width: 0 5px 5px;\n  border-bottom-color: #000000;\n}\n.tooltip.bottom-left .tooltip-arrow {\n  top: 0;\n  right: 5px;\n  margin-top: -5px;\n  border-width: 0 5px 5px;\n  border-bottom-color: #000000;\n}\n.tooltip.bottom-right .tooltip-arrow {\n  top: 0;\n  left: 5px;\n  margin-top: -5px;\n  border-width: 0 5px 5px;\n  border-bottom-color: #000000;\n}\n.popover {\n  position: absolute;\n  top: 0;\n  left: 0;\n  z-index: 1060;\n  display: none;\n  max-width: 276px;\n  padding: 1px;\n  font-family: \"Lato\", \"Helvetica Neue\", Helvetica, Arial, sans-serif;\n  font-style: normal;\n  font-weight: normal;\n  letter-spacing: normal;\n  line-break: auto;\n  line-height: 1.42857143;\n  text-align: left;\n  text-align: start;\n  text-decoration: none;\n  text-shadow: none;\n  text-transform: none;\n  white-space: normal;\n  word-break: normal;\n  word-spacing: normal;\n  word-wrap: normal;\n  font-size: 15px;\n  background-color: #ffffff;\n  -webkit-background-clip: padding-box;\n          background-clip: padding-box;\n  border: 1px solid #cccccc;\n  border: 1px solid rgba(0, 0, 0, 0.2);\n  border-radius: 6px;\n  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);\n}\n.popover.top {\n  margin-top: -10px;\n}\n.popover.right {\n  margin-left: 10px;\n}\n.popover.bottom {\n  margin-top: 10px;\n}\n.popover.left {\n  margin-left: -10px;\n}\n.popover-title {\n  margin: 0;\n  padding: 8px 14px;\n  font-size: 15px;\n  background-color: #f7f7f7;\n  border-bottom: 1px solid #ebebeb;\n  border-radius: 5px 5px 0 0;\n}\n.popover-content {\n  padding: 9px 14px;\n}\n.popover > .arrow,\n.popover > .arrow:after {\n  position: absolute;\n  display: block;\n  width: 0;\n  height: 0;\n  border-color: transparent;\n  border-style: solid;\n}\n.popover > .arrow {\n  border-width: 11px;\n}\n.popover > .arrow:after {\n  border-width: 10px;\n  content: \"\";\n}\n.popover.top > .arrow {\n  left: 50%;\n  margin-left: -11px;\n  border-bottom-width: 0;\n  border-top-color: #999999;\n  border-top-color: rgba(0, 0, 0, 0.25);\n  bottom: -11px;\n}\n.popover.top > .arrow:after {\n  content: \" \";\n  bottom: 1px;\n  margin-left: -10px;\n  border-bottom-width: 0;\n  border-top-color: #ffffff;\n}\n.popover.right > .arrow {\n  top: 50%;\n  left: -11px;\n  margin-top: -11px;\n  border-left-width: 0;\n  border-right-color: #999999;\n  border-right-color: rgba(0, 0, 0, 0.25);\n}\n.popover.right > .arrow:after {\n  content: \" \";\n  left: 1px;\n  bottom: -10px;\n  border-left-width: 0;\n  border-right-color: #ffffff;\n}\n.popover.bottom > .arrow {\n  left: 50%;\n  margin-left: -11px;\n  border-top-width: 0;\n  border-bottom-color: #999999;\n  border-bottom-color: rgba(0, 0, 0, 0.25);\n  top: -11px;\n}\n.popover.bottom > .arrow:after {\n  content: \" \";\n  top: 1px;\n  margin-left: -10px;\n  border-top-width: 0;\n  border-bottom-color: #ffffff;\n}\n.popover.left > .arrow {\n  top: 50%;\n  right: -11px;\n  margin-top: -11px;\n  border-right-width: 0;\n  border-left-color: #999999;\n  border-left-color: rgba(0, 0, 0, 0.25);\n}\n.popover.left > .arrow:after {\n  content: \" \";\n  right: 1px;\n  border-right-width: 0;\n  border-left-color: #ffffff;\n  bottom: -10px;\n}\n.carousel {\n  position: relative;\n}\n.carousel-inner {\n  position: relative;\n  overflow: hidden;\n  width: 100%;\n}\n.carousel-inner > .item {\n  display: none;\n  position: relative;\n  -webkit-transition: 0.6s ease-in-out left;\n  -o-transition: 0.6s ease-in-out left;\n  transition: 0.6s ease-in-out left;\n}\n.carousel-inner > .item > img,\n.carousel-inner > .item > a > img {\n  line-height: 1;\n}\n@media all and (transform-3d), (-webkit-transform-3d) {\n  .carousel-inner > .item {\n    -webkit-transition: -webkit-transform 0.6s ease-in-out;\n    -o-transition: -o-transform 0.6s ease-in-out;\n    transition: transform 0.6s ease-in-out;\n    -webkit-backface-visibility: hidden;\n    backface-visibility: hidden;\n    -webkit-perspective: 1000px;\n    perspective: 1000px;\n  }\n  .carousel-inner > .item.next,\n  .carousel-inner > .item.active.right {\n    -webkit-transform: translate3d(100%, 0, 0);\n    transform: translate3d(100%, 0, 0);\n    left: 0;\n  }\n  .carousel-inner > .item.prev,\n  .carousel-inner > .item.active.left {\n    -webkit-transform: translate3d(-100%, 0, 0);\n    transform: translate3d(-100%, 0, 0);\n    left: 0;\n  }\n  .carousel-inner > .item.next.left,\n  .carousel-inner > .item.prev.right,\n  .carousel-inner > .item.active {\n    -webkit-transform: translate3d(0, 0, 0);\n    transform: translate3d(0, 0, 0);\n    left: 0;\n  }\n}\n.carousel-inner > .active,\n.carousel-inner > .next,\n.carousel-inner > .prev {\n  display: block;\n}\n.carousel-inner > .active {\n  left: 0;\n}\n.carousel-inner > .next,\n.carousel-inner > .prev {\n  position: absolute;\n  top: 0;\n  width: 100%;\n}\n.carousel-inner > .next {\n  left: 100%;\n}\n.carousel-inner > .prev {\n  left: -100%;\n}\n.carousel-inner > .next.left,\n.carousel-inner > .prev.right {\n  left: 0;\n}\n.carousel-inner > .active.left {\n  left: -100%;\n}\n.carousel-inner > .active.right {\n  left: 100%;\n}\n.carousel-control {\n  position: absolute;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  width: 15%;\n  opacity: 0.5;\n  filter: alpha(opacity=50);\n  font-size: 20px;\n  color: #ffffff;\n  text-align: center;\n  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);\n  background-color: rgba(0, 0, 0, 0);\n}\n.carousel-control.left {\n  background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.0001) 100%);\n  background-image: -o-linear-gradient(left, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.0001) 100%);\n  background-image: -webkit-gradient(linear, left top, right top, from(rgba(0, 0, 0, 0.5)), to(rgba(0, 0, 0, 0.0001)));\n  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.0001) 100%);\n  background-repeat: repeat-x;\n  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80000000', endColorstr='#00000000', GradientType=1);\n}\n.carousel-control.right {\n  left: auto;\n  right: 0;\n  background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.0001) 0%, rgba(0, 0, 0, 0.5) 100%);\n  background-image: -o-linear-gradient(left, rgba(0, 0, 0, 0.0001) 0%, rgba(0, 0, 0, 0.5) 100%);\n  background-image: -webkit-gradient(linear, left top, right top, from(rgba(0, 0, 0, 0.0001)), to(rgba(0, 0, 0, 0.5)));\n  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.0001) 0%, rgba(0, 0, 0, 0.5) 100%);\n  background-repeat: repeat-x;\n  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#80000000', GradientType=1);\n}\n.carousel-control:hover,\n.carousel-control:focus {\n  outline: 0;\n  color: #ffffff;\n  text-decoration: none;\n  opacity: 0.9;\n  filter: alpha(opacity=90);\n}\n.carousel-control .icon-prev,\n.carousel-control .icon-next,\n.carousel-control .glyphicon-chevron-left,\n.carousel-control .glyphicon-chevron-right {\n  position: absolute;\n  top: 50%;\n  margin-top: -10px;\n  z-index: 5;\n  display: inline-block;\n}\n.carousel-control .icon-prev,\n.carousel-control .glyphicon-chevron-left {\n  left: 50%;\n  margin-left: -10px;\n}\n.carousel-control .icon-next,\n.carousel-control .glyphicon-chevron-right {\n  right: 50%;\n  margin-right: -10px;\n}\n.carousel-control .icon-prev,\n.carousel-control .icon-next {\n  width: 20px;\n  height: 20px;\n  line-height: 1;\n  font-family: serif;\n}\n.carousel-control .icon-prev:before {\n  content: '\\2039';\n}\n.carousel-control .icon-next:before {\n  content: '\\203A';\n}\n.carousel-indicators {\n  position: absolute;\n  bottom: 10px;\n  left: 50%;\n  z-index: 15;\n  width: 60%;\n  margin-left: -30%;\n  padding-left: 0;\n  list-style: none;\n  text-align: center;\n}\n.carousel-indicators li {\n  display: inline-block;\n  width: 10px;\n  height: 10px;\n  margin: 1px;\n  text-indent: -999px;\n  border: 1px solid #ffffff;\n  border-radius: 10px;\n  cursor: pointer;\n  background-color: #000 \\9;\n  background-color: rgba(0, 0, 0, 0);\n}\n.carousel-indicators .active {\n  margin: 0;\n  width: 12px;\n  height: 12px;\n  background-color: #ffffff;\n}\n.carousel-caption {\n  position: absolute;\n  left: 15%;\n  right: 15%;\n  bottom: 20px;\n  z-index: 10;\n  padding-top: 20px;\n  padding-bottom: 20px;\n  color: #ffffff;\n  text-align: center;\n  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);\n}\n.carousel-caption .btn {\n  text-shadow: none;\n}\n@media screen and (min-width: 768px) {\n  .carousel-control .glyphicon-chevron-left,\n  .carousel-control .glyphicon-chevron-right,\n  .carousel-control .icon-prev,\n  .carousel-control .icon-next {\n    width: 30px;\n    height: 30px;\n    margin-top: -10px;\n    font-size: 30px;\n  }\n  .carousel-control .glyphicon-chevron-left,\n  .carousel-control .icon-prev {\n    margin-left: -10px;\n  }\n  .carousel-control .glyphicon-chevron-right,\n  .carousel-control .icon-next {\n    margin-right: -10px;\n  }\n  .carousel-caption {\n    left: 20%;\n    right: 20%;\n    padding-bottom: 30px;\n  }\n  .carousel-indicators {\n    bottom: 20px;\n  }\n}\n.clearfix:before,\n.clearfix:after,\n.dl-horizontal dd:before,\n.dl-horizontal dd:after,\n.container:before,\n.container:after,\n.container-fluid:before,\n.container-fluid:after,\n.row:before,\n.row:after,\n.form-horizontal .form-group:before,\n.form-horizontal .form-group:after,\n.btn-toolbar:before,\n.btn-toolbar:after,\n.btn-group-vertical > .btn-group:before,\n.btn-group-vertical > .btn-group:after,\n.nav:before,\n.nav:after,\n.navbar:before,\n.navbar:after,\n.navbar-header:before,\n.navbar-header:after,\n.navbar-collapse:before,\n.navbar-collapse:after,\n.pager:before,\n.pager:after,\n.panel-body:before,\n.panel-body:after,\n.modal-header:before,\n.modal-header:after,\n.modal-footer:before,\n.modal-footer:after {\n  content: \" \";\n  display: table;\n}\n.clearfix:after,\n.dl-horizontal dd:after,\n.container:after,\n.container-fluid:after,\n.row:after,\n.form-horizontal .form-group:after,\n.btn-toolbar:after,\n.btn-group-vertical > .btn-group:after,\n.nav:after,\n.navbar:after,\n.navbar-header:after,\n.navbar-collapse:after,\n.pager:after,\n.panel-body:after,\n.modal-header:after,\n.modal-footer:after {\n  clear: both;\n}\n.center-block {\n  display: block;\n  margin-left: auto;\n  margin-right: auto;\n}\n.pull-right {\n  float: right !important;\n}\n.pull-left {\n  float: left !important;\n}\n.hide {\n  display: none !important;\n}\n.show {\n  display: block !important;\n}\n.invisible {\n  visibility: hidden;\n}\n.text-hide {\n  font: 0/0 a;\n  color: transparent;\n  text-shadow: none;\n  background-color: transparent;\n  border: 0;\n}\n.hidden {\n  display: none !important;\n}\n.affix {\n  position: fixed;\n}\n@-ms-viewport {\n  width: device-width;\n}\n.visible-xs,\n.visible-sm,\n.visible-md,\n.visible-lg {\n  display: none !important;\n}\n.visible-xs-block,\n.visible-xs-inline,\n.visible-xs-inline-block,\n.visible-sm-block,\n.visible-sm-inline,\n.visible-sm-inline-block,\n.visible-md-block,\n.visible-md-inline,\n.visible-md-inline-block,\n.visible-lg-block,\n.visible-lg-inline,\n.visible-lg-inline-block {\n  display: none !important;\n}\n@media (max-width: 767px) {\n  .visible-xs {\n    display: block !important;\n  }\n  table.visible-xs {\n    display: table !important;\n  }\n  tr.visible-xs {\n    display: table-row !important;\n  }\n  th.visible-xs,\n  td.visible-xs {\n    display: table-cell !important;\n  }\n}\n@media (max-width: 767px) {\n  .visible-xs-block {\n    display: block !important;\n  }\n}\n@media (max-width: 767px) {\n  .visible-xs-inline {\n    display: inline !important;\n  }\n}\n@media (max-width: 767px) {\n  .visible-xs-inline-block {\n    display: inline-block !important;\n  }\n}\n@media (min-width: 768px) and (max-width: 991px) {\n  .visible-sm {\n    display: block !important;\n  }\n  table.visible-sm {\n    display: table !important;\n  }\n  tr.visible-sm {\n    display: table-row !important;\n  }\n  th.visible-sm,\n  td.visible-sm {\n    display: table-cell !important;\n  }\n}\n@media (min-width: 768px) and (max-width: 991px) {\n  .visible-sm-block {\n    display: block !important;\n  }\n}\n@media (min-width: 768px) and (max-width: 991px) {\n  .visible-sm-inline {\n    display: inline !important;\n  }\n}\n@media (min-width: 768px) and (max-width: 991px) {\n  .visible-sm-inline-block {\n    display: inline-block !important;\n  }\n}\n@media (min-width: 992px) and (max-width: 1199px) {\n  .visible-md {\n    display: block !important;\n  }\n  table.visible-md {\n    display: table !important;\n  }\n  tr.visible-md {\n    display: table-row !important;\n  }\n  th.visible-md,\n  td.visible-md {\n    display: table-cell !important;\n  }\n}\n@media (min-width: 992px) and (max-width: 1199px) {\n  .visible-md-block {\n    display: block !important;\n  }\n}\n@media (min-width: 992px) and (max-width: 1199px) {\n  .visible-md-inline {\n    display: inline !important;\n  }\n}\n@media (min-width: 992px) and (max-width: 1199px) {\n  .visible-md-inline-block {\n    display: inline-block !important;\n  }\n}\n@media (min-width: 1200px) {\n  .visible-lg {\n    display: block !important;\n  }\n  table.visible-lg {\n    display: table !important;\n  }\n  tr.visible-lg {\n    display: table-row !important;\n  }\n  th.visible-lg,\n  td.visible-lg {\n    display: table-cell !important;\n  }\n}\n@media (min-width: 1200px) {\n  .visible-lg-block {\n    display: block !important;\n  }\n}\n@media (min-width: 1200px) {\n  .visible-lg-inline {\n    display: inline !important;\n  }\n}\n@media (min-width: 1200px) {\n  .visible-lg-inline-block {\n    display: inline-block !important;\n  }\n}\n@media (max-width: 767px) {\n  .hidden-xs {\n    display: none !important;\n  }\n}\n@media (min-width: 768px) and (max-width: 991px) {\n  .hidden-sm {\n    display: none !important;\n  }\n}\n@media (min-width: 992px) and (max-width: 1199px) {\n  .hidden-md {\n    display: none !important;\n  }\n}\n@media (min-width: 1200px) {\n  .hidden-lg {\n    display: none !important;\n  }\n}\n.visible-print {\n  display: none !important;\n}\n@media print {\n  .visible-print {\n    display: block !important;\n  }\n  table.visible-print {\n    display: table !important;\n  }\n  tr.visible-print {\n    display: table-row !important;\n  }\n  th.visible-print,\n  td.visible-print {\n    display: table-cell !important;\n  }\n}\n.visible-print-block {\n  display: none !important;\n}\n@media print {\n  .visible-print-block {\n    display: block !important;\n  }\n}\n.visible-print-inline {\n  display: none !important;\n}\n@media print {\n  .visible-print-inline {\n    display: inline !important;\n  }\n}\n.visible-print-inline-block {\n  display: none !important;\n}\n@media print {\n  .visible-print-inline-block {\n    display: inline-block !important;\n  }\n}\n@media print {\n  .hidden-print {\n    display: none !important;\n  }\n}\n.navbar {\n  border-width: 0;\n}\n.navbar-default .badge {\n  background-color: #fff;\n  color: #2c3e50;\n}\n.navbar-inverse .badge {\n  background-color: #fff;\n  color: #18bc9c;\n}\n.navbar-brand {\n  line-height: 1;\n}\n.btn {\n  border-width: 2px;\n}\n.btn:active {\n  -webkit-box-shadow: none;\n  box-shadow: none;\n}\n.btn-group.open .dropdown-toggle {\n  -webkit-box-shadow: none;\n  box-shadow: none;\n}\n.text-primary,\n.text-primary:hover {\n  color: #2c3e50;\n}\n.text-success,\n.text-success:hover {\n  color: #18bc9c;\n}\n.text-danger,\n.text-danger:hover {\n  color: #e74c3c;\n}\n.text-warning,\n.text-warning:hover {\n  color: #f39c12;\n}\n.text-info,\n.text-info:hover {\n  color: #3498db;\n}\ntable a:not(.btn),\n.table a:not(.btn) {\n  text-decoration: underline;\n}\ntable .dropdown-menu a,\n.table .dropdown-menu a {\n  text-decoration: none;\n}\ntable .success,\n.table .success,\ntable .warning,\n.table .warning,\ntable .danger,\n.table .danger,\ntable .info,\n.table .info {\n  color: #fff;\n}\ntable .success > th > a,\n.table .success > th > a,\ntable .warning > th > a,\n.table .warning > th > a,\ntable .danger > th > a,\n.table .danger > th > a,\ntable .info > th > a,\n.table .info > th > a,\ntable .success > td > a,\n.table .success > td > a,\ntable .warning > td > a,\n.table .warning > td > a,\ntable .danger > td > a,\n.table .danger > td > a,\ntable .info > td > a,\n.table .info > td > a,\ntable .success > a,\n.table .success > a,\ntable .warning > a,\n.table .warning > a,\ntable .danger > a,\n.table .danger > a,\ntable .info > a,\n.table .info > a {\n  color: #fff;\n}\ntable > thead > tr > th,\n.table > thead > tr > th,\ntable > tbody > tr > th,\n.table > tbody > tr > th,\ntable > tfoot > tr > th,\n.table > tfoot > tr > th,\ntable > thead > tr > td,\n.table > thead > tr > td,\ntable > tbody > tr > td,\n.table > tbody > tr > td,\ntable > tfoot > tr > td,\n.table > tfoot > tr > td {\n  border: none;\n}\ntable-bordered > thead > tr > th,\n.table-bordered > thead > tr > th,\ntable-bordered > tbody > tr > th,\n.table-bordered > tbody > tr > th,\ntable-bordered > tfoot > tr > th,\n.table-bordered > tfoot > tr > th,\ntable-bordered > thead > tr > td,\n.table-bordered > thead > tr > td,\ntable-bordered > tbody > tr > td,\n.table-bordered > tbody > tr > td,\ntable-bordered > tfoot > tr > td,\n.table-bordered > tfoot > tr > td {\n  border: 1px solid #ecf0f1;\n}\n.form-control,\ninput {\n  border-width: 2px;\n  -webkit-box-shadow: none;\n  box-shadow: none;\n}\n.form-control:focus,\ninput:focus {\n  -webkit-box-shadow: none;\n  box-shadow: none;\n}\n.has-warning .help-block,\n.has-warning .control-label,\n.has-warning .radio,\n.has-warning .checkbox,\n.has-warning .radio-inline,\n.has-warning .checkbox-inline,\n.has-warning.radio label,\n.has-warning.checkbox label,\n.has-warning.radio-inline label,\n.has-warning.checkbox-inline label,\n.has-warning .form-control-feedback {\n  color: #f39c12;\n}\n.has-warning .form-control,\n.has-warning .form-control:focus {\n  border: 2px solid #f39c12;\n}\n.has-warning .input-group-addon {\n  border-color: #f39c12;\n}\n.has-error .help-block,\n.has-error .control-label,\n.has-error .radio,\n.has-error .checkbox,\n.has-error .radio-inline,\n.has-error .checkbox-inline,\n.has-error.radio label,\n.has-error.checkbox label,\n.has-error.radio-inline label,\n.has-error.checkbox-inline label,\n.has-error .form-control-feedback {\n  color: #e74c3c;\n}\n.has-error .form-control,\n.has-error .form-control:focus {\n  border: 2px solid #e74c3c;\n}\n.has-error .input-group-addon {\n  border-color: #e74c3c;\n}\n.has-success .help-block,\n.has-success .control-label,\n.has-success .radio,\n.has-success .checkbox,\n.has-success .radio-inline,\n.has-success .checkbox-inline,\n.has-success.radio label,\n.has-success.checkbox label,\n.has-success.radio-inline label,\n.has-success.checkbox-inline label,\n.has-success .form-control-feedback {\n  color: #18bc9c;\n}\n.has-success .form-control,\n.has-success .form-control:focus {\n  border: 2px solid #18bc9c;\n}\n.has-success .input-group-addon {\n  border-color: #18bc9c;\n}\n.nav .open > a,\n.nav .open > a:hover,\n.nav .open > a:focus {\n  border-color: transparent;\n}\n.pager a,\n.pager a:hover {\n  color: #fff;\n}\n.pager .disabled > a,\n.pager .disabled > a:hover,\n.pager .disabled > a:focus,\n.pager .disabled > span {\n  background-color: #3be6c4;\n}\n.close {\n  color: #fff;\n  text-decoration: none;\n  opacity: 0.4;\n}\n.close:hover,\n.close:focus {\n  color: #fff;\n  opacity: 1;\n}\n.alert .alert-link {\n  color: #fff;\n  text-decoration: underline;\n}\n.progress {\n  height: 10px;\n  -webkit-box-shadow: none;\n  box-shadow: none;\n}\n.progress .progress-bar {\n  font-size: 10px;\n  line-height: 10px;\n}\n.well {\n  -webkit-box-shadow: none;\n  box-shadow: none;\n}\na.list-group-item.active,\na.list-group-item.active:hover,\na.list-group-item.active:focus {\n  border-color: #ecf0f1;\n}\na.list-group-item-success.active {\n  background-color: #18bc9c;\n}\na.list-group-item-success.active:hover,\na.list-group-item-success.active:focus {\n  background-color: #15a589;\n}\na.list-group-item-warning.active {\n  background-color: #f39c12;\n}\na.list-group-item-warning.active:hover,\na.list-group-item-warning.active:focus {\n  background-color: #e08e0b;\n}\na.list-group-item-danger.active {\n  background-color: #e74c3c;\n}\na.list-group-item-danger.active:hover,\na.list-group-item-danger.active:focus {\n  background-color: #e43725;\n}\n.panel-default .close {\n  color: #2c3e50;\n}\n.modal .close {\n  color: #2c3e50;\n}\n.popover {\n  color: #2c3e50;\n}\n", ""]);
-	
-	// exports
-
-
-/***/ }),
-/* 295 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__.p + "f4769f9bdb7466be65088239c12046d1.eot";
-
-/***/ }),
-/* 296 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__.p + "448c34a56d699c29117adc64c43affeb.woff2";
-
-/***/ }),
-/* 297 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__.p + "fa2772327f55d8198301fdb8bcfc8158.woff";
-
-/***/ }),
-/* 298 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__.p + "e18bbf611f2a2e43afc071aa2f4e1512.ttf";
-
-/***/ }),
-/* 299 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__.p + "89889688147bd7575d6327160d64e760.svg";
-
-/***/ }),
-/* 300 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// This file is autogenerated via the `commonjs` Grunt task. You can require() this file in a CommonJS environment.
-	__webpack_require__(301)
-	__webpack_require__(302)
-	__webpack_require__(303)
-	__webpack_require__(304)
-	__webpack_require__(305)
-	__webpack_require__(306)
-	__webpack_require__(307)
-	__webpack_require__(308)
-	__webpack_require__(309)
-	__webpack_require__(310)
-	__webpack_require__(311)
-	__webpack_require__(312)
-
-/***/ }),
-/* 301 */
-/***/ (function(module, exports) {
-
-	/* ========================================================================
-	 * Bootstrap: transition.js v3.3.7
-	 * http://getbootstrap.com/javascript/#transitions
-	 * ========================================================================
-	 * Copyright 2011-2016 Twitter, Inc.
-	 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-	 * ======================================================================== */
-	
-	
-	+function ($) {
-	  'use strict';
-	
-	  // CSS TRANSITION SUPPORT (Shoutout: http://www.modernizr.com/)
-	  // ============================================================
-	
-	  function transitionEnd() {
-	    var el = document.createElement('bootstrap')
-	
-	    var transEndEventNames = {
-	      WebkitTransition : 'webkitTransitionEnd',
-	      MozTransition    : 'transitionend',
-	      OTransition      : 'oTransitionEnd otransitionend',
-	      transition       : 'transitionend'
-	    }
-	
-	    for (var name in transEndEventNames) {
-	      if (el.style[name] !== undefined) {
-	        return { end: transEndEventNames[name] }
-	      }
-	    }
-	
-	    return false // explicit for ie8 (  ._.)
-	  }
-	
-	  // http://blog.alexmaccaw.com/css-transitions
-	  $.fn.emulateTransitionEnd = function (duration) {
-	    var called = false
-	    var $el = this
-	    $(this).one('bsTransitionEnd', function () { called = true })
-	    var callback = function () { if (!called) $($el).trigger($.support.transition.end) }
-	    setTimeout(callback, duration)
-	    return this
-	  }
-	
-	  $(function () {
-	    $.support.transition = transitionEnd()
-	
-	    if (!$.support.transition) return
-	
-	    $.event.special.bsTransitionEnd = {
-	      bindType: $.support.transition.end,
-	      delegateType: $.support.transition.end,
-	      handle: function (e) {
-	        if ($(e.target).is(this)) return e.handleObj.handler.apply(this, arguments)
-	      }
-	    }
-	  })
-	
-	}(jQuery);
-
-
-/***/ }),
-/* 302 */
-/***/ (function(module, exports) {
-
-	/* ========================================================================
-	 * Bootstrap: alert.js v3.3.7
-	 * http://getbootstrap.com/javascript/#alerts
-	 * ========================================================================
-	 * Copyright 2011-2016 Twitter, Inc.
-	 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-	 * ======================================================================== */
-	
-	
-	+function ($) {
-	  'use strict';
-	
-	  // ALERT CLASS DEFINITION
-	  // ======================
-	
-	  var dismiss = '[data-dismiss="alert"]'
-	  var Alert   = function (el) {
-	    $(el).on('click', dismiss, this.close)
-	  }
-	
-	  Alert.VERSION = '3.3.7'
-	
-	  Alert.TRANSITION_DURATION = 150
-	
-	  Alert.prototype.close = function (e) {
-	    var $this    = $(this)
-	    var selector = $this.attr('data-target')
-	
-	    if (!selector) {
-	      selector = $this.attr('href')
-	      selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
-	    }
-	
-	    var $parent = $(selector === '#' ? [] : selector)
-	
-	    if (e) e.preventDefault()
-	
-	    if (!$parent.length) {
-	      $parent = $this.closest('.alert')
-	    }
-	
-	    $parent.trigger(e = $.Event('close.bs.alert'))
-	
-	    if (e.isDefaultPrevented()) return
-	
-	    $parent.removeClass('in')
-	
-	    function removeElement() {
-	      // detach from parent, fire event then clean up data
-	      $parent.detach().trigger('closed.bs.alert').remove()
-	    }
-	
-	    $.support.transition && $parent.hasClass('fade') ?
-	      $parent
-	        .one('bsTransitionEnd', removeElement)
-	        .emulateTransitionEnd(Alert.TRANSITION_DURATION) :
-	      removeElement()
-	  }
-	
-	
-	  // ALERT PLUGIN DEFINITION
-	  // =======================
-	
-	  function Plugin(option) {
-	    return this.each(function () {
-	      var $this = $(this)
-	      var data  = $this.data('bs.alert')
-	
-	      if (!data) $this.data('bs.alert', (data = new Alert(this)))
-	      if (typeof option == 'string') data[option].call($this)
-	    })
-	  }
-	
-	  var old = $.fn.alert
-	
-	  $.fn.alert             = Plugin
-	  $.fn.alert.Constructor = Alert
-	
-	
-	  // ALERT NO CONFLICT
-	  // =================
-	
-	  $.fn.alert.noConflict = function () {
-	    $.fn.alert = old
-	    return this
-	  }
-	
-	
-	  // ALERT DATA-API
-	  // ==============
-	
-	  $(document).on('click.bs.alert.data-api', dismiss, Alert.prototype.close)
-	
-	}(jQuery);
-
-
-/***/ }),
-/* 303 */
-/***/ (function(module, exports) {
-
-	/* ========================================================================
-	 * Bootstrap: button.js v3.3.7
-	 * http://getbootstrap.com/javascript/#buttons
-	 * ========================================================================
-	 * Copyright 2011-2016 Twitter, Inc.
-	 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-	 * ======================================================================== */
-	
-	
-	+function ($) {
-	  'use strict';
-	
-	  // BUTTON PUBLIC CLASS DEFINITION
-	  // ==============================
-	
-	  var Button = function (element, options) {
-	    this.$element  = $(element)
-	    this.options   = $.extend({}, Button.DEFAULTS, options)
-	    this.isLoading = false
-	  }
-	
-	  Button.VERSION  = '3.3.7'
-	
-	  Button.DEFAULTS = {
-	    loadingText: 'loading...'
-	  }
-	
-	  Button.prototype.setState = function (state) {
-	    var d    = 'disabled'
-	    var $el  = this.$element
-	    var val  = $el.is('input') ? 'val' : 'html'
-	    var data = $el.data()
-	
-	    state += 'Text'
-	
-	    if (data.resetText == null) $el.data('resetText', $el[val]())
-	
-	    // push to event loop to allow forms to submit
-	    setTimeout($.proxy(function () {
-	      $el[val](data[state] == null ? this.options[state] : data[state])
-	
-	      if (state == 'loadingText') {
-	        this.isLoading = true
-	        $el.addClass(d).attr(d, d).prop(d, true)
-	      } else if (this.isLoading) {
-	        this.isLoading = false
-	        $el.removeClass(d).removeAttr(d).prop(d, false)
-	      }
-	    }, this), 0)
-	  }
-	
-	  Button.prototype.toggle = function () {
-	    var changed = true
-	    var $parent = this.$element.closest('[data-toggle="buttons"]')
-	
-	    if ($parent.length) {
-	      var $input = this.$element.find('input')
-	      if ($input.prop('type') == 'radio') {
-	        if ($input.prop('checked')) changed = false
-	        $parent.find('.active').removeClass('active')
-	        this.$element.addClass('active')
-	      } else if ($input.prop('type') == 'checkbox') {
-	        if (($input.prop('checked')) !== this.$element.hasClass('active')) changed = false
-	        this.$element.toggleClass('active')
-	      }
-	      $input.prop('checked', this.$element.hasClass('active'))
-	      if (changed) $input.trigger('change')
-	    } else {
-	      this.$element.attr('aria-pressed', !this.$element.hasClass('active'))
-	      this.$element.toggleClass('active')
-	    }
-	  }
-	
-	
-	  // BUTTON PLUGIN DEFINITION
-	  // ========================
-	
-	  function Plugin(option) {
-	    return this.each(function () {
-	      var $this   = $(this)
-	      var data    = $this.data('bs.button')
-	      var options = typeof option == 'object' && option
-	
-	      if (!data) $this.data('bs.button', (data = new Button(this, options)))
-	
-	      if (option == 'toggle') data.toggle()
-	      else if (option) data.setState(option)
-	    })
-	  }
-	
-	  var old = $.fn.button
-	
-	  $.fn.button             = Plugin
-	  $.fn.button.Constructor = Button
-	
-	
-	  // BUTTON NO CONFLICT
-	  // ==================
-	
-	  $.fn.button.noConflict = function () {
-	    $.fn.button = old
-	    return this
-	  }
-	
-	
-	  // BUTTON DATA-API
-	  // ===============
-	
-	  $(document)
-	    .on('click.bs.button.data-api', '[data-toggle^="button"]', function (e) {
-	      var $btn = $(e.target).closest('.btn')
-	      Plugin.call($btn, 'toggle')
-	      if (!($(e.target).is('input[type="radio"], input[type="checkbox"]'))) {
-	        // Prevent double click on radios, and the double selections (so cancellation) on checkboxes
-	        e.preventDefault()
-	        // The target component still receive the focus
-	        if ($btn.is('input,button')) $btn.trigger('focus')
-	        else $btn.find('input:visible,button:visible').first().trigger('focus')
-	      }
-	    })
-	    .on('focus.bs.button.data-api blur.bs.button.data-api', '[data-toggle^="button"]', function (e) {
-	      $(e.target).closest('.btn').toggleClass('focus', /^focus(in)?$/.test(e.type))
-	    })
-	
-	}(jQuery);
-
-
-/***/ }),
-/* 304 */
-/***/ (function(module, exports) {
-
-	/* ========================================================================
-	 * Bootstrap: carousel.js v3.3.7
-	 * http://getbootstrap.com/javascript/#carousel
-	 * ========================================================================
-	 * Copyright 2011-2016 Twitter, Inc.
-	 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-	 * ======================================================================== */
-	
-	
-	+function ($) {
-	  'use strict';
-	
-	  // CAROUSEL CLASS DEFINITION
-	  // =========================
-	
-	  var Carousel = function (element, options) {
-	    this.$element    = $(element)
-	    this.$indicators = this.$element.find('.carousel-indicators')
-	    this.options     = options
-	    this.paused      = null
-	    this.sliding     = null
-	    this.interval    = null
-	    this.$active     = null
-	    this.$items      = null
-	
-	    this.options.keyboard && this.$element.on('keydown.bs.carousel', $.proxy(this.keydown, this))
-	
-	    this.options.pause == 'hover' && !('ontouchstart' in document.documentElement) && this.$element
-	      .on('mouseenter.bs.carousel', $.proxy(this.pause, this))
-	      .on('mouseleave.bs.carousel', $.proxy(this.cycle, this))
-	  }
-	
-	  Carousel.VERSION  = '3.3.7'
-	
-	  Carousel.TRANSITION_DURATION = 600
-	
-	  Carousel.DEFAULTS = {
-	    interval: 5000,
-	    pause: 'hover',
-	    wrap: true,
-	    keyboard: true
-	  }
-	
-	  Carousel.prototype.keydown = function (e) {
-	    if (/input|textarea/i.test(e.target.tagName)) return
-	    switch (e.which) {
-	      case 37: this.prev(); break
-	      case 39: this.next(); break
-	      default: return
-	    }
-	
-	    e.preventDefault()
-	  }
-	
-	  Carousel.prototype.cycle = function (e) {
-	    e || (this.paused = false)
-	
-	    this.interval && clearInterval(this.interval)
-	
-	    this.options.interval
-	      && !this.paused
-	      && (this.interval = setInterval($.proxy(this.next, this), this.options.interval))
-	
-	    return this
-	  }
-	
-	  Carousel.prototype.getItemIndex = function (item) {
-	    this.$items = item.parent().children('.item')
-	    return this.$items.index(item || this.$active)
-	  }
-	
-	  Carousel.prototype.getItemForDirection = function (direction, active) {
-	    var activeIndex = this.getItemIndex(active)
-	    var willWrap = (direction == 'prev' && activeIndex === 0)
-	                || (direction == 'next' && activeIndex == (this.$items.length - 1))
-	    if (willWrap && !this.options.wrap) return active
-	    var delta = direction == 'prev' ? -1 : 1
-	    var itemIndex = (activeIndex + delta) % this.$items.length
-	    return this.$items.eq(itemIndex)
-	  }
-	
-	  Carousel.prototype.to = function (pos) {
-	    var that        = this
-	    var activeIndex = this.getItemIndex(this.$active = this.$element.find('.item.active'))
-	
-	    if (pos > (this.$items.length - 1) || pos < 0) return
-	
-	    if (this.sliding)       return this.$element.one('slid.bs.carousel', function () { that.to(pos) }) // yes, "slid"
-	    if (activeIndex == pos) return this.pause().cycle()
-	
-	    return this.slide(pos > activeIndex ? 'next' : 'prev', this.$items.eq(pos))
-	  }
-	
-	  Carousel.prototype.pause = function (e) {
-	    e || (this.paused = true)
-	
-	    if (this.$element.find('.next, .prev').length && $.support.transition) {
-	      this.$element.trigger($.support.transition.end)
-	      this.cycle(true)
-	    }
-	
-	    this.interval = clearInterval(this.interval)
-	
-	    return this
-	  }
-	
-	  Carousel.prototype.next = function () {
-	    if (this.sliding) return
-	    return this.slide('next')
-	  }
-	
-	  Carousel.prototype.prev = function () {
-	    if (this.sliding) return
-	    return this.slide('prev')
-	  }
-	
-	  Carousel.prototype.slide = function (type, next) {
-	    var $active   = this.$element.find('.item.active')
-	    var $next     = next || this.getItemForDirection(type, $active)
-	    var isCycling = this.interval
-	    var direction = type == 'next' ? 'left' : 'right'
-	    var that      = this
-	
-	    if ($next.hasClass('active')) return (this.sliding = false)
-	
-	    var relatedTarget = $next[0]
-	    var slideEvent = $.Event('slide.bs.carousel', {
-	      relatedTarget: relatedTarget,
-	      direction: direction
-	    })
-	    this.$element.trigger(slideEvent)
-	    if (slideEvent.isDefaultPrevented()) return
-	
-	    this.sliding = true
-	
-	    isCycling && this.pause()
-	
-	    if (this.$indicators.length) {
-	      this.$indicators.find('.active').removeClass('active')
-	      var $nextIndicator = $(this.$indicators.children()[this.getItemIndex($next)])
-	      $nextIndicator && $nextIndicator.addClass('active')
-	    }
-	
-	    var slidEvent = $.Event('slid.bs.carousel', { relatedTarget: relatedTarget, direction: direction }) // yes, "slid"
-	    if ($.support.transition && this.$element.hasClass('slide')) {
-	      $next.addClass(type)
-	      $next[0].offsetWidth // force reflow
-	      $active.addClass(direction)
-	      $next.addClass(direction)
-	      $active
-	        .one('bsTransitionEnd', function () {
-	          $next.removeClass([type, direction].join(' ')).addClass('active')
-	          $active.removeClass(['active', direction].join(' '))
-	          that.sliding = false
-	          setTimeout(function () {
-	            that.$element.trigger(slidEvent)
-	          }, 0)
-	        })
-	        .emulateTransitionEnd(Carousel.TRANSITION_DURATION)
-	    } else {
-	      $active.removeClass('active')
-	      $next.addClass('active')
-	      this.sliding = false
-	      this.$element.trigger(slidEvent)
-	    }
-	
-	    isCycling && this.cycle()
-	
-	    return this
-	  }
-	
-	
-	  // CAROUSEL PLUGIN DEFINITION
-	  // ==========================
-	
-	  function Plugin(option) {
-	    return this.each(function () {
-	      var $this   = $(this)
-	      var data    = $this.data('bs.carousel')
-	      var options = $.extend({}, Carousel.DEFAULTS, $this.data(), typeof option == 'object' && option)
-	      var action  = typeof option == 'string' ? option : options.slide
-	
-	      if (!data) $this.data('bs.carousel', (data = new Carousel(this, options)))
-	      if (typeof option == 'number') data.to(option)
-	      else if (action) data[action]()
-	      else if (options.interval) data.pause().cycle()
-	    })
-	  }
-	
-	  var old = $.fn.carousel
-	
-	  $.fn.carousel             = Plugin
-	  $.fn.carousel.Constructor = Carousel
-	
-	
-	  // CAROUSEL NO CONFLICT
-	  // ====================
-	
-	  $.fn.carousel.noConflict = function () {
-	    $.fn.carousel = old
-	    return this
-	  }
-	
-	
-	  // CAROUSEL DATA-API
-	  // =================
-	
-	  var clickHandler = function (e) {
-	    var href
-	    var $this   = $(this)
-	    var $target = $($this.attr('data-target') || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) // strip for ie7
-	    if (!$target.hasClass('carousel')) return
-	    var options = $.extend({}, $target.data(), $this.data())
-	    var slideIndex = $this.attr('data-slide-to')
-	    if (slideIndex) options.interval = false
-	
-	    Plugin.call($target, options)
-	
-	    if (slideIndex) {
-	      $target.data('bs.carousel').to(slideIndex)
-	    }
-	
-	    e.preventDefault()
-	  }
-	
-	  $(document)
-	    .on('click.bs.carousel.data-api', '[data-slide]', clickHandler)
-	    .on('click.bs.carousel.data-api', '[data-slide-to]', clickHandler)
-	
-	  $(window).on('load', function () {
-	    $('[data-ride="carousel"]').each(function () {
-	      var $carousel = $(this)
-	      Plugin.call($carousel, $carousel.data())
-	    })
-	  })
-	
-	}(jQuery);
-
-
-/***/ }),
-/* 305 */
-/***/ (function(module, exports) {
-
-	/* ========================================================================
-	 * Bootstrap: collapse.js v3.3.7
-	 * http://getbootstrap.com/javascript/#collapse
-	 * ========================================================================
-	 * Copyright 2011-2016 Twitter, Inc.
-	 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-	 * ======================================================================== */
-	
-	/* jshint latedef: false */
-	
-	+function ($) {
-	  'use strict';
-	
-	  // COLLAPSE PUBLIC CLASS DEFINITION
-	  // ================================
-	
-	  var Collapse = function (element, options) {
-	    this.$element      = $(element)
-	    this.options       = $.extend({}, Collapse.DEFAULTS, options)
-	    this.$trigger      = $('[data-toggle="collapse"][href="#' + element.id + '"],' +
-	                           '[data-toggle="collapse"][data-target="#' + element.id + '"]')
-	    this.transitioning = null
-	
-	    if (this.options.parent) {
-	      this.$parent = this.getParent()
-	    } else {
-	      this.addAriaAndCollapsedClass(this.$element, this.$trigger)
-	    }
-	
-	    if (this.options.toggle) this.toggle()
-	  }
-	
-	  Collapse.VERSION  = '3.3.7'
-	
-	  Collapse.TRANSITION_DURATION = 350
-	
-	  Collapse.DEFAULTS = {
-	    toggle: true
-	  }
-	
-	  Collapse.prototype.dimension = function () {
-	    var hasWidth = this.$element.hasClass('width')
-	    return hasWidth ? 'width' : 'height'
-	  }
-	
-	  Collapse.prototype.show = function () {
-	    if (this.transitioning || this.$element.hasClass('in')) return
-	
-	    var activesData
-	    var actives = this.$parent && this.$parent.children('.panel').children('.in, .collapsing')
-	
-	    if (actives && actives.length) {
-	      activesData = actives.data('bs.collapse')
-	      if (activesData && activesData.transitioning) return
-	    }
-	
-	    var startEvent = $.Event('show.bs.collapse')
-	    this.$element.trigger(startEvent)
-	    if (startEvent.isDefaultPrevented()) return
-	
-	    if (actives && actives.length) {
-	      Plugin.call(actives, 'hide')
-	      activesData || actives.data('bs.collapse', null)
-	    }
-	
-	    var dimension = this.dimension()
-	
-	    this.$element
-	      .removeClass('collapse')
-	      .addClass('collapsing')[dimension](0)
-	      .attr('aria-expanded', true)
-	
-	    this.$trigger
-	      .removeClass('collapsed')
-	      .attr('aria-expanded', true)
-	
-	    this.transitioning = 1
-	
-	    var complete = function () {
-	      this.$element
-	        .removeClass('collapsing')
-	        .addClass('collapse in')[dimension]('')
-	      this.transitioning = 0
-	      this.$element
-	        .trigger('shown.bs.collapse')
-	    }
-	
-	    if (!$.support.transition) return complete.call(this)
-	
-	    var scrollSize = $.camelCase(['scroll', dimension].join('-'))
-	
-	    this.$element
-	      .one('bsTransitionEnd', $.proxy(complete, this))
-	      .emulateTransitionEnd(Collapse.TRANSITION_DURATION)[dimension](this.$element[0][scrollSize])
-	  }
-	
-	  Collapse.prototype.hide = function () {
-	    if (this.transitioning || !this.$element.hasClass('in')) return
-	
-	    var startEvent = $.Event('hide.bs.collapse')
-	    this.$element.trigger(startEvent)
-	    if (startEvent.isDefaultPrevented()) return
-	
-	    var dimension = this.dimension()
-	
-	    this.$element[dimension](this.$element[dimension]())[0].offsetHeight
-	
-	    this.$element
-	      .addClass('collapsing')
-	      .removeClass('collapse in')
-	      .attr('aria-expanded', false)
-	
-	    this.$trigger
-	      .addClass('collapsed')
-	      .attr('aria-expanded', false)
-	
-	    this.transitioning = 1
-	
-	    var complete = function () {
-	      this.transitioning = 0
-	      this.$element
-	        .removeClass('collapsing')
-	        .addClass('collapse')
-	        .trigger('hidden.bs.collapse')
-	    }
-	
-	    if (!$.support.transition) return complete.call(this)
-	
-	    this.$element
-	      [dimension](0)
-	      .one('bsTransitionEnd', $.proxy(complete, this))
-	      .emulateTransitionEnd(Collapse.TRANSITION_DURATION)
-	  }
-	
-	  Collapse.prototype.toggle = function () {
-	    this[this.$element.hasClass('in') ? 'hide' : 'show']()
-	  }
-	
-	  Collapse.prototype.getParent = function () {
-	    return $(this.options.parent)
-	      .find('[data-toggle="collapse"][data-parent="' + this.options.parent + '"]')
-	      .each($.proxy(function (i, element) {
-	        var $element = $(element)
-	        this.addAriaAndCollapsedClass(getTargetFromTrigger($element), $element)
-	      }, this))
-	      .end()
-	  }
-	
-	  Collapse.prototype.addAriaAndCollapsedClass = function ($element, $trigger) {
-	    var isOpen = $element.hasClass('in')
-	
-	    $element.attr('aria-expanded', isOpen)
-	    $trigger
-	      .toggleClass('collapsed', !isOpen)
-	      .attr('aria-expanded', isOpen)
-	  }
-	
-	  function getTargetFromTrigger($trigger) {
-	    var href
-	    var target = $trigger.attr('data-target')
-	      || (href = $trigger.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '') // strip for ie7
-	
-	    return $(target)
-	  }
-	
-	
-	  // COLLAPSE PLUGIN DEFINITION
-	  // ==========================
-	
-	  function Plugin(option) {
-	    return this.each(function () {
-	      var $this   = $(this)
-	      var data    = $this.data('bs.collapse')
-	      var options = $.extend({}, Collapse.DEFAULTS, $this.data(), typeof option == 'object' && option)
-	
-	      if (!data && options.toggle && /show|hide/.test(option)) options.toggle = false
-	      if (!data) $this.data('bs.collapse', (data = new Collapse(this, options)))
-	      if (typeof option == 'string') data[option]()
-	    })
-	  }
-	
-	  var old = $.fn.collapse
-	
-	  $.fn.collapse             = Plugin
-	  $.fn.collapse.Constructor = Collapse
-	
-	
-	  // COLLAPSE NO CONFLICT
-	  // ====================
-	
-	  $.fn.collapse.noConflict = function () {
-	    $.fn.collapse = old
-	    return this
-	  }
-	
-	
-	  // COLLAPSE DATA-API
-	  // =================
-	
-	  $(document).on('click.bs.collapse.data-api', '[data-toggle="collapse"]', function (e) {
-	    var $this   = $(this)
-	
-	    if (!$this.attr('data-target')) e.preventDefault()
-	
-	    var $target = getTargetFromTrigger($this)
-	    var data    = $target.data('bs.collapse')
-	    var option  = data ? 'toggle' : $this.data()
-	
-	    Plugin.call($target, option)
-	  })
-	
-	}(jQuery);
-
-
-/***/ }),
-/* 306 */
-/***/ (function(module, exports) {
-
-	/* ========================================================================
-	 * Bootstrap: dropdown.js v3.3.7
-	 * http://getbootstrap.com/javascript/#dropdowns
-	 * ========================================================================
-	 * Copyright 2011-2016 Twitter, Inc.
-	 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-	 * ======================================================================== */
-	
-	
-	+function ($) {
-	  'use strict';
-	
-	  // DROPDOWN CLASS DEFINITION
-	  // =========================
-	
-	  var backdrop = '.dropdown-backdrop'
-	  var toggle   = '[data-toggle="dropdown"]'
-	  var Dropdown = function (element) {
-	    $(element).on('click.bs.dropdown', this.toggle)
-	  }
-	
-	  Dropdown.VERSION = '3.3.7'
-	
-	  function getParent($this) {
-	    var selector = $this.attr('data-target')
-	
-	    if (!selector) {
-	      selector = $this.attr('href')
-	      selector = selector && /#[A-Za-z]/.test(selector) && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
-	    }
-	
-	    var $parent = selector && $(selector)
-	
-	    return $parent && $parent.length ? $parent : $this.parent()
-	  }
-	
-	  function clearMenus(e) {
-	    if (e && e.which === 3) return
-	    $(backdrop).remove()
-	    $(toggle).each(function () {
-	      var $this         = $(this)
-	      var $parent       = getParent($this)
-	      var relatedTarget = { relatedTarget: this }
-	
-	      if (!$parent.hasClass('open')) return
-	
-	      if (e && e.type == 'click' && /input|textarea/i.test(e.target.tagName) && $.contains($parent[0], e.target)) return
-	
-	      $parent.trigger(e = $.Event('hide.bs.dropdown', relatedTarget))
-	
-	      if (e.isDefaultPrevented()) return
-	
-	      $this.attr('aria-expanded', 'false')
-	      $parent.removeClass('open').trigger($.Event('hidden.bs.dropdown', relatedTarget))
-	    })
-	  }
-	
-	  Dropdown.prototype.toggle = function (e) {
-	    var $this = $(this)
-	
-	    if ($this.is('.disabled, :disabled')) return
-	
-	    var $parent  = getParent($this)
-	    var isActive = $parent.hasClass('open')
-	
-	    clearMenus()
-	
-	    if (!isActive) {
-	      if ('ontouchstart' in document.documentElement && !$parent.closest('.navbar-nav').length) {
-	        // if mobile we use a backdrop because click events don't delegate
-	        $(document.createElement('div'))
-	          .addClass('dropdown-backdrop')
-	          .insertAfter($(this))
-	          .on('click', clearMenus)
-	      }
-	
-	      var relatedTarget = { relatedTarget: this }
-	      $parent.trigger(e = $.Event('show.bs.dropdown', relatedTarget))
-	
-	      if (e.isDefaultPrevented()) return
-	
-	      $this
-	        .trigger('focus')
-	        .attr('aria-expanded', 'true')
-	
-	      $parent
-	        .toggleClass('open')
-	        .trigger($.Event('shown.bs.dropdown', relatedTarget))
-	    }
-	
-	    return false
-	  }
-	
-	  Dropdown.prototype.keydown = function (e) {
-	    if (!/(38|40|27|32)/.test(e.which) || /input|textarea/i.test(e.target.tagName)) return
-	
-	    var $this = $(this)
-	
-	    e.preventDefault()
-	    e.stopPropagation()
-	
-	    if ($this.is('.disabled, :disabled')) return
-	
-	    var $parent  = getParent($this)
-	    var isActive = $parent.hasClass('open')
-	
-	    if (!isActive && e.which != 27 || isActive && e.which == 27) {
-	      if (e.which == 27) $parent.find(toggle).trigger('focus')
-	      return $this.trigger('click')
-	    }
-	
-	    var desc = ' li:not(.disabled):visible a'
-	    var $items = $parent.find('.dropdown-menu' + desc)
-	
-	    if (!$items.length) return
-	
-	    var index = $items.index(e.target)
-	
-	    if (e.which == 38 && index > 0)                 index--         // up
-	    if (e.which == 40 && index < $items.length - 1) index++         // down
-	    if (!~index)                                    index = 0
-	
-	    $items.eq(index).trigger('focus')
-	  }
-	
-	
-	  // DROPDOWN PLUGIN DEFINITION
-	  // ==========================
-	
-	  function Plugin(option) {
-	    return this.each(function () {
-	      var $this = $(this)
-	      var data  = $this.data('bs.dropdown')
-	
-	      if (!data) $this.data('bs.dropdown', (data = new Dropdown(this)))
-	      if (typeof option == 'string') data[option].call($this)
-	    })
-	  }
-	
-	  var old = $.fn.dropdown
-	
-	  $.fn.dropdown             = Plugin
-	  $.fn.dropdown.Constructor = Dropdown
-	
-	
-	  // DROPDOWN NO CONFLICT
-	  // ====================
-	
-	  $.fn.dropdown.noConflict = function () {
-	    $.fn.dropdown = old
-	    return this
-	  }
-	
-	
-	  // APPLY TO STANDARD DROPDOWN ELEMENTS
-	  // ===================================
-	
-	  $(document)
-	    .on('click.bs.dropdown.data-api', clearMenus)
-	    .on('click.bs.dropdown.data-api', '.dropdown form', function (e) { e.stopPropagation() })
-	    .on('click.bs.dropdown.data-api', toggle, Dropdown.prototype.toggle)
-	    .on('keydown.bs.dropdown.data-api', toggle, Dropdown.prototype.keydown)
-	    .on('keydown.bs.dropdown.data-api', '.dropdown-menu', Dropdown.prototype.keydown)
-	
-	}(jQuery);
-
-
-/***/ }),
 /* 307 */
-/***/ (function(module, exports) {
-
-	/* ========================================================================
-	 * Bootstrap: modal.js v3.3.7
-	 * http://getbootstrap.com/javascript/#modals
-	 * ========================================================================
-	 * Copyright 2011-2016 Twitter, Inc.
-	 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-	 * ======================================================================== */
-	
-	
-	+function ($) {
-	  'use strict';
-	
-	  // MODAL CLASS DEFINITION
-	  // ======================
-	
-	  var Modal = function (element, options) {
-	    this.options             = options
-	    this.$body               = $(document.body)
-	    this.$element            = $(element)
-	    this.$dialog             = this.$element.find('.modal-dialog')
-	    this.$backdrop           = null
-	    this.isShown             = null
-	    this.originalBodyPad     = null
-	    this.scrollbarWidth      = 0
-	    this.ignoreBackdropClick = false
-	
-	    if (this.options.remote) {
-	      this.$element
-	        .find('.modal-content')
-	        .load(this.options.remote, $.proxy(function () {
-	          this.$element.trigger('loaded.bs.modal')
-	        }, this))
-	    }
-	  }
-	
-	  Modal.VERSION  = '3.3.7'
-	
-	  Modal.TRANSITION_DURATION = 300
-	  Modal.BACKDROP_TRANSITION_DURATION = 150
-	
-	  Modal.DEFAULTS = {
-	    backdrop: true,
-	    keyboard: true,
-	    show: true
-	  }
-	
-	  Modal.prototype.toggle = function (_relatedTarget) {
-	    return this.isShown ? this.hide() : this.show(_relatedTarget)
-	  }
-	
-	  Modal.prototype.show = function (_relatedTarget) {
-	    var that = this
-	    var e    = $.Event('show.bs.modal', { relatedTarget: _relatedTarget })
-	
-	    this.$element.trigger(e)
-	
-	    if (this.isShown || e.isDefaultPrevented()) return
-	
-	    this.isShown = true
-	
-	    this.checkScrollbar()
-	    this.setScrollbar()
-	    this.$body.addClass('modal-open')
-	
-	    this.escape()
-	    this.resize()
-	
-	    this.$element.on('click.dismiss.bs.modal', '[data-dismiss="modal"]', $.proxy(this.hide, this))
-	
-	    this.$dialog.on('mousedown.dismiss.bs.modal', function () {
-	      that.$element.one('mouseup.dismiss.bs.modal', function (e) {
-	        if ($(e.target).is(that.$element)) that.ignoreBackdropClick = true
-	      })
-	    })
-	
-	    this.backdrop(function () {
-	      var transition = $.support.transition && that.$element.hasClass('fade')
-	
-	      if (!that.$element.parent().length) {
-	        that.$element.appendTo(that.$body) // don't move modals dom position
-	      }
-	
-	      that.$element
-	        .show()
-	        .scrollTop(0)
-	
-	      that.adjustDialog()
-	
-	      if (transition) {
-	        that.$element[0].offsetWidth // force reflow
-	      }
-	
-	      that.$element.addClass('in')
-	
-	      that.enforceFocus()
-	
-	      var e = $.Event('shown.bs.modal', { relatedTarget: _relatedTarget })
-	
-	      transition ?
-	        that.$dialog // wait for modal to slide in
-	          .one('bsTransitionEnd', function () {
-	            that.$element.trigger('focus').trigger(e)
-	          })
-	          .emulateTransitionEnd(Modal.TRANSITION_DURATION) :
-	        that.$element.trigger('focus').trigger(e)
-	    })
-	  }
-	
-	  Modal.prototype.hide = function (e) {
-	    if (e) e.preventDefault()
-	
-	    e = $.Event('hide.bs.modal')
-	
-	    this.$element.trigger(e)
-	
-	    if (!this.isShown || e.isDefaultPrevented()) return
-	
-	    this.isShown = false
-	
-	    this.escape()
-	    this.resize()
-	
-	    $(document).off('focusin.bs.modal')
-	
-	    this.$element
-	      .removeClass('in')
-	      .off('click.dismiss.bs.modal')
-	      .off('mouseup.dismiss.bs.modal')
-	
-	    this.$dialog.off('mousedown.dismiss.bs.modal')
-	
-	    $.support.transition && this.$element.hasClass('fade') ?
-	      this.$element
-	        .one('bsTransitionEnd', $.proxy(this.hideModal, this))
-	        .emulateTransitionEnd(Modal.TRANSITION_DURATION) :
-	      this.hideModal()
-	  }
-	
-	  Modal.prototype.enforceFocus = function () {
-	    $(document)
-	      .off('focusin.bs.modal') // guard against infinite focus loop
-	      .on('focusin.bs.modal', $.proxy(function (e) {
-	        if (document !== e.target &&
-	            this.$element[0] !== e.target &&
-	            !this.$element.has(e.target).length) {
-	          this.$element.trigger('focus')
-	        }
-	      }, this))
-	  }
-	
-	  Modal.prototype.escape = function () {
-	    if (this.isShown && this.options.keyboard) {
-	      this.$element.on('keydown.dismiss.bs.modal', $.proxy(function (e) {
-	        e.which == 27 && this.hide()
-	      }, this))
-	    } else if (!this.isShown) {
-	      this.$element.off('keydown.dismiss.bs.modal')
-	    }
-	  }
-	
-	  Modal.prototype.resize = function () {
-	    if (this.isShown) {
-	      $(window).on('resize.bs.modal', $.proxy(this.handleUpdate, this))
-	    } else {
-	      $(window).off('resize.bs.modal')
-	    }
-	  }
-	
-	  Modal.prototype.hideModal = function () {
-	    var that = this
-	    this.$element.hide()
-	    this.backdrop(function () {
-	      that.$body.removeClass('modal-open')
-	      that.resetAdjustments()
-	      that.resetScrollbar()
-	      that.$element.trigger('hidden.bs.modal')
-	    })
-	  }
-	
-	  Modal.prototype.removeBackdrop = function () {
-	    this.$backdrop && this.$backdrop.remove()
-	    this.$backdrop = null
-	  }
-	
-	  Modal.prototype.backdrop = function (callback) {
-	    var that = this
-	    var animate = this.$element.hasClass('fade') ? 'fade' : ''
-	
-	    if (this.isShown && this.options.backdrop) {
-	      var doAnimate = $.support.transition && animate
-	
-	      this.$backdrop = $(document.createElement('div'))
-	        .addClass('modal-backdrop ' + animate)
-	        .appendTo(this.$body)
-	
-	      this.$element.on('click.dismiss.bs.modal', $.proxy(function (e) {
-	        if (this.ignoreBackdropClick) {
-	          this.ignoreBackdropClick = false
-	          return
-	        }
-	        if (e.target !== e.currentTarget) return
-	        this.options.backdrop == 'static'
-	          ? this.$element[0].focus()
-	          : this.hide()
-	      }, this))
-	
-	      if (doAnimate) this.$backdrop[0].offsetWidth // force reflow
-	
-	      this.$backdrop.addClass('in')
-	
-	      if (!callback) return
-	
-	      doAnimate ?
-	        this.$backdrop
-	          .one('bsTransitionEnd', callback)
-	          .emulateTransitionEnd(Modal.BACKDROP_TRANSITION_DURATION) :
-	        callback()
-	
-	    } else if (!this.isShown && this.$backdrop) {
-	      this.$backdrop.removeClass('in')
-	
-	      var callbackRemove = function () {
-	        that.removeBackdrop()
-	        callback && callback()
-	      }
-	      $.support.transition && this.$element.hasClass('fade') ?
-	        this.$backdrop
-	          .one('bsTransitionEnd', callbackRemove)
-	          .emulateTransitionEnd(Modal.BACKDROP_TRANSITION_DURATION) :
-	        callbackRemove()
-	
-	    } else if (callback) {
-	      callback()
-	    }
-	  }
-	
-	  // these following methods are used to handle overflowing modals
-	
-	  Modal.prototype.handleUpdate = function () {
-	    this.adjustDialog()
-	  }
-	
-	  Modal.prototype.adjustDialog = function () {
-	    var modalIsOverflowing = this.$element[0].scrollHeight > document.documentElement.clientHeight
-	
-	    this.$element.css({
-	      paddingLeft:  !this.bodyIsOverflowing && modalIsOverflowing ? this.scrollbarWidth : '',
-	      paddingRight: this.bodyIsOverflowing && !modalIsOverflowing ? this.scrollbarWidth : ''
-	    })
-	  }
-	
-	  Modal.prototype.resetAdjustments = function () {
-	    this.$element.css({
-	      paddingLeft: '',
-	      paddingRight: ''
-	    })
-	  }
-	
-	  Modal.prototype.checkScrollbar = function () {
-	    var fullWindowWidth = window.innerWidth
-	    if (!fullWindowWidth) { // workaround for missing window.innerWidth in IE8
-	      var documentElementRect = document.documentElement.getBoundingClientRect()
-	      fullWindowWidth = documentElementRect.right - Math.abs(documentElementRect.left)
-	    }
-	    this.bodyIsOverflowing = document.body.clientWidth < fullWindowWidth
-	    this.scrollbarWidth = this.measureScrollbar()
-	  }
-	
-	  Modal.prototype.setScrollbar = function () {
-	    var bodyPad = parseInt((this.$body.css('padding-right') || 0), 10)
-	    this.originalBodyPad = document.body.style.paddingRight || ''
-	    if (this.bodyIsOverflowing) this.$body.css('padding-right', bodyPad + this.scrollbarWidth)
-	  }
-	
-	  Modal.prototype.resetScrollbar = function () {
-	    this.$body.css('padding-right', this.originalBodyPad)
-	  }
-	
-	  Modal.prototype.measureScrollbar = function () { // thx walsh
-	    var scrollDiv = document.createElement('div')
-	    scrollDiv.className = 'modal-scrollbar-measure'
-	    this.$body.append(scrollDiv)
-	    var scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth
-	    this.$body[0].removeChild(scrollDiv)
-	    return scrollbarWidth
-	  }
-	
-	
-	  // MODAL PLUGIN DEFINITION
-	  // =======================
-	
-	  function Plugin(option, _relatedTarget) {
-	    return this.each(function () {
-	      var $this   = $(this)
-	      var data    = $this.data('bs.modal')
-	      var options = $.extend({}, Modal.DEFAULTS, $this.data(), typeof option == 'object' && option)
-	
-	      if (!data) $this.data('bs.modal', (data = new Modal(this, options)))
-	      if (typeof option == 'string') data[option](_relatedTarget)
-	      else if (options.show) data.show(_relatedTarget)
-	    })
-	  }
-	
-	  var old = $.fn.modal
-	
-	  $.fn.modal             = Plugin
-	  $.fn.modal.Constructor = Modal
-	
-	
-	  // MODAL NO CONFLICT
-	  // =================
-	
-	  $.fn.modal.noConflict = function () {
-	    $.fn.modal = old
-	    return this
-	  }
-	
-	
-	  // MODAL DATA-API
-	  // ==============
-	
-	  $(document).on('click.bs.modal.data-api', '[data-toggle="modal"]', function (e) {
-	    var $this   = $(this)
-	    var href    = $this.attr('href')
-	    var $target = $($this.attr('data-target') || (href && href.replace(/.*(?=#[^\s]+$)/, ''))) // strip for ie7
-	    var option  = $target.data('bs.modal') ? 'toggle' : $.extend({ remote: !/#/.test(href) && href }, $target.data(), $this.data())
-	
-	    if ($this.is('a')) e.preventDefault()
-	
-	    $target.one('show.bs.modal', function (showEvent) {
-	      if (showEvent.isDefaultPrevented()) return // only register focus restorer if modal will actually get shown
-	      $target.one('hidden.bs.modal', function () {
-	        $this.is(':visible') && $this.trigger('focus')
-	      })
-	    })
-	    Plugin.call($target, option, this)
-	  })
-	
-	}(jQuery);
-
-
-/***/ }),
-/* 308 */
-/***/ (function(module, exports) {
-
-	/* ========================================================================
-	 * Bootstrap: tooltip.js v3.3.7
-	 * http://getbootstrap.com/javascript/#tooltip
-	 * Inspired by the original jQuery.tipsy by Jason Frame
-	 * ========================================================================
-	 * Copyright 2011-2016 Twitter, Inc.
-	 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-	 * ======================================================================== */
-	
-	
-	+function ($) {
-	  'use strict';
-	
-	  // TOOLTIP PUBLIC CLASS DEFINITION
-	  // ===============================
-	
-	  var Tooltip = function (element, options) {
-	    this.type       = null
-	    this.options    = null
-	    this.enabled    = null
-	    this.timeout    = null
-	    this.hoverState = null
-	    this.$element   = null
-	    this.inState    = null
-	
-	    this.init('tooltip', element, options)
-	  }
-	
-	  Tooltip.VERSION  = '3.3.7'
-	
-	  Tooltip.TRANSITION_DURATION = 150
-	
-	  Tooltip.DEFAULTS = {
-	    animation: true,
-	    placement: 'top',
-	    selector: false,
-	    template: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>',
-	    trigger: 'hover focus',
-	    title: '',
-	    delay: 0,
-	    html: false,
-	    container: false,
-	    viewport: {
-	      selector: 'body',
-	      padding: 0
-	    }
-	  }
-	
-	  Tooltip.prototype.init = function (type, element, options) {
-	    this.enabled   = true
-	    this.type      = type
-	    this.$element  = $(element)
-	    this.options   = this.getOptions(options)
-	    this.$viewport = this.options.viewport && $($.isFunction(this.options.viewport) ? this.options.viewport.call(this, this.$element) : (this.options.viewport.selector || this.options.viewport))
-	    this.inState   = { click: false, hover: false, focus: false }
-	
-	    if (this.$element[0] instanceof document.constructor && !this.options.selector) {
-	      throw new Error('`selector` option must be specified when initializing ' + this.type + ' on the window.document object!')
-	    }
-	
-	    var triggers = this.options.trigger.split(' ')
-	
-	    for (var i = triggers.length; i--;) {
-	      var trigger = triggers[i]
-	
-	      if (trigger == 'click') {
-	        this.$element.on('click.' + this.type, this.options.selector, $.proxy(this.toggle, this))
-	      } else if (trigger != 'manual') {
-	        var eventIn  = trigger == 'hover' ? 'mouseenter' : 'focusin'
-	        var eventOut = trigger == 'hover' ? 'mouseleave' : 'focusout'
-	
-	        this.$element.on(eventIn  + '.' + this.type, this.options.selector, $.proxy(this.enter, this))
-	        this.$element.on(eventOut + '.' + this.type, this.options.selector, $.proxy(this.leave, this))
-	      }
-	    }
-	
-	    this.options.selector ?
-	      (this._options = $.extend({}, this.options, { trigger: 'manual', selector: '' })) :
-	      this.fixTitle()
-	  }
-	
-	  Tooltip.prototype.getDefaults = function () {
-	    return Tooltip.DEFAULTS
-	  }
-	
-	  Tooltip.prototype.getOptions = function (options) {
-	    options = $.extend({}, this.getDefaults(), this.$element.data(), options)
-	
-	    if (options.delay && typeof options.delay == 'number') {
-	      options.delay = {
-	        show: options.delay,
-	        hide: options.delay
-	      }
-	    }
-	
-	    return options
-	  }
-	
-	  Tooltip.prototype.getDelegateOptions = function () {
-	    var options  = {}
-	    var defaults = this.getDefaults()
-	
-	    this._options && $.each(this._options, function (key, value) {
-	      if (defaults[key] != value) options[key] = value
-	    })
-	
-	    return options
-	  }
-	
-	  Tooltip.prototype.enter = function (obj) {
-	    var self = obj instanceof this.constructor ?
-	      obj : $(obj.currentTarget).data('bs.' + this.type)
-	
-	    if (!self) {
-	      self = new this.constructor(obj.currentTarget, this.getDelegateOptions())
-	      $(obj.currentTarget).data('bs.' + this.type, self)
-	    }
-	
-	    if (obj instanceof $.Event) {
-	      self.inState[obj.type == 'focusin' ? 'focus' : 'hover'] = true
-	    }
-	
-	    if (self.tip().hasClass('in') || self.hoverState == 'in') {
-	      self.hoverState = 'in'
-	      return
-	    }
-	
-	    clearTimeout(self.timeout)
-	
-	    self.hoverState = 'in'
-	
-	    if (!self.options.delay || !self.options.delay.show) return self.show()
-	
-	    self.timeout = setTimeout(function () {
-	      if (self.hoverState == 'in') self.show()
-	    }, self.options.delay.show)
-	  }
-	
-	  Tooltip.prototype.isInStateTrue = function () {
-	    for (var key in this.inState) {
-	      if (this.inState[key]) return true
-	    }
-	
-	    return false
-	  }
-	
-	  Tooltip.prototype.leave = function (obj) {
-	    var self = obj instanceof this.constructor ?
-	      obj : $(obj.currentTarget).data('bs.' + this.type)
-	
-	    if (!self) {
-	      self = new this.constructor(obj.currentTarget, this.getDelegateOptions())
-	      $(obj.currentTarget).data('bs.' + this.type, self)
-	    }
-	
-	    if (obj instanceof $.Event) {
-	      self.inState[obj.type == 'focusout' ? 'focus' : 'hover'] = false
-	    }
-	
-	    if (self.isInStateTrue()) return
-	
-	    clearTimeout(self.timeout)
-	
-	    self.hoverState = 'out'
-	
-	    if (!self.options.delay || !self.options.delay.hide) return self.hide()
-	
-	    self.timeout = setTimeout(function () {
-	      if (self.hoverState == 'out') self.hide()
-	    }, self.options.delay.hide)
-	  }
-	
-	  Tooltip.prototype.show = function () {
-	    var e = $.Event('show.bs.' + this.type)
-	
-	    if (this.hasContent() && this.enabled) {
-	      this.$element.trigger(e)
-	
-	      var inDom = $.contains(this.$element[0].ownerDocument.documentElement, this.$element[0])
-	      if (e.isDefaultPrevented() || !inDom) return
-	      var that = this
-	
-	      var $tip = this.tip()
-	
-	      var tipId = this.getUID(this.type)
-	
-	      this.setContent()
-	      $tip.attr('id', tipId)
-	      this.$element.attr('aria-describedby', tipId)
-	
-	      if (this.options.animation) $tip.addClass('fade')
-	
-	      var placement = typeof this.options.placement == 'function' ?
-	        this.options.placement.call(this, $tip[0], this.$element[0]) :
-	        this.options.placement
-	
-	      var autoToken = /\s?auto?\s?/i
-	      var autoPlace = autoToken.test(placement)
-	      if (autoPlace) placement = placement.replace(autoToken, '') || 'top'
-	
-	      $tip
-	        .detach()
-	        .css({ top: 0, left: 0, display: 'block' })
-	        .addClass(placement)
-	        .data('bs.' + this.type, this)
-	
-	      this.options.container ? $tip.appendTo(this.options.container) : $tip.insertAfter(this.$element)
-	      this.$element.trigger('inserted.bs.' + this.type)
-	
-	      var pos          = this.getPosition()
-	      var actualWidth  = $tip[0].offsetWidth
-	      var actualHeight = $tip[0].offsetHeight
-	
-	      if (autoPlace) {
-	        var orgPlacement = placement
-	        var viewportDim = this.getPosition(this.$viewport)
-	
-	        placement = placement == 'bottom' && pos.bottom + actualHeight > viewportDim.bottom ? 'top'    :
-	                    placement == 'top'    && pos.top    - actualHeight < viewportDim.top    ? 'bottom' :
-	                    placement == 'right'  && pos.right  + actualWidth  > viewportDim.width  ? 'left'   :
-	                    placement == 'left'   && pos.left   - actualWidth  < viewportDim.left   ? 'right'  :
-	                    placement
-	
-	        $tip
-	          .removeClass(orgPlacement)
-	          .addClass(placement)
-	      }
-	
-	      var calculatedOffset = this.getCalculatedOffset(placement, pos, actualWidth, actualHeight)
-	
-	      this.applyPlacement(calculatedOffset, placement)
-	
-	      var complete = function () {
-	        var prevHoverState = that.hoverState
-	        that.$element.trigger('shown.bs.' + that.type)
-	        that.hoverState = null
-	
-	        if (prevHoverState == 'out') that.leave(that)
-	      }
-	
-	      $.support.transition && this.$tip.hasClass('fade') ?
-	        $tip
-	          .one('bsTransitionEnd', complete)
-	          .emulateTransitionEnd(Tooltip.TRANSITION_DURATION) :
-	        complete()
-	    }
-	  }
-	
-	  Tooltip.prototype.applyPlacement = function (offset, placement) {
-	    var $tip   = this.tip()
-	    var width  = $tip[0].offsetWidth
-	    var height = $tip[0].offsetHeight
-	
-	    // manually read margins because getBoundingClientRect includes difference
-	    var marginTop = parseInt($tip.css('margin-top'), 10)
-	    var marginLeft = parseInt($tip.css('margin-left'), 10)
-	
-	    // we must check for NaN for ie 8/9
-	    if (isNaN(marginTop))  marginTop  = 0
-	    if (isNaN(marginLeft)) marginLeft = 0
-	
-	    offset.top  += marginTop
-	    offset.left += marginLeft
-	
-	    // $.fn.offset doesn't round pixel values
-	    // so we use setOffset directly with our own function B-0
-	    $.offset.setOffset($tip[0], $.extend({
-	      using: function (props) {
-	        $tip.css({
-	          top: Math.round(props.top),
-	          left: Math.round(props.left)
-	        })
-	      }
-	    }, offset), 0)
-	
-	    $tip.addClass('in')
-	
-	    // check to see if placing tip in new offset caused the tip to resize itself
-	    var actualWidth  = $tip[0].offsetWidth
-	    var actualHeight = $tip[0].offsetHeight
-	
-	    if (placement == 'top' && actualHeight != height) {
-	      offset.top = offset.top + height - actualHeight
-	    }
-	
-	    var delta = this.getViewportAdjustedDelta(placement, offset, actualWidth, actualHeight)
-	
-	    if (delta.left) offset.left += delta.left
-	    else offset.top += delta.top
-	
-	    var isVertical          = /top|bottom/.test(placement)
-	    var arrowDelta          = isVertical ? delta.left * 2 - width + actualWidth : delta.top * 2 - height + actualHeight
-	    var arrowOffsetPosition = isVertical ? 'offsetWidth' : 'offsetHeight'
-	
-	    $tip.offset(offset)
-	    this.replaceArrow(arrowDelta, $tip[0][arrowOffsetPosition], isVertical)
-	  }
-	
-	  Tooltip.prototype.replaceArrow = function (delta, dimension, isVertical) {
-	    this.arrow()
-	      .css(isVertical ? 'left' : 'top', 50 * (1 - delta / dimension) + '%')
-	      .css(isVertical ? 'top' : 'left', '')
-	  }
-	
-	  Tooltip.prototype.setContent = function () {
-	    var $tip  = this.tip()
-	    var title = this.getTitle()
-	
-	    $tip.find('.tooltip-inner')[this.options.html ? 'html' : 'text'](title)
-	    $tip.removeClass('fade in top bottom left right')
-	  }
-	
-	  Tooltip.prototype.hide = function (callback) {
-	    var that = this
-	    var $tip = $(this.$tip)
-	    var e    = $.Event('hide.bs.' + this.type)
-	
-	    function complete() {
-	      if (that.hoverState != 'in') $tip.detach()
-	      if (that.$element) { // TODO: Check whether guarding this code with this `if` is really necessary.
-	        that.$element
-	          .removeAttr('aria-describedby')
-	          .trigger('hidden.bs.' + that.type)
-	      }
-	      callback && callback()
-	    }
-	
-	    this.$element.trigger(e)
-	
-	    if (e.isDefaultPrevented()) return
-	
-	    $tip.removeClass('in')
-	
-	    $.support.transition && $tip.hasClass('fade') ?
-	      $tip
-	        .one('bsTransitionEnd', complete)
-	        .emulateTransitionEnd(Tooltip.TRANSITION_DURATION) :
-	      complete()
-	
-	    this.hoverState = null
-	
-	    return this
-	  }
-	
-	  Tooltip.prototype.fixTitle = function () {
-	    var $e = this.$element
-	    if ($e.attr('title') || typeof $e.attr('data-original-title') != 'string') {
-	      $e.attr('data-original-title', $e.attr('title') || '').attr('title', '')
-	    }
-	  }
-	
-	  Tooltip.prototype.hasContent = function () {
-	    return this.getTitle()
-	  }
-	
-	  Tooltip.prototype.getPosition = function ($element) {
-	    $element   = $element || this.$element
-	
-	    var el     = $element[0]
-	    var isBody = el.tagName == 'BODY'
-	
-	    var elRect    = el.getBoundingClientRect()
-	    if (elRect.width == null) {
-	      // width and height are missing in IE8, so compute them manually; see https://github.com/twbs/bootstrap/issues/14093
-	      elRect = $.extend({}, elRect, { width: elRect.right - elRect.left, height: elRect.bottom - elRect.top })
-	    }
-	    var isSvg = window.SVGElement && el instanceof window.SVGElement
-	    // Avoid using $.offset() on SVGs since it gives incorrect results in jQuery 3.
-	    // See https://github.com/twbs/bootstrap/issues/20280
-	    var elOffset  = isBody ? { top: 0, left: 0 } : (isSvg ? null : $element.offset())
-	    var scroll    = { scroll: isBody ? document.documentElement.scrollTop || document.body.scrollTop : $element.scrollTop() }
-	    var outerDims = isBody ? { width: $(window).width(), height: $(window).height() } : null
-	
-	    return $.extend({}, elRect, scroll, outerDims, elOffset)
-	  }
-	
-	  Tooltip.prototype.getCalculatedOffset = function (placement, pos, actualWidth, actualHeight) {
-	    return placement == 'bottom' ? { top: pos.top + pos.height,   left: pos.left + pos.width / 2 - actualWidth / 2 } :
-	           placement == 'top'    ? { top: pos.top - actualHeight, left: pos.left + pos.width / 2 - actualWidth / 2 } :
-	           placement == 'left'   ? { top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left - actualWidth } :
-	        /* placement == 'right' */ { top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left + pos.width }
-	
-	  }
-	
-	  Tooltip.prototype.getViewportAdjustedDelta = function (placement, pos, actualWidth, actualHeight) {
-	    var delta = { top: 0, left: 0 }
-	    if (!this.$viewport) return delta
-	
-	    var viewportPadding = this.options.viewport && this.options.viewport.padding || 0
-	    var viewportDimensions = this.getPosition(this.$viewport)
-	
-	    if (/right|left/.test(placement)) {
-	      var topEdgeOffset    = pos.top - viewportPadding - viewportDimensions.scroll
-	      var bottomEdgeOffset = pos.top + viewportPadding - viewportDimensions.scroll + actualHeight
-	      if (topEdgeOffset < viewportDimensions.top) { // top overflow
-	        delta.top = viewportDimensions.top - topEdgeOffset
-	      } else if (bottomEdgeOffset > viewportDimensions.top + viewportDimensions.height) { // bottom overflow
-	        delta.top = viewportDimensions.top + viewportDimensions.height - bottomEdgeOffset
-	      }
-	    } else {
-	      var leftEdgeOffset  = pos.left - viewportPadding
-	      var rightEdgeOffset = pos.left + viewportPadding + actualWidth
-	      if (leftEdgeOffset < viewportDimensions.left) { // left overflow
-	        delta.left = viewportDimensions.left - leftEdgeOffset
-	      } else if (rightEdgeOffset > viewportDimensions.right) { // right overflow
-	        delta.left = viewportDimensions.left + viewportDimensions.width - rightEdgeOffset
-	      }
-	    }
-	
-	    return delta
-	  }
-	
-	  Tooltip.prototype.getTitle = function () {
-	    var title
-	    var $e = this.$element
-	    var o  = this.options
-	
-	    title = $e.attr('data-original-title')
-	      || (typeof o.title == 'function' ? o.title.call($e[0]) :  o.title)
-	
-	    return title
-	  }
-	
-	  Tooltip.prototype.getUID = function (prefix) {
-	    do prefix += ~~(Math.random() * 1000000)
-	    while (document.getElementById(prefix))
-	    return prefix
-	  }
-	
-	  Tooltip.prototype.tip = function () {
-	    if (!this.$tip) {
-	      this.$tip = $(this.options.template)
-	      if (this.$tip.length != 1) {
-	        throw new Error(this.type + ' `template` option must consist of exactly 1 top-level element!')
-	      }
-	    }
-	    return this.$tip
-	  }
-	
-	  Tooltip.prototype.arrow = function () {
-	    return (this.$arrow = this.$arrow || this.tip().find('.tooltip-arrow'))
-	  }
-	
-	  Tooltip.prototype.enable = function () {
-	    this.enabled = true
-	  }
-	
-	  Tooltip.prototype.disable = function () {
-	    this.enabled = false
-	  }
-	
-	  Tooltip.prototype.toggleEnabled = function () {
-	    this.enabled = !this.enabled
-	  }
-	
-	  Tooltip.prototype.toggle = function (e) {
-	    var self = this
-	    if (e) {
-	      self = $(e.currentTarget).data('bs.' + this.type)
-	      if (!self) {
-	        self = new this.constructor(e.currentTarget, this.getDelegateOptions())
-	        $(e.currentTarget).data('bs.' + this.type, self)
-	      }
-	    }
-	
-	    if (e) {
-	      self.inState.click = !self.inState.click
-	      if (self.isInStateTrue()) self.enter(self)
-	      else self.leave(self)
-	    } else {
-	      self.tip().hasClass('in') ? self.leave(self) : self.enter(self)
-	    }
-	  }
-	
-	  Tooltip.prototype.destroy = function () {
-	    var that = this
-	    clearTimeout(this.timeout)
-	    this.hide(function () {
-	      that.$element.off('.' + that.type).removeData('bs.' + that.type)
-	      if (that.$tip) {
-	        that.$tip.detach()
-	      }
-	      that.$tip = null
-	      that.$arrow = null
-	      that.$viewport = null
-	      that.$element = null
-	    })
-	  }
-	
-	
-	  // TOOLTIP PLUGIN DEFINITION
-	  // =========================
-	
-	  function Plugin(option) {
-	    return this.each(function () {
-	      var $this   = $(this)
-	      var data    = $this.data('bs.tooltip')
-	      var options = typeof option == 'object' && option
-	
-	      if (!data && /destroy|hide/.test(option)) return
-	      if (!data) $this.data('bs.tooltip', (data = new Tooltip(this, options)))
-	      if (typeof option == 'string') data[option]()
-	    })
-	  }
-	
-	  var old = $.fn.tooltip
-	
-	  $.fn.tooltip             = Plugin
-	  $.fn.tooltip.Constructor = Tooltip
-	
-	
-	  // TOOLTIP NO CONFLICT
-	  // ===================
-	
-	  $.fn.tooltip.noConflict = function () {
-	    $.fn.tooltip = old
-	    return this
-	  }
-	
-	}(jQuery);
-
-
-/***/ }),
-/* 309 */
-/***/ (function(module, exports) {
-
-	/* ========================================================================
-	 * Bootstrap: popover.js v3.3.7
-	 * http://getbootstrap.com/javascript/#popovers
-	 * ========================================================================
-	 * Copyright 2011-2016 Twitter, Inc.
-	 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-	 * ======================================================================== */
-	
-	
-	+function ($) {
-	  'use strict';
-	
-	  // POPOVER PUBLIC CLASS DEFINITION
-	  // ===============================
-	
-	  var Popover = function (element, options) {
-	    this.init('popover', element, options)
-	  }
-	
-	  if (!$.fn.tooltip) throw new Error('Popover requires tooltip.js')
-	
-	  Popover.VERSION  = '3.3.7'
-	
-	  Popover.DEFAULTS = $.extend({}, $.fn.tooltip.Constructor.DEFAULTS, {
-	    placement: 'right',
-	    trigger: 'click',
-	    content: '',
-	    template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
-	  })
-	
-	
-	  // NOTE: POPOVER EXTENDS tooltip.js
-	  // ================================
-	
-	  Popover.prototype = $.extend({}, $.fn.tooltip.Constructor.prototype)
-	
-	  Popover.prototype.constructor = Popover
-	
-	  Popover.prototype.getDefaults = function () {
-	    return Popover.DEFAULTS
-	  }
-	
-	  Popover.prototype.setContent = function () {
-	    var $tip    = this.tip()
-	    var title   = this.getTitle()
-	    var content = this.getContent()
-	
-	    $tip.find('.popover-title')[this.options.html ? 'html' : 'text'](title)
-	    $tip.find('.popover-content').children().detach().end()[ // we use append for html objects to maintain js events
-	      this.options.html ? (typeof content == 'string' ? 'html' : 'append') : 'text'
-	    ](content)
-	
-	    $tip.removeClass('fade top bottom left right in')
-	
-	    // IE8 doesn't accept hiding via the `:empty` pseudo selector, we have to do
-	    // this manually by checking the contents.
-	    if (!$tip.find('.popover-title').html()) $tip.find('.popover-title').hide()
-	  }
-	
-	  Popover.prototype.hasContent = function () {
-	    return this.getTitle() || this.getContent()
-	  }
-	
-	  Popover.prototype.getContent = function () {
-	    var $e = this.$element
-	    var o  = this.options
-	
-	    return $e.attr('data-content')
-	      || (typeof o.content == 'function' ?
-	            o.content.call($e[0]) :
-	            o.content)
-	  }
-	
-	  Popover.prototype.arrow = function () {
-	    return (this.$arrow = this.$arrow || this.tip().find('.arrow'))
-	  }
-	
-	
-	  // POPOVER PLUGIN DEFINITION
-	  // =========================
-	
-	  function Plugin(option) {
-	    return this.each(function () {
-	      var $this   = $(this)
-	      var data    = $this.data('bs.popover')
-	      var options = typeof option == 'object' && option
-	
-	      if (!data && /destroy|hide/.test(option)) return
-	      if (!data) $this.data('bs.popover', (data = new Popover(this, options)))
-	      if (typeof option == 'string') data[option]()
-	    })
-	  }
-	
-	  var old = $.fn.popover
-	
-	  $.fn.popover             = Plugin
-	  $.fn.popover.Constructor = Popover
-	
-	
-	  // POPOVER NO CONFLICT
-	  // ===================
-	
-	  $.fn.popover.noConflict = function () {
-	    $.fn.popover = old
-	    return this
-	  }
-	
-	}(jQuery);
-
-
-/***/ }),
-/* 310 */
-/***/ (function(module, exports) {
-
-	/* ========================================================================
-	 * Bootstrap: scrollspy.js v3.3.7
-	 * http://getbootstrap.com/javascript/#scrollspy
-	 * ========================================================================
-	 * Copyright 2011-2016 Twitter, Inc.
-	 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-	 * ======================================================================== */
-	
-	
-	+function ($) {
-	  'use strict';
-	
-	  // SCROLLSPY CLASS DEFINITION
-	  // ==========================
-	
-	  function ScrollSpy(element, options) {
-	    this.$body          = $(document.body)
-	    this.$scrollElement = $(element).is(document.body) ? $(window) : $(element)
-	    this.options        = $.extend({}, ScrollSpy.DEFAULTS, options)
-	    this.selector       = (this.options.target || '') + ' .nav li > a'
-	    this.offsets        = []
-	    this.targets        = []
-	    this.activeTarget   = null
-	    this.scrollHeight   = 0
-	
-	    this.$scrollElement.on('scroll.bs.scrollspy', $.proxy(this.process, this))
-	    this.refresh()
-	    this.process()
-	  }
-	
-	  ScrollSpy.VERSION  = '3.3.7'
-	
-	  ScrollSpy.DEFAULTS = {
-	    offset: 10
-	  }
-	
-	  ScrollSpy.prototype.getScrollHeight = function () {
-	    return this.$scrollElement[0].scrollHeight || Math.max(this.$body[0].scrollHeight, document.documentElement.scrollHeight)
-	  }
-	
-	  ScrollSpy.prototype.refresh = function () {
-	    var that          = this
-	    var offsetMethod  = 'offset'
-	    var offsetBase    = 0
-	
-	    this.offsets      = []
-	    this.targets      = []
-	    this.scrollHeight = this.getScrollHeight()
-	
-	    if (!$.isWindow(this.$scrollElement[0])) {
-	      offsetMethod = 'position'
-	      offsetBase   = this.$scrollElement.scrollTop()
-	    }
-	
-	    this.$body
-	      .find(this.selector)
-	      .map(function () {
-	        var $el   = $(this)
-	        var href  = $el.data('target') || $el.attr('href')
-	        var $href = /^#./.test(href) && $(href)
-	
-	        return ($href
-	          && $href.length
-	          && $href.is(':visible')
-	          && [[$href[offsetMethod]().top + offsetBase, href]]) || null
-	      })
-	      .sort(function (a, b) { return a[0] - b[0] })
-	      .each(function () {
-	        that.offsets.push(this[0])
-	        that.targets.push(this[1])
-	      })
-	  }
-	
-	  ScrollSpy.prototype.process = function () {
-	    var scrollTop    = this.$scrollElement.scrollTop() + this.options.offset
-	    var scrollHeight = this.getScrollHeight()
-	    var maxScroll    = this.options.offset + scrollHeight - this.$scrollElement.height()
-	    var offsets      = this.offsets
-	    var targets      = this.targets
-	    var activeTarget = this.activeTarget
-	    var i
-	
-	    if (this.scrollHeight != scrollHeight) {
-	      this.refresh()
-	    }
-	
-	    if (scrollTop >= maxScroll) {
-	      return activeTarget != (i = targets[targets.length - 1]) && this.activate(i)
-	    }
-	
-	    if (activeTarget && scrollTop < offsets[0]) {
-	      this.activeTarget = null
-	      return this.clear()
-	    }
-	
-	    for (i = offsets.length; i--;) {
-	      activeTarget != targets[i]
-	        && scrollTop >= offsets[i]
-	        && (offsets[i + 1] === undefined || scrollTop < offsets[i + 1])
-	        && this.activate(targets[i])
-	    }
-	  }
-	
-	  ScrollSpy.prototype.activate = function (target) {
-	    this.activeTarget = target
-	
-	    this.clear()
-	
-	    var selector = this.selector +
-	      '[data-target="' + target + '"],' +
-	      this.selector + '[href="' + target + '"]'
-	
-	    var active = $(selector)
-	      .parents('li')
-	      .addClass('active')
-	
-	    if (active.parent('.dropdown-menu').length) {
-	      active = active
-	        .closest('li.dropdown')
-	        .addClass('active')
-	    }
-	
-	    active.trigger('activate.bs.scrollspy')
-	  }
-	
-	  ScrollSpy.prototype.clear = function () {
-	    $(this.selector)
-	      .parentsUntil(this.options.target, '.active')
-	      .removeClass('active')
-	  }
-	
-	
-	  // SCROLLSPY PLUGIN DEFINITION
-	  // ===========================
-	
-	  function Plugin(option) {
-	    return this.each(function () {
-	      var $this   = $(this)
-	      var data    = $this.data('bs.scrollspy')
-	      var options = typeof option == 'object' && option
-	
-	      if (!data) $this.data('bs.scrollspy', (data = new ScrollSpy(this, options)))
-	      if (typeof option == 'string') data[option]()
-	    })
-	  }
-	
-	  var old = $.fn.scrollspy
-	
-	  $.fn.scrollspy             = Plugin
-	  $.fn.scrollspy.Constructor = ScrollSpy
-	
-	
-	  // SCROLLSPY NO CONFLICT
-	  // =====================
-	
-	  $.fn.scrollspy.noConflict = function () {
-	    $.fn.scrollspy = old
-	    return this
-	  }
-	
-	
-	  // SCROLLSPY DATA-API
-	  // ==================
-	
-	  $(window).on('load.bs.scrollspy.data-api', function () {
-	    $('[data-spy="scroll"]').each(function () {
-	      var $spy = $(this)
-	      Plugin.call($spy, $spy.data())
-	    })
-	  })
-	
-	}(jQuery);
-
-
-/***/ }),
-/* 311 */
-/***/ (function(module, exports) {
-
-	/* ========================================================================
-	 * Bootstrap: tab.js v3.3.7
-	 * http://getbootstrap.com/javascript/#tabs
-	 * ========================================================================
-	 * Copyright 2011-2016 Twitter, Inc.
-	 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-	 * ======================================================================== */
-	
-	
-	+function ($) {
-	  'use strict';
-	
-	  // TAB CLASS DEFINITION
-	  // ====================
-	
-	  var Tab = function (element) {
-	    // jscs:disable requireDollarBeforejQueryAssignment
-	    this.element = $(element)
-	    // jscs:enable requireDollarBeforejQueryAssignment
-	  }
-	
-	  Tab.VERSION = '3.3.7'
-	
-	  Tab.TRANSITION_DURATION = 150
-	
-	  Tab.prototype.show = function () {
-	    var $this    = this.element
-	    var $ul      = $this.closest('ul:not(.dropdown-menu)')
-	    var selector = $this.data('target')
-	
-	    if (!selector) {
-	      selector = $this.attr('href')
-	      selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
-	    }
-	
-	    if ($this.parent('li').hasClass('active')) return
-	
-	    var $previous = $ul.find('.active:last a')
-	    var hideEvent = $.Event('hide.bs.tab', {
-	      relatedTarget: $this[0]
-	    })
-	    var showEvent = $.Event('show.bs.tab', {
-	      relatedTarget: $previous[0]
-	    })
-	
-	    $previous.trigger(hideEvent)
-	    $this.trigger(showEvent)
-	
-	    if (showEvent.isDefaultPrevented() || hideEvent.isDefaultPrevented()) return
-	
-	    var $target = $(selector)
-	
-	    this.activate($this.closest('li'), $ul)
-	    this.activate($target, $target.parent(), function () {
-	      $previous.trigger({
-	        type: 'hidden.bs.tab',
-	        relatedTarget: $this[0]
-	      })
-	      $this.trigger({
-	        type: 'shown.bs.tab',
-	        relatedTarget: $previous[0]
-	      })
-	    })
-	  }
-	
-	  Tab.prototype.activate = function (element, container, callback) {
-	    var $active    = container.find('> .active')
-	    var transition = callback
-	      && $.support.transition
-	      && ($active.length && $active.hasClass('fade') || !!container.find('> .fade').length)
-	
-	    function next() {
-	      $active
-	        .removeClass('active')
-	        .find('> .dropdown-menu > .active')
-	          .removeClass('active')
-	        .end()
-	        .find('[data-toggle="tab"]')
-	          .attr('aria-expanded', false)
-	
-	      element
-	        .addClass('active')
-	        .find('[data-toggle="tab"]')
-	          .attr('aria-expanded', true)
-	
-	      if (transition) {
-	        element[0].offsetWidth // reflow for transition
-	        element.addClass('in')
-	      } else {
-	        element.removeClass('fade')
-	      }
-	
-	      if (element.parent('.dropdown-menu').length) {
-	        element
-	          .closest('li.dropdown')
-	            .addClass('active')
-	          .end()
-	          .find('[data-toggle="tab"]')
-	            .attr('aria-expanded', true)
-	      }
-	
-	      callback && callback()
-	    }
-	
-	    $active.length && transition ?
-	      $active
-	        .one('bsTransitionEnd', next)
-	        .emulateTransitionEnd(Tab.TRANSITION_DURATION) :
-	      next()
-	
-	    $active.removeClass('in')
-	  }
-	
-	
-	  // TAB PLUGIN DEFINITION
-	  // =====================
-	
-	  function Plugin(option) {
-	    return this.each(function () {
-	      var $this = $(this)
-	      var data  = $this.data('bs.tab')
-	
-	      if (!data) $this.data('bs.tab', (data = new Tab(this)))
-	      if (typeof option == 'string') data[option]()
-	    })
-	  }
-	
-	  var old = $.fn.tab
-	
-	  $.fn.tab             = Plugin
-	  $.fn.tab.Constructor = Tab
-	
-	
-	  // TAB NO CONFLICT
-	  // ===============
-	
-	  $.fn.tab.noConflict = function () {
-	    $.fn.tab = old
-	    return this
-	  }
-	
-	
-	  // TAB DATA-API
-	  // ============
-	
-	  var clickHandler = function (e) {
-	    e.preventDefault()
-	    Plugin.call($(this), 'show')
-	  }
-	
-	  $(document)
-	    .on('click.bs.tab.data-api', '[data-toggle="tab"]', clickHandler)
-	    .on('click.bs.tab.data-api', '[data-toggle="pill"]', clickHandler)
-	
-	}(jQuery);
-
-
-/***/ }),
-/* 312 */
-/***/ (function(module, exports) {
-
-	/* ========================================================================
-	 * Bootstrap: affix.js v3.3.7
-	 * http://getbootstrap.com/javascript/#affix
-	 * ========================================================================
-	 * Copyright 2011-2016 Twitter, Inc.
-	 * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-	 * ======================================================================== */
-	
-	
-	+function ($) {
-	  'use strict';
-	
-	  // AFFIX CLASS DEFINITION
-	  // ======================
-	
-	  var Affix = function (element, options) {
-	    this.options = $.extend({}, Affix.DEFAULTS, options)
-	
-	    this.$target = $(this.options.target)
-	      .on('scroll.bs.affix.data-api', $.proxy(this.checkPosition, this))
-	      .on('click.bs.affix.data-api',  $.proxy(this.checkPositionWithEventLoop, this))
-	
-	    this.$element     = $(element)
-	    this.affixed      = null
-	    this.unpin        = null
-	    this.pinnedOffset = null
-	
-	    this.checkPosition()
-	  }
-	
-	  Affix.VERSION  = '3.3.7'
-	
-	  Affix.RESET    = 'affix affix-top affix-bottom'
-	
-	  Affix.DEFAULTS = {
-	    offset: 0,
-	    target: window
-	  }
-	
-	  Affix.prototype.getState = function (scrollHeight, height, offsetTop, offsetBottom) {
-	    var scrollTop    = this.$target.scrollTop()
-	    var position     = this.$element.offset()
-	    var targetHeight = this.$target.height()
-	
-	    if (offsetTop != null && this.affixed == 'top') return scrollTop < offsetTop ? 'top' : false
-	
-	    if (this.affixed == 'bottom') {
-	      if (offsetTop != null) return (scrollTop + this.unpin <= position.top) ? false : 'bottom'
-	      return (scrollTop + targetHeight <= scrollHeight - offsetBottom) ? false : 'bottom'
-	    }
-	
-	    var initializing   = this.affixed == null
-	    var colliderTop    = initializing ? scrollTop : position.top
-	    var colliderHeight = initializing ? targetHeight : height
-	
-	    if (offsetTop != null && scrollTop <= offsetTop) return 'top'
-	    if (offsetBottom != null && (colliderTop + colliderHeight >= scrollHeight - offsetBottom)) return 'bottom'
-	
-	    return false
-	  }
-	
-	  Affix.prototype.getPinnedOffset = function () {
-	    if (this.pinnedOffset) return this.pinnedOffset
-	    this.$element.removeClass(Affix.RESET).addClass('affix')
-	    var scrollTop = this.$target.scrollTop()
-	    var position  = this.$element.offset()
-	    return (this.pinnedOffset = position.top - scrollTop)
-	  }
-	
-	  Affix.prototype.checkPositionWithEventLoop = function () {
-	    setTimeout($.proxy(this.checkPosition, this), 1)
-	  }
-	
-	  Affix.prototype.checkPosition = function () {
-	    if (!this.$element.is(':visible')) return
-	
-	    var height       = this.$element.height()
-	    var offset       = this.options.offset
-	    var offsetTop    = offset.top
-	    var offsetBottom = offset.bottom
-	    var scrollHeight = Math.max($(document).height(), $(document.body).height())
-	
-	    if (typeof offset != 'object')         offsetBottom = offsetTop = offset
-	    if (typeof offsetTop == 'function')    offsetTop    = offset.top(this.$element)
-	    if (typeof offsetBottom == 'function') offsetBottom = offset.bottom(this.$element)
-	
-	    var affix = this.getState(scrollHeight, height, offsetTop, offsetBottom)
-	
-	    if (this.affixed != affix) {
-	      if (this.unpin != null) this.$element.css('top', '')
-	
-	      var affixType = 'affix' + (affix ? '-' + affix : '')
-	      var e         = $.Event(affixType + '.bs.affix')
-	
-	      this.$element.trigger(e)
-	
-	      if (e.isDefaultPrevented()) return
-	
-	      this.affixed = affix
-	      this.unpin = affix == 'bottom' ? this.getPinnedOffset() : null
-	
-	      this.$element
-	        .removeClass(Affix.RESET)
-	        .addClass(affixType)
-	        .trigger(affixType.replace('affix', 'affixed') + '.bs.affix')
-	    }
-	
-	    if (affix == 'bottom') {
-	      this.$element.offset({
-	        top: scrollHeight - height - offsetBottom
-	      })
-	    }
-	  }
-	
-	
-	  // AFFIX PLUGIN DEFINITION
-	  // =======================
-	
-	  function Plugin(option) {
-	    return this.each(function () {
-	      var $this   = $(this)
-	      var data    = $this.data('bs.affix')
-	      var options = typeof option == 'object' && option
-	
-	      if (!data) $this.data('bs.affix', (data = new Affix(this, options)))
-	      if (typeof option == 'string') data[option]()
-	    })
-	  }
-	
-	  var old = $.fn.affix
-	
-	  $.fn.affix             = Plugin
-	  $.fn.affix.Constructor = Affix
-	
-	
-	  // AFFIX NO CONFLICT
-	  // =================
-	
-	  $.fn.affix.noConflict = function () {
-	    $.fn.affix = old
-	    return this
-	  }
-	
-	
-	  // AFFIX DATA-API
-	  // ==============
-	
-	  $(window).on('load', function () {
-	    $('[data-spy="affix"]').each(function () {
-	      var $spy = $(this)
-	      var data = $spy.data()
-	
-	      data.offset = data.offset || {}
-	
-	      if (data.offsetBottom != null) data.offset.bottom = data.offsetBottom
-	      if (data.offsetTop    != null) data.offset.top    = data.offsetTop
-	
-	      Plugin.call($spy, data)
-	    })
-	  })
-	
-	}(jQuery);
-
-
-/***/ }),
-/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(314);
+	var content = __webpack_require__(308);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(12)(content, {});
@@ -75512,7 +74970,7 @@
 	}
 
 /***/ }),
-/* 314 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(11)();
@@ -75520,19 +74978,19 @@
 	
 	
 	// module
-	exports.push([module.id, "/* BASICS */\n\n.CodeMirror {\n  /* Set height, width, borders, and global font properties here */\n  font-family: monospace;\n  height: 300px;\n  color: black;\n}\n\n/* PADDING */\n\n.CodeMirror-lines {\n  padding: 4px 0; /* Vertical padding around content */\n}\n.CodeMirror pre {\n  padding: 0 4px; /* Horizontal padding of content */\n}\n\n.CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {\n  background-color: white; /* The little square between H and V scrollbars */\n}\n\n/* GUTTER */\n\n.CodeMirror-gutters {\n  border-right: 1px solid #ddd;\n  background-color: #f7f7f7;\n  white-space: nowrap;\n}\n.CodeMirror-linenumbers {}\n.CodeMirror-linenumber {\n  padding: 0 3px 0 5px;\n  min-width: 20px;\n  text-align: right;\n  color: #999;\n  white-space: nowrap;\n}\n\n.CodeMirror-guttermarker { color: black; }\n.CodeMirror-guttermarker-subtle { color: #999; }\n\n/* CURSOR */\n\n.CodeMirror-cursor {\n  border-left: 1px solid black;\n  border-right: none;\n  width: 0;\n}\n/* Shown when moving in bi-directional text */\n.CodeMirror div.CodeMirror-secondarycursor {\n  border-left: 1px solid silver;\n}\n.cm-fat-cursor .CodeMirror-cursor {\n  width: auto;\n  border: 0 !important;\n  background: #7e7;\n}\n.cm-fat-cursor div.CodeMirror-cursors {\n  z-index: 1;\n}\n\n.cm-animate-fat-cursor {\n  width: auto;\n  border: 0;\n  -webkit-animation: blink 1.06s steps(1) infinite;\n  -moz-animation: blink 1.06s steps(1) infinite;\n  animation: blink 1.06s steps(1) infinite;\n  background-color: #7e7;\n}\n@-moz-keyframes blink {\n  0% {}\n  50% { background-color: transparent; }\n  100% {}\n}\n@-webkit-keyframes blink {\n  0% {}\n  50% { background-color: transparent; }\n  100% {}\n}\n@keyframes blink {\n  0% {}\n  50% { background-color: transparent; }\n  100% {}\n}\n\n/* Can style cursor different in overwrite (non-insert) mode */\n.CodeMirror-overwrite .CodeMirror-cursor {}\n\n.cm-tab { display: inline-block; text-decoration: inherit; }\n\n.CodeMirror-rulers {\n  position: absolute;\n  left: 0; right: 0; top: -50px; bottom: -20px;\n  overflow: hidden;\n}\n.CodeMirror-ruler {\n  border-left: 1px solid #ccc;\n  top: 0; bottom: 0;\n  position: absolute;\n}\n\n/* DEFAULT THEME */\n\n.cm-s-default .cm-header {color: blue;}\n.cm-s-default .cm-quote {color: #090;}\n.cm-negative {color: #d44;}\n.cm-positive {color: #292;}\n.cm-header, .cm-strong {font-weight: bold;}\n.cm-em {font-style: italic;}\n.cm-link {text-decoration: underline;}\n.cm-strikethrough {text-decoration: line-through;}\n\n.cm-s-default .cm-keyword {color: #708;}\n.cm-s-default .cm-atom {color: #219;}\n.cm-s-default .cm-number {color: #164;}\n.cm-s-default .cm-def {color: #00f;}\n.cm-s-default .cm-variable,\n.cm-s-default .cm-punctuation,\n.cm-s-default .cm-property,\n.cm-s-default .cm-operator {}\n.cm-s-default .cm-variable-2 {color: #05a;}\n.cm-s-default .cm-variable-3 {color: #085;}\n.cm-s-default .cm-comment {color: #a50;}\n.cm-s-default .cm-string {color: #a11;}\n.cm-s-default .cm-string-2 {color: #f50;}\n.cm-s-default .cm-meta {color: #555;}\n.cm-s-default .cm-qualifier {color: #555;}\n.cm-s-default .cm-builtin {color: #30a;}\n.cm-s-default .cm-bracket {color: #997;}\n.cm-s-default .cm-tag {color: #170;}\n.cm-s-default .cm-attribute {color: #00c;}\n.cm-s-default .cm-hr {color: #999;}\n.cm-s-default .cm-link {color: #00c;}\n\n.cm-s-default .cm-error {color: #f00;}\n.cm-invalidchar {color: #f00;}\n\n.CodeMirror-composing { border-bottom: 2px solid; }\n\n/* Default styles for common addons */\n\ndiv.CodeMirror span.CodeMirror-matchingbracket {color: #0f0;}\ndiv.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}\n.CodeMirror-matchingtag { background: rgba(255, 150, 0, .3); }\n.CodeMirror-activeline-background {background: #e8f2ff;}\n\n/* STOP */\n\n/* The rest of this file contains styles related to the mechanics of\n   the editor. You probably shouldn't touch them. */\n\n.CodeMirror {\n  position: relative;\n  overflow: hidden;\n  background: white;\n}\n\n.CodeMirror-scroll {\n  overflow: scroll !important; /* Things will break if this is overridden */\n  /* 30px is the magic margin used to hide the element's real scrollbars */\n  /* See overflow: hidden in .CodeMirror */\n  margin-bottom: -30px; margin-right: -30px;\n  padding-bottom: 30px;\n  height: 100%;\n  outline: none; /* Prevent dragging from highlighting the element */\n  position: relative;\n}\n.CodeMirror-sizer {\n  position: relative;\n  border-right: 30px solid transparent;\n}\n\n/* The fake, visible scrollbars. Used to force redraw during scrolling\n   before actual scrolling happens, thus preventing shaking and\n   flickering artifacts. */\n.CodeMirror-vscrollbar, .CodeMirror-hscrollbar, .CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {\n  position: absolute;\n  z-index: 6;\n  display: none;\n}\n.CodeMirror-vscrollbar {\n  right: 0; top: 0;\n  overflow-x: hidden;\n  overflow-y: scroll;\n}\n.CodeMirror-hscrollbar {\n  bottom: 0; left: 0;\n  overflow-y: hidden;\n  overflow-x: scroll;\n}\n.CodeMirror-scrollbar-filler {\n  right: 0; bottom: 0;\n}\n.CodeMirror-gutter-filler {\n  left: 0; bottom: 0;\n}\n\n.CodeMirror-gutters {\n  position: absolute; left: 0; top: 0;\n  min-height: 100%;\n  z-index: 3;\n}\n.CodeMirror-gutter {\n  white-space: normal;\n  height: 100%;\n  display: inline-block;\n  vertical-align: top;\n  margin-bottom: -30px;\n}\n.CodeMirror-gutter-wrapper {\n  position: absolute;\n  z-index: 4;\n  background: none !important;\n  border: none !important;\n}\n.CodeMirror-gutter-background {\n  position: absolute;\n  top: 0; bottom: 0;\n  z-index: 4;\n}\n.CodeMirror-gutter-elt {\n  position: absolute;\n  cursor: default;\n  z-index: 4;\n}\n.CodeMirror-gutter-wrapper ::selection { background-color: transparent }\n.CodeMirror-gutter-wrapper ::-moz-selection { background-color: transparent }\n\n.CodeMirror-lines {\n  cursor: text;\n  min-height: 1px; /* prevents collapsing before first draw */\n}\n.CodeMirror pre {\n  /* Reset some styles that the rest of the page might have set */\n  -moz-border-radius: 0; -webkit-border-radius: 0; border-radius: 0;\n  border-width: 0;\n  background: transparent;\n  font-family: inherit;\n  font-size: inherit;\n  margin: 0;\n  white-space: pre;\n  word-wrap: normal;\n  line-height: inherit;\n  color: inherit;\n  z-index: 2;\n  position: relative;\n  overflow: visible;\n  -webkit-tap-highlight-color: transparent;\n  -webkit-font-variant-ligatures: contextual;\n  font-variant-ligatures: contextual;\n}\n.CodeMirror-wrap pre {\n  word-wrap: break-word;\n  white-space: pre-wrap;\n  word-break: normal;\n}\n\n.CodeMirror-linebackground {\n  position: absolute;\n  left: 0; right: 0; top: 0; bottom: 0;\n  z-index: 0;\n}\n\n.CodeMirror-linewidget {\n  position: relative;\n  z-index: 2;\n  overflow: auto;\n}\n\n.CodeMirror-widget {}\n\n.CodeMirror-rtl pre { direction: rtl; }\n\n.CodeMirror-code {\n  outline: none;\n}\n\n/* Force content-box sizing for the elements where we expect it */\n.CodeMirror-scroll,\n.CodeMirror-sizer,\n.CodeMirror-gutter,\n.CodeMirror-gutters,\n.CodeMirror-linenumber {\n  -moz-box-sizing: content-box;\n  box-sizing: content-box;\n}\n\n.CodeMirror-measure {\n  position: absolute;\n  width: 100%;\n  height: 0;\n  overflow: hidden;\n  visibility: hidden;\n}\n\n.CodeMirror-cursor {\n  position: absolute;\n  pointer-events: none;\n}\n.CodeMirror-measure pre { position: static; }\n\ndiv.CodeMirror-cursors {\n  visibility: hidden;\n  position: relative;\n  z-index: 3;\n}\ndiv.CodeMirror-dragcursors {\n  visibility: visible;\n}\n\n.CodeMirror-focused div.CodeMirror-cursors {\n  visibility: visible;\n}\n\n.CodeMirror-selected { background: #d9d9d9; }\n.CodeMirror-focused .CodeMirror-selected { background: #d7d4f0; }\n.CodeMirror-crosshair { cursor: crosshair; }\n.CodeMirror-line::selection, .CodeMirror-line > span::selection, .CodeMirror-line > span > span::selection { background: #d7d4f0; }\n.CodeMirror-line::-moz-selection, .CodeMirror-line > span::-moz-selection, .CodeMirror-line > span > span::-moz-selection { background: #d7d4f0; }\n\n.cm-searching {\n  background: #ffa;\n  background: rgba(255, 255, 0, .4);\n}\n\n/* Used to force a border model for a node */\n.cm-force-border { padding-right: .1px; }\n\n@media print {\n  /* Hide the cursor when printing */\n  .CodeMirror div.CodeMirror-cursors {\n    visibility: hidden;\n  }\n}\n\n/* See issue #2901 */\n.cm-tab-wrap-hack:after { content: ''; }\n\n/* Help users use markselection to safely style text background */\nspan.CodeMirror-selectedtext { background: none; }\n", ""]);
+	exports.push([module.id, "/* BASICS */\n\n.CodeMirror {\n  /* Set height, width, borders, and global font properties here */\n  font-family: monospace;\n  height: 300px;\n  color: black;\n}\n\n/* PADDING */\n\n.CodeMirror-lines {\n  padding: 4px 0; /* Vertical padding around content */\n}\n.CodeMirror pre {\n  padding: 0 4px; /* Horizontal padding of content */\n}\n\n.CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {\n  background-color: white; /* The little square between H and V scrollbars */\n}\n\n/* GUTTER */\n\n.CodeMirror-gutters {\n  border-right: 1px solid #ddd;\n  background-color: #f7f7f7;\n  white-space: nowrap;\n}\n.CodeMirror-linenumbers {}\n.CodeMirror-linenumber {\n  padding: 0 3px 0 5px;\n  min-width: 20px;\n  text-align: right;\n  color: #999;\n  white-space: nowrap;\n}\n\n.CodeMirror-guttermarker { color: black; }\n.CodeMirror-guttermarker-subtle { color: #999; }\n\n/* CURSOR */\n\n.CodeMirror-cursor {\n  border-left: 1px solid black;\n  border-right: none;\n  width: 0;\n}\n/* Shown when moving in bi-directional text */\n.CodeMirror div.CodeMirror-secondarycursor {\n  border-left: 1px solid silver;\n}\n.cm-fat-cursor .CodeMirror-cursor {\n  width: auto;\n  border: 0 !important;\n  background: #7e7;\n}\n.cm-fat-cursor div.CodeMirror-cursors {\n  z-index: 1;\n}\n\n.cm-animate-fat-cursor {\n  width: auto;\n  border: 0;\n  -webkit-animation: blink 1.06s steps(1) infinite;\n  -moz-animation: blink 1.06s steps(1) infinite;\n  animation: blink 1.06s steps(1) infinite;\n  background-color: #7e7;\n}\n@-moz-keyframes blink {\n  0% {}\n  50% { background-color: transparent; }\n  100% {}\n}\n@-webkit-keyframes blink {\n  0% {}\n  50% { background-color: transparent; }\n  100% {}\n}\n@keyframes blink {\n  0% {}\n  50% { background-color: transparent; }\n  100% {}\n}\n\n/* Can style cursor different in overwrite (non-insert) mode */\n.CodeMirror-overwrite .CodeMirror-cursor {}\n\n.cm-tab { display: inline-block; text-decoration: inherit; }\n\n.CodeMirror-rulers {\n  position: absolute;\n  left: 0; right: 0; top: -50px; bottom: -20px;\n  overflow: hidden;\n}\n.CodeMirror-ruler {\n  border-left: 1px solid #ccc;\n  top: 0; bottom: 0;\n  position: absolute;\n}\n\n/* DEFAULT THEME */\n\n.cm-s-default .cm-header {color: blue;}\n.cm-s-default .cm-quote {color: #090;}\n.cm-negative {color: #d44;}\n.cm-positive {color: #292;}\n.cm-header, .cm-strong {font-weight: bold;}\n.cm-em {font-style: italic;}\n.cm-link {text-decoration: underline;}\n.cm-strikethrough {text-decoration: line-through;}\n\n.cm-s-default .cm-keyword {color: #708;}\n.cm-s-default .cm-atom {color: #219;}\n.cm-s-default .cm-number {color: #164;}\n.cm-s-default .cm-def {color: #00f;}\n.cm-s-default .cm-variable,\n.cm-s-default .cm-punctuation,\n.cm-s-default .cm-property,\n.cm-s-default .cm-operator {}\n.cm-s-default .cm-variable-2 {color: #05a;}\n.cm-s-default .cm-variable-3, .cm-s-default .cm-type {color: #085;}\n.cm-s-default .cm-comment {color: #a50;}\n.cm-s-default .cm-string {color: #a11;}\n.cm-s-default .cm-string-2 {color: #f50;}\n.cm-s-default .cm-meta {color: #555;}\n.cm-s-default .cm-qualifier {color: #555;}\n.cm-s-default .cm-builtin {color: #30a;}\n.cm-s-default .cm-bracket {color: #997;}\n.cm-s-default .cm-tag {color: #170;}\n.cm-s-default .cm-attribute {color: #00c;}\n.cm-s-default .cm-hr {color: #999;}\n.cm-s-default .cm-link {color: #00c;}\n\n.cm-s-default .cm-error {color: #f00;}\n.cm-invalidchar {color: #f00;}\n\n.CodeMirror-composing { border-bottom: 2px solid; }\n\n/* Default styles for common addons */\n\ndiv.CodeMirror span.CodeMirror-matchingbracket {color: #0f0;}\ndiv.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}\n.CodeMirror-matchingtag { background: rgba(255, 150, 0, .3); }\n.CodeMirror-activeline-background {background: #e8f2ff;}\n\n/* STOP */\n\n/* The rest of this file contains styles related to the mechanics of\n   the editor. You probably shouldn't touch them. */\n\n.CodeMirror {\n  position: relative;\n  overflow: hidden;\n  background: white;\n}\n\n.CodeMirror-scroll {\n  overflow: scroll !important; /* Things will break if this is overridden */\n  /* 30px is the magic margin used to hide the element's real scrollbars */\n  /* See overflow: hidden in .CodeMirror */\n  margin-bottom: -30px; margin-right: -30px;\n  padding-bottom: 30px;\n  height: 100%;\n  outline: none; /* Prevent dragging from highlighting the element */\n  position: relative;\n}\n.CodeMirror-sizer {\n  position: relative;\n  border-right: 30px solid transparent;\n}\n\n/* The fake, visible scrollbars. Used to force redraw during scrolling\n   before actual scrolling happens, thus preventing shaking and\n   flickering artifacts. */\n.CodeMirror-vscrollbar, .CodeMirror-hscrollbar, .CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {\n  position: absolute;\n  z-index: 6;\n  display: none;\n}\n.CodeMirror-vscrollbar {\n  right: 0; top: 0;\n  overflow-x: hidden;\n  overflow-y: scroll;\n}\n.CodeMirror-hscrollbar {\n  bottom: 0; left: 0;\n  overflow-y: hidden;\n  overflow-x: scroll;\n}\n.CodeMirror-scrollbar-filler {\n  right: 0; bottom: 0;\n}\n.CodeMirror-gutter-filler {\n  left: 0; bottom: 0;\n}\n\n.CodeMirror-gutters {\n  position: absolute; left: 0; top: 0;\n  min-height: 100%;\n  z-index: 3;\n}\n.CodeMirror-gutter {\n  white-space: normal;\n  height: 100%;\n  display: inline-block;\n  vertical-align: top;\n  margin-bottom: -30px;\n}\n.CodeMirror-gutter-wrapper {\n  position: absolute;\n  z-index: 4;\n  background: none !important;\n  border: none !important;\n}\n.CodeMirror-gutter-background {\n  position: absolute;\n  top: 0; bottom: 0;\n  z-index: 4;\n}\n.CodeMirror-gutter-elt {\n  position: absolute;\n  cursor: default;\n  z-index: 4;\n}\n.CodeMirror-gutter-wrapper ::selection { background-color: transparent }\n.CodeMirror-gutter-wrapper ::-moz-selection { background-color: transparent }\n\n.CodeMirror-lines {\n  cursor: text;\n  min-height: 1px; /* prevents collapsing before first draw */\n}\n.CodeMirror pre {\n  /* Reset some styles that the rest of the page might have set */\n  -moz-border-radius: 0; -webkit-border-radius: 0; border-radius: 0;\n  border-width: 0;\n  background: transparent;\n  font-family: inherit;\n  font-size: inherit;\n  margin: 0;\n  white-space: pre;\n  word-wrap: normal;\n  line-height: inherit;\n  color: inherit;\n  z-index: 2;\n  position: relative;\n  overflow: visible;\n  -webkit-tap-highlight-color: transparent;\n  -webkit-font-variant-ligatures: contextual;\n  font-variant-ligatures: contextual;\n}\n.CodeMirror-wrap pre {\n  word-wrap: break-word;\n  white-space: pre-wrap;\n  word-break: normal;\n}\n\n.CodeMirror-linebackground {\n  position: absolute;\n  left: 0; right: 0; top: 0; bottom: 0;\n  z-index: 0;\n}\n\n.CodeMirror-linewidget {\n  position: relative;\n  z-index: 2;\n  overflow: auto;\n}\n\n.CodeMirror-widget {}\n\n.CodeMirror-rtl pre { direction: rtl; }\n\n.CodeMirror-code {\n  outline: none;\n}\n\n/* Force content-box sizing for the elements where we expect it */\n.CodeMirror-scroll,\n.CodeMirror-sizer,\n.CodeMirror-gutter,\n.CodeMirror-gutters,\n.CodeMirror-linenumber {\n  -moz-box-sizing: content-box;\n  box-sizing: content-box;\n}\n\n.CodeMirror-measure {\n  position: absolute;\n  width: 100%;\n  height: 0;\n  overflow: hidden;\n  visibility: hidden;\n}\n\n.CodeMirror-cursor {\n  position: absolute;\n  pointer-events: none;\n}\n.CodeMirror-measure pre { position: static; }\n\ndiv.CodeMirror-cursors {\n  visibility: hidden;\n  position: relative;\n  z-index: 3;\n}\ndiv.CodeMirror-dragcursors {\n  visibility: visible;\n}\n\n.CodeMirror-focused div.CodeMirror-cursors {\n  visibility: visible;\n}\n\n.CodeMirror-selected { background: #d9d9d9; }\n.CodeMirror-focused .CodeMirror-selected { background: #d7d4f0; }\n.CodeMirror-crosshair { cursor: crosshair; }\n.CodeMirror-line::selection, .CodeMirror-line > span::selection, .CodeMirror-line > span > span::selection { background: #d7d4f0; }\n.CodeMirror-line::-moz-selection, .CodeMirror-line > span::-moz-selection, .CodeMirror-line > span > span::-moz-selection { background: #d7d4f0; }\n\n.cm-searching {\n  background: #ffa;\n  background: rgba(255, 255, 0, .4);\n}\n\n/* Used to force a border model for a node */\n.cm-force-border { padding-right: .1px; }\n\n@media print {\n  /* Hide the cursor when printing */\n  .CodeMirror div.CodeMirror-cursors {\n    visibility: hidden;\n  }\n}\n\n/* See issue #2901 */\n.cm-tab-wrap-hack:after { content: ''; }\n\n/* Help users use markselection to safely style text background */\nspan.CodeMirror-selectedtext { background: none; }\n", ""]);
 	
 	// exports
 
 
 /***/ }),
-/* 315 */
+/* 309 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(316);
+	var content = __webpack_require__(310);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(12)(content, {});
@@ -75552,7 +75010,7 @@
 	}
 
 /***/ }),
-/* 316 */
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(11)();
@@ -75566,13 +75024,13 @@
 
 
 /***/ }),
-/* 317 */
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(318);
+	var content = __webpack_require__(312);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(12)(content, {});
@@ -75592,7 +75050,7 @@
 	}
 
 /***/ }),
-/* 318 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(11)();
@@ -75606,21 +75064,21 @@
 
 
 /***/ }),
-/* 319 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["colorbrewer"] = __webpack_require__(320);
+	/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["colorbrewer"] = __webpack_require__(314);
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }),
-/* 320 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(321);
+	module.exports = __webpack_require__(315);
 
 
 /***/ }),
-/* 321 */
+/* 315 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;// This product includes color specifications and designs developed by Cynthia Brewer (http://colorbrewer.org/).
@@ -75941,14 +75399,14 @@
 
 
 /***/ }),
-/* 322 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["jsonlint"] = __webpack_require__(323);
+	/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["jsonlint"] = __webpack_require__(317);
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }),
-/* 323 */
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* Jison generated parser */
@@ -76377,14 +75835,14 @@
 
 
 /***/ }),
-/* 324 */
+/* 318 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["CodeMirror"] = __webpack_require__(325);
+	/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["CodeMirror"] = __webpack_require__(319);
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }),
-/* 325 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -77884,12 +77342,13 @@
 	// Fed to the mode parsers, provides helper functions to make
 	// parsers more succinct.
 	
-	var StringStream = function(string, tabSize) {
+	var StringStream = function(string, tabSize, lineOracle) {
 	  this.pos = this.start = 0;
 	  this.string = string;
 	  this.tabSize = tabSize || 8;
 	  this.lastColumnPos = this.lastColumnValue = 0;
 	  this.lineStart = 0;
+	  this.lineOracle = lineOracle;
 	};
 	
 	StringStream.prototype.eol = function () {return this.pos >= this.string.length};
@@ -77956,23 +77415,65 @@
 	  try { return inner() }
 	  finally { this.lineStart -= n; }
 	};
+	StringStream.prototype.lookAhead = function (n) {
+	  var oracle = this.lineOracle;
+	  return oracle && oracle.lookAhead(n)
+	};
+	
+	var SavedContext = function(state, lookAhead) {
+	  this.state = state;
+	  this.lookAhead = lookAhead;
+	};
+	
+	var Context = function(doc, state, line, lookAhead) {
+	  this.state = state;
+	  this.doc = doc;
+	  this.line = line;
+	  this.maxLookAhead = lookAhead || 0;
+	};
+	
+	Context.prototype.lookAhead = function (n) {
+	  var line = this.doc.getLine(this.line + n);
+	  if (line != null && n > this.maxLookAhead) { this.maxLookAhead = n; }
+	  return line
+	};
+	
+	Context.prototype.nextLine = function () {
+	  this.line++;
+	  if (this.maxLookAhead > 0) { this.maxLookAhead--; }
+	};
+	
+	Context.fromSaved = function (doc, saved, line) {
+	  if (saved instanceof SavedContext)
+	    { return new Context(doc, copyState(doc.mode, saved.state), line, saved.lookAhead) }
+	  else
+	    { return new Context(doc, copyState(doc.mode, saved), line) }
+	};
+	
+	Context.prototype.save = function (copy) {
+	  var state = copy !== false ? copyState(this.doc.mode, this.state) : this.state;
+	  return this.maxLookAhead > 0 ? new SavedContext(state, this.maxLookAhead) : state
+	};
+	
 	
 	// Compute a style array (an array starting with a mode generation
 	// -- for invalidation -- followed by pairs of end positions and
 	// style strings), which is used to highlight the tokens on the
 	// line.
-	function highlightLine(cm, line, state, forceToEnd) {
+	function highlightLine(cm, line, context, forceToEnd) {
 	  // A styles array always starts with a number identifying the
 	  // mode/overlays that it is based on (for easy invalidation).
 	  var st = [cm.state.modeGen], lineClasses = {};
 	  // Compute the base array of styles
-	  runMode(cm, line.text, cm.doc.mode, state, function (end, style) { return st.push(end, style); },
-	    lineClasses, forceToEnd);
+	  runMode(cm, line.text, cm.doc.mode, context, function (end, style) { return st.push(end, style); },
+	          lineClasses, forceToEnd);
+	  var state = context.state;
 	
 	  // Run overlays, adjust style array.
 	  var loop = function ( o ) {
 	    var overlay = cm.state.overlays[o], i = 1, at = 0;
-	    runMode(cm, line.text, overlay.mode, true, function (end, style) {
+	    context.state = true;
+	    runMode(cm, line.text, overlay.mode, context, function (end, style) {
 	      var start = i;
 	      // Ensure there's a token end at the current position, and that i points at it
 	      while (at < end) {
@@ -77996,49 +77497,54 @@
 	  };
 	
 	  for (var o = 0; o < cm.state.overlays.length; ++o) loop( o );
+	  context.state = state;
 	
 	  return {styles: st, classes: lineClasses.bgClass || lineClasses.textClass ? lineClasses : null}
 	}
 	
 	function getLineStyles(cm, line, updateFrontier) {
 	  if (!line.styles || line.styles[0] != cm.state.modeGen) {
-	    var state = getStateBefore(cm, lineNo(line));
-	    var result = highlightLine(cm, line, line.text.length > cm.options.maxHighlightLength ? copyState(cm.doc.mode, state) : state);
-	    line.stateAfter = state;
+	    var context = getContextBefore(cm, lineNo(line));
+	    var resetState = line.text.length > cm.options.maxHighlightLength && copyState(cm.doc.mode, context.state);
+	    var result = highlightLine(cm, line, context);
+	    if (resetState) { context.state = resetState; }
+	    line.stateAfter = context.save(!resetState);
 	    line.styles = result.styles;
 	    if (result.classes) { line.styleClasses = result.classes; }
 	    else if (line.styleClasses) { line.styleClasses = null; }
-	    if (updateFrontier === cm.doc.frontier) { cm.doc.frontier++; }
+	    if (updateFrontier === cm.doc.highlightFrontier)
+	      { cm.doc.modeFrontier = Math.max(cm.doc.modeFrontier, ++cm.doc.highlightFrontier); }
 	  }
 	  return line.styles
 	}
 	
-	function getStateBefore(cm, n, precise) {
+	function getContextBefore(cm, n, precise) {
 	  var doc = cm.doc, display = cm.display;
-	  if (!doc.mode.startState) { return true }
-	  var pos = findStartLine(cm, n, precise), state = pos > doc.first && getLine(doc, pos-1).stateAfter;
-	  if (!state) { state = startState(doc.mode); }
-	  else { state = copyState(doc.mode, state); }
-	  doc.iter(pos, n, function (line) {
-	    processLine(cm, line.text, state);
-	    var save = pos == n - 1 || pos % 5 == 0 || pos >= display.viewFrom && pos < display.viewTo;
-	    line.stateAfter = save ? copyState(doc.mode, state) : null;
-	    ++pos;
+	  if (!doc.mode.startState) { return new Context(doc, true, n) }
+	  var start = findStartLine(cm, n, precise);
+	  var saved = start > doc.first && getLine(doc, start - 1).stateAfter;
+	  var context = saved ? Context.fromSaved(doc, saved, start) : new Context(doc, startState(doc.mode), start);
+	
+	  doc.iter(start, n, function (line) {
+	    processLine(cm, line.text, context);
+	    var pos = context.line;
+	    line.stateAfter = pos == n - 1 || pos % 5 == 0 || pos >= display.viewFrom && pos < display.viewTo ? context.save() : null;
+	    context.nextLine();
 	  });
-	  if (precise) { doc.frontier = pos; }
-	  return state
+	  if (precise) { doc.modeFrontier = context.line; }
+	  return context
 	}
 	
 	// Lightweight form of highlight -- proceed over this line and
 	// update state, but don't save a style array. Used for lines that
 	// aren't currently visible.
-	function processLine(cm, text, state, startAt) {
+	function processLine(cm, text, context, startAt) {
 	  var mode = cm.doc.mode;
-	  var stream = new StringStream(text, cm.options.tabSize);
+	  var stream = new StringStream(text, cm.options.tabSize, context);
 	  stream.start = stream.pos = startAt || 0;
-	  if (text == "") { callBlankLine(mode, state); }
+	  if (text == "") { callBlankLine(mode, context.state); }
 	  while (!stream.eol()) {
-	    readToken(mode, stream, state);
+	    readToken(mode, stream, context.state);
 	    stream.start = stream.pos;
 	  }
 	}
@@ -78059,26 +77565,26 @@
 	  throw new Error("Mode " + mode.name + " failed to advance stream.")
 	}
 	
+	var Token = function(stream, type, state) {
+	  this.start = stream.start; this.end = stream.pos;
+	  this.string = stream.current();
+	  this.type = type || null;
+	  this.state = state;
+	};
+	
 	// Utility for getTokenAt and getLineTokens
 	function takeToken(cm, pos, precise, asArray) {
-	  var getObj = function (copy) { return ({
-	    start: stream.start, end: stream.pos,
-	    string: stream.current(),
-	    type: style || null,
-	    state: copy ? copyState(doc.mode, state) : state
-	  }); };
-	
 	  var doc = cm.doc, mode = doc.mode, style;
 	  pos = clipPos(doc, pos);
-	  var line = getLine(doc, pos.line), state = getStateBefore(cm, pos.line, precise);
-	  var stream = new StringStream(line.text, cm.options.tabSize), tokens;
+	  var line = getLine(doc, pos.line), context = getContextBefore(cm, pos.line, precise);
+	  var stream = new StringStream(line.text, cm.options.tabSize, context), tokens;
 	  if (asArray) { tokens = []; }
 	  while ((asArray || stream.pos < pos.ch) && !stream.eol()) {
 	    stream.start = stream.pos;
-	    style = readToken(mode, stream, state);
-	    if (asArray) { tokens.push(getObj(true)); }
+	    style = readToken(mode, stream, context.state);
+	    if (asArray) { tokens.push(new Token(stream, style, copyState(doc.mode, context.state))); }
 	  }
-	  return asArray ? tokens : getObj()
+	  return asArray ? tokens : new Token(stream, style, context.state)
 	}
 	
 	function extractLineClasses(type, output) {
@@ -78096,21 +77602,21 @@
 	}
 	
 	// Run the given mode's parser over a line, calling f for each token.
-	function runMode(cm, text, mode, state, f, lineClasses, forceToEnd) {
+	function runMode(cm, text, mode, context, f, lineClasses, forceToEnd) {
 	  var flattenSpans = mode.flattenSpans;
 	  if (flattenSpans == null) { flattenSpans = cm.options.flattenSpans; }
 	  var curStart = 0, curStyle = null;
-	  var stream = new StringStream(text, cm.options.tabSize), style;
+	  var stream = new StringStream(text, cm.options.tabSize, context), style;
 	  var inner = cm.options.addModeClass && [null];
-	  if (text == "") { extractLineClasses(callBlankLine(mode, state), lineClasses); }
+	  if (text == "") { extractLineClasses(callBlankLine(mode, context.state), lineClasses); }
 	  while (!stream.eol()) {
 	    if (stream.pos > cm.options.maxHighlightLength) {
 	      flattenSpans = false;
-	      if (forceToEnd) { processLine(cm, text, state, stream.pos); }
+	      if (forceToEnd) { processLine(cm, text, context, stream.pos); }
 	      stream.pos = text.length;
 	      style = null;
 	    } else {
-	      style = extractLineClasses(readToken(mode, stream, state, inner), lineClasses);
+	      style = extractLineClasses(readToken(mode, stream, context.state, inner), lineClasses);
 	    }
 	    if (inner) {
 	      var mName = inner[0].name;
@@ -78145,8 +77651,9 @@
 	  var lim = precise ? -1 : n - (cm.doc.mode.innerMode ? 1000 : 100);
 	  for (var search = n; search > lim; --search) {
 	    if (search <= doc.first) { return doc.first }
-	    var line = getLine(doc, search - 1);
-	    if (line.stateAfter && (!precise || search <= doc.frontier)) { return search }
+	    var line = getLine(doc, search - 1), after = line.stateAfter;
+	    if (after && (!precise || search + (after instanceof SavedContext ? after.lookAhead : 0) <= doc.modeFrontier))
+	      { return search }
 	    var indented = countColumn(line.text, null, cm.options.tabSize);
 	    if (minline == null || minindent > indented) {
 	      minline = search - 1;
@@ -78154,6 +77661,23 @@
 	    }
 	  }
 	  return minline
+	}
+	
+	function retreatFrontier(doc, n) {
+	  doc.modeFrontier = Math.min(doc.modeFrontier, n);
+	  if (doc.highlightFrontier < n - 10) { return }
+	  var start = doc.first;
+	  for (var line = n - 1; line > start; line--) {
+	    var saved = getLine(doc, line).stateAfter;
+	    // change is on 3
+	    // state on line 1 looked ahead 2 -- so saw 3
+	    // test 1 + 2 < 3 should cover this
+	    if (saved && (!(saved instanceof SavedContext) || line + saved.lookAhead < n)) {
+	      start = line + 1;
+	      break
+	    }
+	  }
+	  doc.highlightFrontier = Math.min(doc.highlightFrontier, start);
 	}
 	
 	// LINE DATA STRUCTURE
@@ -79208,20 +78732,30 @@
 	      var assign;
 	      ((assign = wrappedLineExtent(cm, lineObj, preparedMeasure, y), begin = assign.begin, end = assign.end, assign));
 	    }
-	    pos = new Pos(lineNo$$1, begin);
+	    pos = new Pos(lineNo$$1, Math.floor(begin + (end - begin) / 2));
 	    var beginLeft = cursorCoords(cm, pos, "line", lineObj, preparedMeasure).left;
 	    var dir = beginLeft < x ? 1 : -1;
 	    var prevDiff, diff = beginLeft - x, prevPos;
-	    do {
+	    var steps = Math.ceil((end - begin) / 4);
+	    outer: do {
 	      prevDiff = diff;
 	      prevPos = pos;
-	      pos = moveVisually(cm, lineObj, pos, dir);
-	      if (pos == null || pos.ch < begin || end <= (pos.sticky == "before" ? pos.ch - 1 : pos.ch)) {
-	        pos = prevPos;
-	        break
+	      var i = 0;
+	      for (; i < steps; ++i) {
+	        var prevPos$1 = pos;
+	        pos = moveVisually(cm, lineObj, pos, dir);
+	        if (pos == null || pos.ch < begin || end <= (pos.sticky == "before" ? pos.ch - 1 : pos.ch)) {
+	          pos = prevPos$1;
+	          break outer
+	        }
 	      }
 	      diff = cursorCoords(cm, pos, "line", lineObj, preparedMeasure).left - x;
-	    } while ((dir < 0) != (diff < 0) && (Math.abs(diff) <= Math.abs(prevDiff)))
+	      if (steps > 1) {
+	        var diff_change_per_step = Math.abs(diff - prevDiff) / steps;
+	        steps = Math.min(steps, Math.ceil(Math.abs(diff) / diff_change_per_step));
+	        dir = diff < 0 ? 1 : -1;
+	      }
+	    } while (diff != 0 && (steps > 1 || ((dir < 0) != (diff < 0) && (Math.abs(diff) <= Math.abs(prevDiff)))))
 	    if (Math.abs(diff) > Math.abs(prevDiff)) {
 	      if ((diff < 0) == (prevDiff < 0)) { throw new Error("Broke out of infinite loop in coordsCharInner") }
 	      pos = prevPos;
@@ -79555,7 +79089,7 @@
 	    }
 	    var diff = cur.line.height - height;
 	    if (height < 2) { height = textHeight(display); }
-	    if (diff > .001 || diff < -.001) {
+	    if (diff > .005 || diff < -.005) {
 	      updateLineHeight(cur.line, height);
 	      updateWidgetHeight(cur.line);
 	      if (cur.rest) { for (var j = 0; j < cur.rest.length; j++)
@@ -79662,6 +79196,13 @@
 	function scrollPosIntoView(cm, pos, end, margin) {
 	  if (margin == null) { margin = 0; }
 	  var rect;
+	  if (!cm.options.lineWrapping && pos == end) {
+	    // Set pos and end to the cursor positions around the character pos sticks to
+	    // If pos.sticky == "before", that is around pos.ch - 1, otherwise around pos.ch
+	    // If pos == Pos(_, 0, "before"), pos and end are unchanged
+	    pos = pos.ch ? Pos(pos.line, pos.sticky == "before" ? pos.ch - 1 : pos.ch, "after") : pos;
+	    end = pos.sticky == "before" ? Pos(pos.line, pos.ch + 1, "before") : pos;
+	  }
 	  for (var limit = 0; limit < 5; limit++) {
 	    var changed = false;
 	    var coords = cursorCoords(cm, pos);
@@ -79736,12 +79277,8 @@
 	// shown.
 	function ensureCursorVisible(cm) {
 	  resolveScrollToPos(cm);
-	  var cur = cm.getCursor(), from = cur, to = cur;
-	  if (!cm.options.lineWrapping) {
-	    from = cur.ch ? Pos(cur.line, cur.ch - 1) : cur;
-	    to = Pos(cur.line, cur.ch + 1);
-	  }
-	  cm.curOp.scrollToPos = {from: from, to: to, margin: cm.options.cursorScrollMargin};
+	  var cur = cm.getCursor();
+	  cm.curOp.scrollToPos = {from: cur, to: cur, margin: cm.options.cursorScrollMargin};
 	}
 	
 	function scrollToCoords(cm, x, y) {
@@ -80332,22 +79869,23 @@
 	// HIGHLIGHT WORKER
 	
 	function startWorker(cm, time) {
-	  if (cm.doc.mode.startState && cm.doc.frontier < cm.display.viewTo)
+	  if (cm.doc.highlightFrontier < cm.display.viewTo)
 	    { cm.state.highlight.set(time, bind(highlightWorker, cm)); }
 	}
 	
 	function highlightWorker(cm) {
 	  var doc = cm.doc;
-	  if (doc.frontier < doc.first) { doc.frontier = doc.first; }
-	  if (doc.frontier >= cm.display.viewTo) { return }
+	  if (doc.highlightFrontier >= cm.display.viewTo) { return }
 	  var end = +new Date + cm.options.workTime;
-	  var state = copyState(doc.mode, getStateBefore(cm, doc.frontier));
+	  var context = getContextBefore(cm, doc.highlightFrontier);
 	  var changedLines = [];
 	
-	  doc.iter(doc.frontier, Math.min(doc.first + doc.size, cm.display.viewTo + 500), function (line) {
-	    if (doc.frontier >= cm.display.viewFrom) { // Visible
-	      var oldStyles = line.styles, tooLong = line.text.length > cm.options.maxHighlightLength;
-	      var highlighted = highlightLine(cm, line, tooLong ? copyState(doc.mode, state) : state, true);
+	  doc.iter(context.line, Math.min(doc.first + doc.size, cm.display.viewTo + 500), function (line) {
+	    if (context.line >= cm.display.viewFrom) { // Visible
+	      var oldStyles = line.styles;
+	      var resetState = line.text.length > cm.options.maxHighlightLength ? copyState(doc.mode, context.state) : null;
+	      var highlighted = highlightLine(cm, line, context, true);
+	      if (resetState) { context.state = resetState; }
 	      line.styles = highlighted.styles;
 	      var oldCls = line.styleClasses, newCls = highlighted.classes;
 	      if (newCls) { line.styleClasses = newCls; }
@@ -80355,19 +79893,22 @@
 	      var ischange = !oldStyles || oldStyles.length != line.styles.length ||
 	        oldCls != newCls && (!oldCls || !newCls || oldCls.bgClass != newCls.bgClass || oldCls.textClass != newCls.textClass);
 	      for (var i = 0; !ischange && i < oldStyles.length; ++i) { ischange = oldStyles[i] != line.styles[i]; }
-	      if (ischange) { changedLines.push(doc.frontier); }
-	      line.stateAfter = tooLong ? state : copyState(doc.mode, state);
+	      if (ischange) { changedLines.push(context.line); }
+	      line.stateAfter = context.save();
+	      context.nextLine();
 	    } else {
 	      if (line.text.length <= cm.options.maxHighlightLength)
-	        { processLine(cm, line.text, state); }
-	      line.stateAfter = doc.frontier % 5 == 0 ? copyState(doc.mode, state) : null;
+	        { processLine(cm, line.text, context); }
+	      line.stateAfter = context.line % 5 == 0 ? context.save() : null;
+	      context.nextLine();
 	    }
-	    ++doc.frontier;
 	    if (+new Date > end) {
 	      startWorker(cm, cm.options.workDelay);
 	      return true
 	    }
 	  });
+	  doc.highlightFrontier = context.line;
+	  doc.modeFrontier = Math.max(doc.modeFrontier, context.line);
 	  if (changedLines.length) { runInOp(cm, function () {
 	    for (var i = 0; i < changedLines.length; i++)
 	      { regLineChange(cm, changedLines[i], "text"); }
@@ -80538,6 +80079,7 @@
 	    updateSelection(cm);
 	    updateScrollbars(cm, barMeasure);
 	    setDocumentHeight(cm, barMeasure);
+	    update.force = false;
 	  }
 	
 	  update.signal(cm, "update", cm);
@@ -80911,7 +80453,7 @@
 	    if (line.stateAfter) { line.stateAfter = null; }
 	    if (line.styles) { line.styles = null; }
 	  });
-	  cm.doc.frontier = cm.doc.first;
+	  cm.doc.modeFrontier = cm.doc.highlightFrontier = cm.doc.first;
 	  startWorker(cm, 100);
 	  cm.state.modeGen++;
 	  if (cm.curOp) { regChange(cm); }
@@ -81245,8 +80787,8 @@
 	// include a given position (and optionally a second position).
 	// Otherwise, simply returns the range between the given positions.
 	// Used for cursor motion and such.
-	function extendRange(doc, range, head, other) {
-	  if (doc.cm && doc.cm.display.shift || doc.extend) {
+	function extendRange(range, head, other, extend) {
+	  if (extend) {
 	    var anchor = range.anchor;
 	    if (other) {
 	      var posBefore = cmp(head, anchor) < 0;
@@ -81264,16 +80806,18 @@
 	}
 	
 	// Extend the primary selection range, discard the rest.
-	function extendSelection(doc, head, other, options) {
-	  setSelection(doc, new Selection([extendRange(doc, doc.sel.primary(), head, other)], 0), options);
+	function extendSelection(doc, head, other, options, extend) {
+	  if (extend == null) { extend = doc.cm && (doc.cm.display.shift || doc.extend); }
+	  setSelection(doc, new Selection([extendRange(doc.sel.primary(), head, other, extend)], 0), options);
 	}
 	
 	// Extend all selections (pos is an array of selections with length
 	// equal the number of selections)
 	function extendSelections(doc, heads, options) {
 	  var out = [];
+	  var extend = doc.cm && (doc.cm.display.shift || doc.extend);
 	  for (var i = 0; i < doc.sel.ranges.length; i++)
-	    { out[i] = extendRange(doc, doc.sel.ranges[i], heads[i], null); }
+	    { out[i] = extendRange(doc.sel.ranges[i], heads[i], null, extend); }
 	  var newSel = normalizeSelection(out, doc.sel.primIndex);
 	  setSelection(doc, newSel, options);
 	}
@@ -81657,8 +81201,7 @@
 	    if (recomputeMaxLength) { cm.curOp.updateMaxLine = true; }
 	  }
 	
-	  // Adjust frontier, schedule worker
-	  doc.frontier = Math.min(doc.frontier, from.line);
+	  retreatFrontier(doc, from.line);
 	  startWorker(cm, 400);
 	
 	  var lendiff = change.text.length - (to.line - from.line) - 1;
@@ -81768,7 +81311,7 @@
 	//
 	// See also http://marijnhaverbeke.nl/blog/codemirror-line-tree.html
 	
-	var LeafChunk = function(lines) {
+	function LeafChunk(lines) {
 	  var this$1 = this;
 	
 	  this.lines = lines;
@@ -81779,47 +81322,49 @@
 	    height += lines[i].height;
 	  }
 	  this.height = height;
-	};
+	}
 	
-	LeafChunk.prototype.chunkSize = function () { return this.lines.length };
+	LeafChunk.prototype = {
+	  chunkSize: function chunkSize() { return this.lines.length },
 	
-	// Remove the n lines at offset 'at'.
-	LeafChunk.prototype.removeInner = function (at, n) {
+	  // Remove the n lines at offset 'at'.
+	  removeInner: function removeInner(at, n) {
 	    var this$1 = this;
 	
-	  for (var i = at, e = at + n; i < e; ++i) {
-	    var line = this$1.lines[i];
-	    this$1.height -= line.height;
-	    cleanUpLine(line);
-	    signalLater(line, "delete");
+	    for (var i = at, e = at + n; i < e; ++i) {
+	      var line = this$1.lines[i];
+	      this$1.height -= line.height;
+	      cleanUpLine(line);
+	      signalLater(line, "delete");
+	    }
+	    this.lines.splice(at, n);
+	  },
+	
+	  // Helper used to collapse a small branch into a single leaf.
+	  collapse: function collapse(lines) {
+	    lines.push.apply(lines, this.lines);
+	  },
+	
+	  // Insert the given array of lines at offset 'at', count them as
+	  // having the given height.
+	  insertInner: function insertInner(at, lines, height) {
+	    var this$1 = this;
+	
+	    this.height += height;
+	    this.lines = this.lines.slice(0, at).concat(lines).concat(this.lines.slice(at));
+	    for (var i = 0; i < lines.length; ++i) { lines[i].parent = this$1; }
+	  },
+	
+	  // Used to iterate over a part of the tree.
+	  iterN: function iterN(at, n, op) {
+	    var this$1 = this;
+	
+	    for (var e = at + n; at < e; ++at)
+	      { if (op(this$1.lines[at])) { return true } }
 	  }
-	  this.lines.splice(at, n);
 	};
 	
-	// Helper used to collapse a small branch into a single leaf.
-	LeafChunk.prototype.collapse = function (lines) {
-	  lines.push.apply(lines, this.lines);
-	};
-	
-	// Insert the given array of lines at offset 'at', count them as
-	// having the given height.
-	LeafChunk.prototype.insertInner = function (at, lines, height) {
-	    var this$1 = this;
-	
-	  this.height += height;
-	  this.lines = this.lines.slice(0, at).concat(lines).concat(this.lines.slice(at));
-	  for (var i = 0; i < lines.length; ++i) { lines[i].parent = this$1; }
-	};
-	
-	// Used to iterate over a part of the tree.
-	LeafChunk.prototype.iterN = function (at, n, op) {
-	    var this$1 = this;
-	
-	  for (var e = at + n; at < e; ++at)
-	    { if (op(this$1.lines[at])) { return true } }
-	};
-	
-	var BranchChunk = function(children) {
+	function BranchChunk(children) {
 	  var this$1 = this;
 	
 	  this.children = children;
@@ -81832,104 +81377,106 @@
 	  this.size = size;
 	  this.height = height;
 	  this.parent = null;
-	};
+	}
 	
-	BranchChunk.prototype.chunkSize = function () { return this.size };
+	BranchChunk.prototype = {
+	  chunkSize: function chunkSize() { return this.size },
 	
-	BranchChunk.prototype.removeInner = function (at, n) {
+	  removeInner: function removeInner(at, n) {
 	    var this$1 = this;
 	
-	  this.size -= n;
-	  for (var i = 0; i < this.children.length; ++i) {
-	    var child = this$1.children[i], sz = child.chunkSize();
-	    if (at < sz) {
-	      var rm = Math.min(n, sz - at), oldHeight = child.height;
-	      child.removeInner(at, rm);
-	      this$1.height -= oldHeight - child.height;
-	      if (sz == rm) { this$1.children.splice(i--, 1); child.parent = null; }
-	      if ((n -= rm) == 0) { break }
-	      at = 0;
-	    } else { at -= sz; }
-	  }
-	  // If the result is smaller than 25 lines, ensure that it is a
-	  // single leaf node.
-	  if (this.size - n < 25 &&
-	      (this.children.length > 1 || !(this.children[0] instanceof LeafChunk))) {
-	    var lines = [];
-	    this.collapse(lines);
-	    this.children = [new LeafChunk(lines)];
-	    this.children[0].parent = this;
-	  }
-	};
+	    this.size -= n;
+	    for (var i = 0; i < this.children.length; ++i) {
+	      var child = this$1.children[i], sz = child.chunkSize();
+	      if (at < sz) {
+	        var rm = Math.min(n, sz - at), oldHeight = child.height;
+	        child.removeInner(at, rm);
+	        this$1.height -= oldHeight - child.height;
+	        if (sz == rm) { this$1.children.splice(i--, 1); child.parent = null; }
+	        if ((n -= rm) == 0) { break }
+	        at = 0;
+	      } else { at -= sz; }
+	    }
+	    // If the result is smaller than 25 lines, ensure that it is a
+	    // single leaf node.
+	    if (this.size - n < 25 &&
+	        (this.children.length > 1 || !(this.children[0] instanceof LeafChunk))) {
+	      var lines = [];
+	      this.collapse(lines);
+	      this.children = [new LeafChunk(lines)];
+	      this.children[0].parent = this;
+	    }
+	  },
 	
-	BranchChunk.prototype.collapse = function (lines) {
+	  collapse: function collapse(lines) {
 	    var this$1 = this;
 	
-	  for (var i = 0; i < this.children.length; ++i) { this$1.children[i].collapse(lines); }
-	};
+	    for (var i = 0; i < this.children.length; ++i) { this$1.children[i].collapse(lines); }
+	  },
 	
-	BranchChunk.prototype.insertInner = function (at, lines, height) {
+	  insertInner: function insertInner(at, lines, height) {
 	    var this$1 = this;
 	
-	  this.size += lines.length;
-	  this.height += height;
-	  for (var i = 0; i < this.children.length; ++i) {
-	    var child = this$1.children[i], sz = child.chunkSize();
-	    if (at <= sz) {
-	      child.insertInner(at, lines, height);
-	      if (child.lines && child.lines.length > 50) {
-	        // To avoid memory thrashing when child.lines is huge (e.g. first view of a large file), it's never spliced.
-	        // Instead, small slices are taken. They're taken in order because sequential memory accesses are fastest.
-	        var remaining = child.lines.length % 25 + 25;
-	        for (var pos = remaining; pos < child.lines.length;) {
-	          var leaf = new LeafChunk(child.lines.slice(pos, pos += 25));
-	          child.height -= leaf.height;
-	          this$1.children.splice(++i, 0, leaf);
-	          leaf.parent = this$1;
+	    this.size += lines.length;
+	    this.height += height;
+	    for (var i = 0; i < this.children.length; ++i) {
+	      var child = this$1.children[i], sz = child.chunkSize();
+	      if (at <= sz) {
+	        child.insertInner(at, lines, height);
+	        if (child.lines && child.lines.length > 50) {
+	          // To avoid memory thrashing when child.lines is huge (e.g. first view of a large file), it's never spliced.
+	          // Instead, small slices are taken. They're taken in order because sequential memory accesses are fastest.
+	          var remaining = child.lines.length % 25 + 25;
+	          for (var pos = remaining; pos < child.lines.length;) {
+	            var leaf = new LeafChunk(child.lines.slice(pos, pos += 25));
+	            child.height -= leaf.height;
+	            this$1.children.splice(++i, 0, leaf);
+	            leaf.parent = this$1;
+	          }
+	          child.lines = child.lines.slice(0, remaining);
+	          this$1.maybeSpill();
 	        }
-	        child.lines = child.lines.slice(0, remaining);
-	        this$1.maybeSpill();
+	        break
 	      }
-	      break
+	      at -= sz;
 	    }
-	    at -= sz;
-	  }
-	};
+	  },
 	
-	// When a node has grown, check whether it should be split.
-	BranchChunk.prototype.maybeSpill = function () {
-	  if (this.children.length <= 10) { return }
-	  var me = this;
-	  do {
-	    var spilled = me.children.splice(me.children.length - 5, 5);
-	    var sibling = new BranchChunk(spilled);
-	    if (!me.parent) { // Become the parent node
-	      var copy = new BranchChunk(me.children);
-	      copy.parent = me;
-	      me.children = [copy, sibling];
-	      me = copy;
-	   } else {
-	      me.size -= sibling.size;
-	      me.height -= sibling.height;
-	      var myIndex = indexOf(me.parent.children, me);
-	      me.parent.children.splice(myIndex + 1, 0, sibling);
-	    }
-	    sibling.parent = me.parent;
-	  } while (me.children.length > 10)
-	  me.parent.maybeSpill();
-	};
+	  // When a node has grown, check whether it should be split.
+	  maybeSpill: function maybeSpill() {
+	    if (this.children.length <= 10) { return }
+	    var me = this;
+	    do {
+	      var spilled = me.children.splice(me.children.length - 5, 5);
+	      var sibling = new BranchChunk(spilled);
+	      if (!me.parent) { // Become the parent node
+	        var copy = new BranchChunk(me.children);
+	        copy.parent = me;
+	        me.children = [copy, sibling];
+	        me = copy;
+	     } else {
+	        me.size -= sibling.size;
+	        me.height -= sibling.height;
+	        var myIndex = indexOf(me.parent.children, me);
+	        me.parent.children.splice(myIndex + 1, 0, sibling);
+	      }
+	      sibling.parent = me.parent;
+	    } while (me.children.length > 10)
+	    me.parent.maybeSpill();
+	  },
 	
-	BranchChunk.prototype.iterN = function (at, n, op) {
+	  iterN: function iterN(at, n, op) {
 	    var this$1 = this;
 	
-	  for (var i = 0; i < this.children.length; ++i) {
-	    var child = this$1.children[i], sz = child.chunkSize();
-	    if (at < sz) {
-	      var used = Math.min(n, sz - at);
-	      if (child.iterN(at, used, op)) { return true }
-	      if ((n -= used) == 0) { break }
-	      at = 0;
-	    } else { at -= sz; }
+	    for (var i = 0; i < this.children.length; ++i) {
+	      var child = this$1.children[i], sz = child.chunkSize();
+	      if (at < sz) {
+	        var used = Math.min(n, sz - at);
+	        if (child.iterN(at, used, op)) { return true }
+	        if ((n -= used) == 0) { break }
+	        at = 0;
+	      } else { at -= sz; }
+	    }
 	  }
 	};
 	
@@ -82299,7 +81846,7 @@
 	  this.scrollTop = this.scrollLeft = 0;
 	  this.cantEdit = false;
 	  this.cleanGeneration = 1;
-	  this.frontier = firstLine;
+	  this.modeFrontier = this.highlightFrontier = firstLine;
 	  var start = Pos(firstLine, 0);
 	  this.sel = simpleSelection(start);
 	  this.history = new History(null);
@@ -82822,8 +82369,8 @@
 	// garbage collected.
 	
 	function forEachCodeMirror(f) {
-	  if (!document.body.getElementsByClassName) { return }
-	  var byClass = document.body.getElementsByClassName("CodeMirror");
+	  if (!document.getElementsByClassName) { return }
+	  var byClass = document.getElementsByClassName("CodeMirror");
 	  for (var i = 0; i < byClass.length; i++) {
 	    var cm = byClass[i].CodeMirror;
 	    if (cm) { f(cm); }
@@ -82997,16 +82544,21 @@
 	  return name == "Ctrl" || name == "Alt" || name == "Shift" || name == "Mod"
 	}
 	
-	// Look up the name of a key as indicated by an event object.
-	function keyName(event, noShift) {
-	  if (presto && event.keyCode == 34 && event["char"]) { return false }
-	  var base = keyNames[event.keyCode], name = base;
-	  if (name == null || event.altGraphKey) { return false }
+	function addModifierNames(name, event, noShift) {
+	  var base = name;
 	  if (event.altKey && base != "Alt") { name = "Alt-" + name; }
 	  if ((flipCtrlCmd ? event.metaKey : event.ctrlKey) && base != "Ctrl") { name = "Ctrl-" + name; }
 	  if ((flipCtrlCmd ? event.ctrlKey : event.metaKey) && base != "Cmd") { name = "Cmd-" + name; }
 	  if (!noShift && event.shiftKey && base != "Shift") { name = "Shift-" + name; }
 	  return name
+	}
+	
+	// Look up the name of a key as indicated by an event object.
+	function keyName(event, noShift) {
+	  if (presto && event.keyCode == 34 && event["char"]) { return false }
+	  var name = keyNames[event.keyCode];
+	  if (name == null || event.altGraphKey) { return false }
+	  return addModifierNames(name, event, noShift)
 	}
 	
 	function getKeyMap(val) {
@@ -83087,15 +82639,15 @@
 	    {origin: "+move", bias: -1}
 	  ); },
 	  goLineRight: function (cm) { return cm.extendSelectionsBy(function (range) {
-	    var top = cm.charCoords(range.head, "div").top + 5;
+	    var top = cm.cursorCoords(range.head, "div").top + 5;
 	    return cm.coordsChar({left: cm.display.lineDiv.offsetWidth + 100, top: top}, "div")
 	  }, sel_move); },
 	  goLineLeft: function (cm) { return cm.extendSelectionsBy(function (range) {
-	    var top = cm.charCoords(range.head, "div").top + 5;
+	    var top = cm.cursorCoords(range.head, "div").top + 5;
 	    return cm.coordsChar({left: 0, top: top}, "div")
 	  }, sel_move); },
 	  goLineLeftSmart: function (cm) { return cm.extendSelectionsBy(function (range) {
-	    var top = cm.charCoords(range.head, "div").top + 5;
+	    var top = cm.cursorCoords(range.head, "div").top + 5;
 	    var pos = cm.coordsChar({left: 0, top: top}, "div");
 	    if (pos.ch < cm.getLine(pos.line).search(/\S/)) { return lineStartSmart(cm, range.head) }
 	    return pos
@@ -83235,6 +82787,9 @@
 	    || lookupKey(name, cm.options.keyMap, handle, cm)
 	}
 	
+	// Note that, despite the name, this function is also used to check
+	// for bound mouse clicks.
+	
 	var stopSeq = new Delayed;
 	function dispatchKey(cm, name, e, handle) {
 	  var seq = cm.state.keySeq;
@@ -83346,6 +82901,37 @@
 	  cm.display.input.onKeyPress(e);
 	}
 	
+	var DOUBLECLICK_DELAY = 400;
+	
+	var PastClick = function(time, pos, button) {
+	  this.time = time;
+	  this.pos = pos;
+	  this.button = button;
+	};
+	
+	PastClick.prototype.compare = function (time, pos, button) {
+	  return this.time + DOUBLECLICK_DELAY > time &&
+	    cmp(pos, this.pos) == 0 && button == this.button
+	};
+	
+	var lastClick;
+	var lastDoubleClick;
+	function clickRepeat(pos, button) {
+	  var now = +new Date;
+	  if (lastDoubleClick && lastDoubleClick.compare(now, pos, button)) {
+	    lastClick = lastDoubleClick = null;
+	    return "triple"
+	  } else if (lastClick && lastClick.compare(now, pos, button)) {
+	    lastDoubleClick = new PastClick(now, pos, button);
+	    lastClick = null;
+	    return "double"
+	  } else {
+	    lastClick = new PastClick(now, pos, button);
+	    lastDoubleClick = null;
+	    return "single"
+	  }
+	}
+	
 	// A mouse down can be a single click, double click, triple click,
 	// start of selection drag, start of text drag, new cursor
 	// (ctrl-click), rectangle drag (alt-drag), or xwin
@@ -83367,62 +82953,79 @@
 	    return
 	  }
 	  if (clickInGutter(cm, e)) { return }
-	  var start = posFromMouse(cm, e);
+	  var pos = posFromMouse(cm, e), button = e_button(e), repeat = pos ? clickRepeat(pos, button) : "single";
 	  window.focus();
 	
-	  switch (e_button(e)) {
-	  case 1:
-	    // #3261: make sure, that we're not starting a second selection
-	    if (cm.state.selectingText)
-	      { cm.state.selectingText(e); }
-	    else if (start)
-	      { leftButtonDown(cm, e, start); }
-	    else if (e_target(e) == display.scroller)
-	      { e_preventDefault(e); }
-	    break
-	  case 2:
-	    if (webkit) { cm.state.lastMiddleDown = +new Date; }
-	    if (start) { extendSelection(cm.doc, start); }
+	  // #3261: make sure, that we're not starting a second selection
+	  if (button == 1 && cm.state.selectingText)
+	    { cm.state.selectingText(e); }
+	
+	  if (pos && handleMappedButton(cm, button, pos, repeat, e)) { return }
+	
+	  if (button == 1) {
+	    if (pos) { leftButtonDown(cm, pos, repeat, e); }
+	    else if (e_target(e) == display.scroller) { e_preventDefault(e); }
+	  } else if (button == 2) {
+	    if (pos) { extendSelection(cm.doc, pos); }
 	    setTimeout(function () { return display.input.focus(); }, 20);
-	    e_preventDefault(e);
-	    break
-	  case 3:
+	  } else if (button == 3) {
 	    if (captureRightClick) { onContextMenu(cm, e); }
 	    else { delayBlurEvent(cm); }
-	    break
 	  }
 	}
 	
-	var lastClick;
-	var lastDoubleClick;
-	function leftButtonDown(cm, e, start) {
+	function handleMappedButton(cm, button, pos, repeat, event) {
+	  var name = "Click";
+	  if (repeat == "double") { name = "Double" + name; }
+	  else if (repeat == "triple") { name = "Triple" + name; }
+	  name = (button == 1 ? "Left" : button == 2 ? "Middle" : "Right") + name;
+	
+	  return dispatchKey(cm,  addModifierNames(name, event), event, function (bound) {
+	    if (typeof bound == "string") { bound = commands[bound]; }
+	    if (!bound) { return false }
+	    var done = false;
+	    try {
+	      if (cm.isReadOnly()) { cm.state.suppressEdits = true; }
+	      done = bound(cm, pos) != Pass;
+	    } finally {
+	      cm.state.suppressEdits = false;
+	    }
+	    return done
+	  })
+	}
+	
+	function configureMouse(cm, repeat, event) {
+	  var option = cm.getOption("configureMouse");
+	  var value = option ? option(cm, repeat, event) : {};
+	  if (value.unit == null) {
+	    var rect = chromeOS ? event.shiftKey && event.metaKey : event.altKey;
+	    value.unit = rect ? "rectangle" : repeat == "single" ? "char" : repeat == "double" ? "word" : "line";
+	  }
+	  if (value.extend == null || cm.doc.extend) { value.extend = cm.doc.extend || event.shiftKey; }
+	  if (value.addNew == null) { value.addNew = mac ? event.metaKey : event.ctrlKey; }
+	  if (value.moveOnDrag == null) { value.moveOnDrag = !(mac ? event.altKey : event.ctrlKey); }
+	  return value
+	}
+	
+	function leftButtonDown(cm, pos, repeat, event) {
 	  if (ie) { setTimeout(bind(ensureFocus, cm), 0); }
 	  else { cm.curOp.focus = activeElt(); }
 	
-	  var now = +new Date, type;
-	  if (lastDoubleClick && lastDoubleClick.time > now - 400 && cmp(lastDoubleClick.pos, start) == 0) {
-	    type = "triple";
-	  } else if (lastClick && lastClick.time > now - 400 && cmp(lastClick.pos, start) == 0) {
-	    type = "double";
-	    lastDoubleClick = {time: now, pos: start};
-	  } else {
-	    type = "single";
-	    lastClick = {time: now, pos: start};
-	  }
+	  var behavior = configureMouse(cm, repeat, event);
 	
-	  var sel = cm.doc.sel, modifier = mac ? e.metaKey : e.ctrlKey, contained;
+	  var sel = cm.doc.sel, contained;
 	  if (cm.options.dragDrop && dragAndDrop && !cm.isReadOnly() &&
-	      type == "single" && (contained = sel.contains(start)) > -1 &&
-	      (cmp((contained = sel.ranges[contained]).from(), start) < 0 || start.xRel > 0) &&
-	      (cmp(contained.to(), start) > 0 || start.xRel < 0))
-	    { leftButtonStartDrag(cm, e, start, modifier); }
+	      repeat == "single" && (contained = sel.contains(pos)) > -1 &&
+	      (cmp((contained = sel.ranges[contained]).from(), pos) < 0 || pos.xRel > 0) &&
+	      (cmp(contained.to(), pos) > 0 || pos.xRel < 0))
+	    { leftButtonStartDrag(cm, event, pos, behavior); }
 	  else
-	    { leftButtonSelect(cm, e, start, type, modifier); }
+	    { leftButtonSelect(cm, event, pos, behavior); }
 	}
 	
 	// Start a text drag. When it ends, see if any dragging actually
 	// happen, and treat as a click if it didn't.
-	function leftButtonStartDrag(cm, e, start, modifier) {
+	function leftButtonStartDrag(cm, event, pos, behavior) {
 	  var display = cm.display, moved = false;
 	  var dragEnd = operation(cm, function (e) {
 	    if (webkit) { display.scroller.draggable = false; }
@@ -83433,8 +83036,8 @@
 	    off(display.scroller, "drop", dragEnd);
 	    if (!moved) {
 	      e_preventDefault(e);
-	      if (!modifier)
-	        { extendSelection(cm.doc, start); }
+	      if (!behavior.addNew)
+	        { extendSelection(cm.doc, pos, null, null, behavior.extend); }
 	      // Work around unexplainable focus problem in IE9 (#2127) and Chrome (#3081)
 	      if (webkit || ie && ie_version == 9)
 	        { setTimeout(function () {document.body.focus(); display.input.focus();}, 20); }
@@ -83443,13 +83046,13 @@
 	    }
 	  });
 	  var mouseMove = function(e2) {
-	    moved = moved || Math.abs(e.clientX - e2.clientX) + Math.abs(e.clientY - e2.clientY) >= 10;
+	    moved = moved || Math.abs(event.clientX - e2.clientX) + Math.abs(event.clientY - e2.clientY) >= 10;
 	  };
 	  var dragStart = function () { return moved = true; };
 	  // Let the drag handler handle this.
 	  if (webkit) { display.scroller.draggable = true; }
 	  cm.state.draggingText = dragEnd;
-	  dragEnd.copy = mac ? e.altKey : e.ctrlKey;
+	  dragEnd.copy = !behavior.moveOnDrag;
 	  // IE's approach to draggable
 	  if (display.scroller.dragDrop) { display.scroller.dragDrop(); }
 	  on(document, "mouseup", dragEnd);
@@ -83461,13 +83064,21 @@
 	  setTimeout(function () { return display.input.focus(); }, 20);
 	}
 	
+	function rangeForUnit(cm, pos, unit) {
+	  if (unit == "char") { return new Range(pos, pos) }
+	  if (unit == "word") { return cm.findWordAt(pos) }
+	  if (unit == "line") { return new Range(Pos(pos.line, 0), clipPos(cm.doc, Pos(pos.line + 1, 0))) }
+	  var result = unit(cm, pos);
+	  return new Range(result.from, result.to)
+	}
+	
 	// Normal selection, as opposed to text dragging.
-	function leftButtonSelect(cm, e, start, type, addNew) {
+	function leftButtonSelect(cm, event, start, behavior) {
 	  var display = cm.display, doc = cm.doc;
-	  e_preventDefault(e);
+	  e_preventDefault(event);
 	
 	  var ourRange, ourIndex, startSel = doc.sel, ranges = startSel.ranges;
-	  if (addNew && !e.shiftKey) {
+	  if (behavior.addNew && !behavior.extend) {
 	    ourIndex = doc.sel.contains(start);
 	    if (ourIndex > -1)
 	      { ourRange = ranges[ourIndex]; }
@@ -83478,28 +83089,19 @@
 	    ourIndex = doc.sel.primIndex;
 	  }
 	
-	  if (chromeOS ? e.shiftKey && e.metaKey : e.altKey) {
-	    type = "rect";
-	    if (!addNew) { ourRange = new Range(start, start); }
-	    start = posFromMouse(cm, e, true, true);
+	  if (behavior.unit == "rectangle") {
+	    if (!behavior.addNew) { ourRange = new Range(start, start); }
+	    start = posFromMouse(cm, event, true, true);
 	    ourIndex = -1;
-	  } else if (type == "double") {
-	    var word = cm.findWordAt(start);
-	    if (cm.display.shift || doc.extend)
-	      { ourRange = extendRange(doc, ourRange, word.anchor, word.head); }
-	    else
-	      { ourRange = word; }
-	  } else if (type == "triple") {
-	    var line = new Range(Pos(start.line, 0), clipPos(doc, Pos(start.line + 1, 0)));
-	    if (cm.display.shift || doc.extend)
-	      { ourRange = extendRange(doc, ourRange, line.anchor, line.head); }
-	    else
-	      { ourRange = line; }
 	  } else {
-	    ourRange = extendRange(doc, ourRange, start);
+	    var range$$1 = rangeForUnit(cm, start, behavior.unit);
+	    if (behavior.extend)
+	      { ourRange = extendRange(ourRange, range$$1.anchor, range$$1.head, behavior.extend); }
+	    else
+	      { ourRange = range$$1; }
 	  }
 	
-	  if (!addNew) {
+	  if (!behavior.addNew) {
 	    ourIndex = 0;
 	    setSelection(doc, new Selection([ourRange], 0), sel_mouse);
 	    startSel = doc.sel;
@@ -83507,7 +83109,7 @@
 	    ourIndex = ranges.length;
 	    setSelection(doc, normalizeSelection(ranges.concat([ourRange]), ourIndex),
 	                 {scroll: false, origin: "*mouse"});
-	  } else if (ranges.length > 1 && ranges[ourIndex].empty() && type == "single" && !e.shiftKey) {
+	  } else if (ranges.length > 1 && ranges[ourIndex].empty() && behavior.unit == "char" && !behavior.extend) {
 	    setSelection(doc, normalizeSelection(ranges.slice(0, ourIndex).concat(ranges.slice(ourIndex + 1)), 0),
 	                 {scroll: false, origin: "*mouse"});
 	    startSel = doc.sel;
@@ -83520,7 +83122,7 @@
 	    if (cmp(lastPos, pos) == 0) { return }
 	    lastPos = pos;
 	
-	    if (type == "rect") {
+	    if (behavior.unit == "rectangle") {
 	      var ranges = [], tabSize = cm.options.tabSize;
 	      var startCol = countColumn(getLine(doc, start.line).text, start.ch, tabSize);
 	      var posCol = countColumn(getLine(doc, pos.line).text, pos.ch, tabSize);
@@ -83539,20 +83141,14 @@
 	      cm.scrollIntoView(pos);
 	    } else {
 	      var oldRange = ourRange;
-	      var anchor = oldRange.anchor, head = pos;
-	      if (type != "single") {
-	        var range$$1;
-	        if (type == "double")
-	          { range$$1 = cm.findWordAt(pos); }
-	        else
-	          { range$$1 = new Range(Pos(pos.line, 0), clipPos(doc, Pos(pos.line + 1, 0))); }
-	        if (cmp(range$$1.anchor, anchor) > 0) {
-	          head = range$$1.head;
-	          anchor = minPos(oldRange.from(), range$$1.anchor);
-	        } else {
-	          head = range$$1.anchor;
-	          anchor = maxPos(oldRange.to(), range$$1.head);
-	        }
+	      var range$$1 = rangeForUnit(cm, pos, behavior.unit);
+	      var anchor = oldRange.anchor, head;
+	      if (cmp(range$$1.anchor, anchor) > 0) {
+	        head = range$$1.head;
+	        anchor = minPos(oldRange.from(), range$$1.anchor);
+	      } else {
+	        head = range$$1.anchor;
+	        anchor = maxPos(oldRange.to(), range$$1.head);
 	      }
 	      var ranges$1 = startSel.ranges.slice(0);
 	      ranges$1[ourIndex] = new Range(clipPos(doc, anchor), head);
@@ -83569,7 +83165,7 @@
 	
 	  function extend(e) {
 	    var curCount = ++counter;
-	    var cur = posFromMouse(cm, e, true, type == "rect");
+	    var cur = posFromMouse(cm, e, true, behavior.unit == "rectangle");
 	    if (!cur) { return }
 	    if (cmp(cur, lastPos) != 0) {
 	      cm.curOp.focus = activeElt();
@@ -83735,6 +83331,7 @@
 	    if (next.attach) { next.attach(cm, prev || null); }
 	  });
 	  option("extraKeys", null);
+	  option("configureMouse", null);
 	
 	  option("lineWrapping", false, wrappingChanged, true);
 	  option("gutters", [], function (cm) {
@@ -83762,14 +83359,12 @@
 	
 	  option("resetSelectionOnContextMenu", true);
 	  option("lineWiseCopyCut", true);
+	  option("pasteLinesPerSelection", true);
 	
 	  option("readOnly", false, function (cm, val) {
 	    if (val == "nocursor") {
 	      onBlur(cm);
 	      cm.display.input.blur();
-	      cm.display.disabled = true;
-	    } else {
-	      cm.display.disabled = false;
 	    }
 	    cm.display.input.readOnlyChanged(val);
 	  });
@@ -84034,7 +83629,7 @@
 	    // Fall back to "prev" when the mode doesn't have an indentation
 	    // method.
 	    if (!doc.mode.indent) { how = "prev"; }
-	    else { state = getStateBefore(cm, n); }
+	    else { state = getContextBefore(cm, n).state; }
 	  }
 	
 	  var tabSize = cm.options.tabSize;
@@ -84110,7 +83705,7 @@
 	        for (var i = 0; i < lastCopied.text.length; i++)
 	          { multiPaste.push(doc.splitLines(lastCopied.text[i])); }
 	      }
-	    } else if (textLines.length == sel.ranges.length) {
+	    } else if (textLines.length == sel.ranges.length && cm.options.pasteLinesPerSelection) {
 	      multiPaste = map(textLines, function (l) { return [l]; });
 	    }
 	  }
@@ -84370,7 +83965,7 @@
 	    getStateAfter: function(line, precise) {
 	      var doc = this.doc;
 	      line = clipLine(doc, line == null ? doc.first + doc.size - 1: line);
-	      return getStateBefore(this, line + 1, precise)
+	      return getContextBefore(this, line + 1, precise).state
 	    },
 	
 	    cursorCoords: function(start, mode) {
@@ -84451,6 +84046,7 @@
 	    triggerOnKeyDown: methodOp(onKeyDown),
 	    triggerOnKeyPress: methodOp(onKeyPress),
 	    triggerOnKeyUp: onKeyUp,
+	    triggerOnMouseDown: methodOp(onMouseDown),
 	
 	    execCommand: function(cmd) {
 	      if (commands.hasOwnProperty(cmd))
@@ -84606,6 +84202,8 @@
 	    }),
 	
 	    operation: function(f){return runInOp(this, f)},
+	    startOperation: function(){return startOperation(this)},
+	    endOperation: function(){return endOperation(this)},
 	
 	    refresh: methodOp(function() {
 	      var oldHeight = this.display.cachedTextHeight;
@@ -85258,9 +84856,6 @@
 	  this.pollingFast = false;
 	  // Self-resetting timeout for the poller
 	  this.polling = new Delayed();
-	  // Tracks when input.reset has punted to just putting a short
-	  // string into the textarea instead of the full selection.
-	  this.inaccurateSelection = false;
 	  // Used to work around IE issue with selection being forgotten when focus moves away from textarea
 	  this.hasSelection = false;
 	  this.composing = null;
@@ -85297,12 +84892,6 @@
 	    if (signalDOMEvent(cm, e)) { return }
 	    if (cm.somethingSelected()) {
 	      setLastCopied({lineWise: false, text: cm.getSelections()});
-	      if (input.inaccurateSelection) {
-	        input.prevInput = "";
-	        input.inaccurateSelection = false;
-	        te.value = lastCopied.text.join("\n");
-	        selectInput(te);
-	      }
 	    } else if (!cm.options.lineWiseCopyCut) {
 	      return
 	    } else {
@@ -85381,13 +84970,10 @@
 	// when not typing and nothing is selected)
 	TextareaInput.prototype.reset = function (typing) {
 	  if (this.contextMenuPending || this.composing) { return }
-	  var minimal, selected, cm = this.cm, doc = cm.doc;
+	  var cm = this.cm;
 	  if (cm.somethingSelected()) {
 	    this.prevInput = "";
-	    var range$$1 = doc.sel.primary();
-	    minimal = hasCopyEvent &&
-	      (range$$1.to().line - range$$1.from().line > 100 || (selected = cm.getSelection()).length > 1000);
-	    var content = minimal ? "-" : selected || cm.getSelection();
+	    var content = cm.getSelection();
 	    this.textarea.value = content;
 	    if (cm.state.focused) { selectInput(this.textarea); }
 	    if (ie && ie_version >= 9) { this.hasSelection = content; }
@@ -85395,7 +84981,6 @@
 	    this.prevInput = this.textarea.value = "";
 	    if (ie && ie_version >= 9) { this.hasSelection = null; }
 	  }
-	  this.inaccurateSelection = minimal;
 	};
 	
 	TextareaInput.prototype.getField = function () { return this.textarea };
@@ -85590,6 +85175,7 @@
 	
 	TextareaInput.prototype.readOnlyChanged = function (val) {
 	  if (!val) { this.reset(); }
+	  this.textarea.disabled = val == "nocursor";
 	};
 	
 	TextareaInput.prototype.setUneditable = function () {};
@@ -85745,7 +85331,7 @@
 	
 	addLegacyProps(CodeMirror$1);
 	
-	CodeMirror$1.version = "5.26.0";
+	CodeMirror$1.version = "5.28.0";
 	
 	return CodeMirror$1;
 	
@@ -85753,7 +85339,7 @@
 
 
 /***/ }),
-/* 326 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -85761,7 +85347,7 @@
 	
 	(function(mod) {
 	  if (true) // CommonJS
-	    mod(__webpack_require__(324));
+	    mod(__webpack_require__(318));
 	  else if (typeof define == "function" && define.amd) // AMD
 	    define(["../../lib/codemirror"], mod);
 	  else // Plain browser env
@@ -85799,12 +85385,12 @@
 	      "true": atom, "false": atom, "null": atom, "undefined": atom, "NaN": atom, "Infinity": atom,
 	      "this": kw("this"), "class": kw("class"), "super": kw("atom"),
 	      "yield": C, "export": kw("export"), "import": kw("import"), "extends": C,
-	      "await": C, "async": kw("async")
+	      "await": C
 	    };
 	
 	    // Extend the 'normal' keywords with the TypeScript language extensions
 	    if (isTS) {
-	      var type = {type: "variable", style: "variable-3"};
+	      var type = {type: "variable", style: "type"};
 	      var tsKeywords = {
 	        // object-like things
 	        "interface": kw("class"),
@@ -85818,9 +85404,6 @@
 	        "private": kw("modifier"),
 	        "protected": kw("modifier"),
 	        "abstract": kw("modifier"),
-	
-	        // operators
-	        "as": operator,
 	
 	        // types
 	        "string": type, "number": type, "boolean": type, "any": type
@@ -85908,9 +85491,16 @@
 	      return ret("operator", "operator", stream.current());
 	    } else if (wordRE.test(ch)) {
 	      stream.eatWhile(wordRE);
-	      var word = stream.current(), known = keywords.propertyIsEnumerable(word) && keywords[word];
-	      return (known && state.lastType != ".") ? ret(known.type, known.style, word) :
-	                     ret("variable", "variable", word);
+	      var word = stream.current()
+	      if (state.lastType != ".") {
+	        if (keywords.propertyIsEnumerable(word)) {
+	          var kw = keywords[word]
+	          return ret(kw.type, kw.style, word)
+	        }
+	        if (word == "async" && stream.match(/^\s*[\(\w]/, false))
+	          return ret("async", "keyword", word)
+	      }
+	      return ret("variable", "variable", word)
 	    }
 	  }
 	
@@ -86197,6 +85787,7 @@
 	    if (type == "(") return contCommasep(expressionNoComma, ")", "call", me);
 	    if (type == ".") return cont(property, me);
 	    if (type == "[") return cont(pushlex("]"), maybeexpression, expect("]"), poplex, me);
+	    if (isTS && value == "as") { cx.marked = "keyword"; return cont(typeexpr, me) }
 	  }
 	  function quasi(type, value) {
 	    if (type != "quasi") return pass();
@@ -86255,7 +85846,7 @@
 	    } else if (type == "[") {
 	      return cont(expression, expect("]"), afterprop);
 	    } else if (type == "spread") {
-	      return cont(expression);
+	      return cont(expression, afterprop);
 	    } else if (type == ":") {
 	      return pass(afterprop)
 	    }
@@ -86303,7 +85894,7 @@
 	    }
 	  }
 	  function typeexpr(type) {
-	    if (type == "variable") {cx.marked = "variable-3"; return cont(afterType);}
+	    if (type == "variable") {cx.marked = "type"; return cont(afterType);}
 	    if (type == "string" || type == "number" || type == "atom") return cont(afterType);
 	    if (type == "{") return cont(pushlex("}"), commasep(typeprop, "}", ",;"), poplex, afterType)
 	    if (type == "(") return cont(commasep(typearg, ")"), maybeReturnType)
@@ -86572,7 +86163,7 @@
 
 
 /***/ }),
-/* 327 */
+/* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -86580,7 +86171,7 @@
 	
 	(function(mod) {
 	  if (true) // CommonJS
-	    mod(__webpack_require__(324));
+	    mod(__webpack_require__(318));
 	  else if (typeof define == "function" && define.amd) // AMD
 	    define(["../../lib/codemirror"], mod);
 	  else // Plain browser env
@@ -86689,7 +86280,11 @@
 	    if (!severity) severity = "error";
 	    var tip = document.createElement("div");
 	    tip.className = "CodeMirror-lint-message-" + severity;
-	    tip.appendChild(document.createTextNode(ann.message));
+	    if (typeof ann.messageHTML != 'undefined') {
+	        tip.innerHTML = ann.messageHTML;
+	    } else {
+	        tip.appendChild(document.createTextNode(ann.message));
+	    }
 	    return tip;
 	  }
 	
@@ -86822,7 +86417,7 @@
 
 
 /***/ }),
-/* 328 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -86834,7 +86429,7 @@
 	
 	(function(mod) {
 	  if (true) // CommonJS
-	    mod(__webpack_require__(324));
+	    mod(__webpack_require__(318));
 	  else if (typeof define == "function" && define.amd) // AMD
 	    define(["../../lib/codemirror"], mod);
 	  else // Plain browser env
@@ -86844,6 +86439,12 @@
 	
 	CodeMirror.registerHelper("lint", "json", function(text) {
 	  var found = [];
+	  if (!window.jsonlint) {
+	    if (window.console) {
+	      window.console.error("Error: window.jsonlint not defined, CodeMirror JSON linting cannot run.");
+	    }
+	    return found;
+	  }
 	  jsonlint.parseError = function(str, hash) {
 	    var loc = hash.loc;
 	    found.push({from: CodeMirror.Pos(loc.first_line - 1, loc.first_column),
@@ -86859,7 +86460,7 @@
 
 
 /***/ }),
-/* 329 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -86867,7 +86468,7 @@
 	
 	(function(mod) {
 	  if (true) // CommonJS
-	    mod(__webpack_require__(324));
+	    mod(__webpack_require__(318));
 	  else if (typeof define == "function" && define.amd) // AMD
 	    define(["../../lib/codemirror"], mod);
 	  else // Plain browser env
@@ -86970,7 +86571,7 @@
 
 
 /***/ }),
-/* 330 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -86978,7 +86579,7 @@
 	
 	(function(mod) {
 	  if (true) // CommonJS
-	    mod(__webpack_require__(324));
+	    mod(__webpack_require__(318));
 	  else if (typeof define == "function" && define.amd) // AMD
 	    define(["../../lib/codemirror"], mod);
 	  else // Plain browser env
@@ -87040,6 +86641,8 @@
 	      widget = document.createElement("span");
 	      widget.appendChild(text);
 	      widget.className = "CodeMirror-foldmarker";
+	    } else if (widget) {
+	      widget = widget.cloneNode(true)
 	    }
 	    return widget;
 	  }
@@ -87126,7 +86729,7 @@
 
 
 /***/ }),
-/* 331 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -87134,7 +86737,7 @@
 	
 	(function(mod) {
 	  if (true) // CommonJS
-	    mod(__webpack_require__(324), __webpack_require__(330));
+	    mod(__webpack_require__(318), __webpack_require__(324));
 	  else if (typeof define == "function" && define.amd) // AMD
 	    define(["../../lib/codemirror", "./foldcode"], mod);
 	  else // Plain browser env
@@ -87278,7 +86881,7 @@
 
 
 /***/ }),
-/* 332 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -87286,7 +86889,7 @@
 	
 	(function(mod) {
 	  if (true) // CommonJS
-	    mod(__webpack_require__(324));
+	    mod(__webpack_require__(318));
 	  else if (typeof define == "function" && define.amd) // AMD
 	    define(["../../lib/codemirror"], mod);
 	  else // Plain browser env
@@ -87299,12 +86902,21 @@
 	
 	  var matching = {"(": ")>", ")": "(<", "[": "]>", "]": "[<", "{": "}>", "}": "{<"};
 	
-	  function findMatchingBracket(cm, where, strict, config) {
+	  function findMatchingBracket(cm, where, config) {
 	    var line = cm.getLineHandle(where.line), pos = where.ch - 1;
-	    var match = (pos >= 0 && matching[line.text.charAt(pos)]) || matching[line.text.charAt(++pos)];
+	    var afterCursor = config && config.afterCursor
+	    if (afterCursor == null)
+	      afterCursor = /(^| )cm-fat-cursor($| )/.test(cm.getWrapperElement().className)
+	
+	    // A cursor is defined as between two characters, but in in vim command mode
+	    // (i.e. not insert mode), the cursor is visually represented as a
+	    // highlighted box on top of the 2nd character. Otherwise, we allow matches
+	    // from before or after the cursor.
+	    var match = (!afterCursor && pos >= 0 && matching[line.text.charAt(pos)]) ||
+	        matching[line.text.charAt(++pos)];
 	    if (!match) return null;
 	    var dir = match.charAt(1) == ">" ? 1 : -1;
-	    if (strict && (dir > 0) != (pos == where.ch)) return null;
+	    if (config && config.strict && (dir > 0) != (pos == where.ch)) return null;
 	    var style = cm.getTokenTypeAt(Pos(where.line, pos + 1));
 	
 	    var found = scanForBracket(cm, Pos(where.line, pos + (dir > 0 ? 1 : 0)), dir, style || null, config);
@@ -87352,7 +86964,7 @@
 	    var maxHighlightLen = cm.state.matchBrackets.maxHighlightLineLength || 1000;
 	    var marks = [], ranges = cm.listSelections();
 	    for (var i = 0; i < ranges.length; i++) {
-	      var match = ranges[i].empty() && findMatchingBracket(cm, ranges[i].head, false, config);
+	      var match = ranges[i].empty() && findMatchingBracket(cm, ranges[i].head, config);
 	      if (match && cm.getLine(match.from.line).length <= maxHighlightLen) {
 	        var style = match.match ? "CodeMirror-matchingbracket" : "CodeMirror-nonmatchingbracket";
 	        marks.push(cm.markText(match.from, Pos(match.from.line, match.from.ch + 1), {className: style}));
@@ -87396,119 +87008,20 @@
 	  });
 	
 	  CodeMirror.defineExtension("matchBrackets", function() {matchBrackets(this, true);});
-	  CodeMirror.defineExtension("findMatchingBracket", function(pos, strict, config){
-	    return findMatchingBracket(this, pos, strict, config);
+	  CodeMirror.defineExtension("findMatchingBracket", function(pos, config, oldConfig){
+	    // Backwards-compatibility kludge
+	    if (oldConfig || typeof config == "boolean") {
+	      if (!oldConfig) {
+	        config = config ? {strict: true} : null
+	      } else {
+	        oldConfig.strict = config
+	        config = oldConfig
+	      }
+	    }
+	    return findMatchingBracket(this, pos, config)
 	  });
 	  CodeMirror.defineExtension("scanForBracket", function(pos, dir, style, config){
 	    return scanForBracket(this, pos, dir, style, config);
-	  });
-	});
-
-
-/***/ }),
-/* 333 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-	
-	// load the styles
-	var content = __webpack_require__(334);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(12)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!../../../node_modules/css-loader/index.js!./examples.css", function() {
-				var newContent = require("!!../../../node_modules/css-loader/index.js!./examples.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ }),
-/* 334 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(11)();
-	// imports
-	
-	
-	// module
-	exports.push([module.id, "html, body {\n  height: 100%;\n  width: 100%;\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -khtml-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none;\n}\n\n.navbar {\n  margin: 0;\n}\n\n#map {\n  width: 100%;\n  height: calc(100% - 60px);\n  overflow: hidden;\n}\n\n.gj-screenshot-link {\n  cursor: pointer;\n}\nli.gj-screenshot-result,li.gj-screenshot-waiting {\n  display: none;\n}\nli a.gj-screenshot-download {\n  padding: 0;\n}\nli.gj-screenshot-result img {\n  max-height: 60px;\n  max-width: 120px;\n}\n", ""]);
-	
-	// exports
-
-
-/***/ }),
-/* 335 */
-/***/ (function(module, exports) {
-
-	var exampleUtils = {
-	  /* Decode query components into a dictionary of values.
-	   *
-	   * @returns {object}: the query parameters as a dictionary.
-	   */
-	  getQuery: function () {
-	    var query = document.location.search.replace(/(^\?)/, '').split(
-	      '&').map(function (n) {
-	        n = n.split('=');
-	        if (n[0]) {
-	          this[decodeURIComponent(n[0].replace(/\+/g, '%20'))] = decodeURIComponent(n[1].replace(/\+/g, '%20'));
-	        }
-	        return this;
-	      }.bind({}))[0];
-	    return query;
-	  },
-	
-	  /* Encode a dictionary of parameters to the query string, setting the window
-	   * location and history.  This will also remove undefined values from the
-	   * set properites of params.
-	   *
-	   * @param {object} params: the query parameters as a dictionary.
-	   */
-	  setQuery: function (params) {
-	    $.each(params, function (key, value) {
-	      if (value === undefined) {
-	        delete params[key];
-	      }
-	    });
-	    var newurl = window.location.protocol + '//' + window.location.host +
-	        window.location.pathname + '?' + $.param(params);
-	    window.history.replaceState(params, '', newurl);
-	  }
-	};
-	
-	window.utils = exampleUtils;
-	
-	/* Add a function to take a screenshot.  Show the screenshot so that a user can
-	 * click on it to save it or right-click to copy it. */
-	$(function () {
-	  $('.gj-screenshot-link').on('click', function () {
-	    $('.gj-screenshot-result').hide();
-	    $('.gj-screenshot-waiting').show();
-	    var map = $('#map').data('data-geojs-map');
-	    map.screenshot({wait:'idle'}).then(function (res) {
-	      $('.gj-screenshot-waiting').hide();
-	      $('.gj-screenshot-result img').attr({src: res});
-	      $('.gj-screenshot-download').attr({href: res});
-	      $('.gj-screenshot-result').show();
-	      /* If you want to trigger an automatic download, enable this line (and,
-	       * perhaps, always hide the waiting and result elements).
-	      $('.gj-screenshot-download')[0].click();
-	       */
-	    });
-	  });
-	  $('.gj-screenshot-link').keypress(function (evt) {
-	    if (evt.which === 13) {
-	      $('.gj-screenshot-link').click();
-	      return false;
-	    }
 	  });
 	});
 
