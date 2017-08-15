@@ -58,7 +58,7 @@ $(function () {
       type: 'discrete',
       scale: {
         type: 'quantize',
-        domain: [0, 99],
+        domain: [20000, 120000],
         range: colorbrewer.YlGnBu["9"]
       }
     },
@@ -66,9 +66,18 @@ $(function () {
       name: 'test3',
       type: 'continuous',
       scale: {
-        type: 'log',
-        domain: [1, 100],
+        type: 'pow',
+        domain: [100, 10000],
         range: ['red', 'blue']
+      }
+    },
+    {
+      name: 'test4',
+      type: 'continuous',
+      scale: {
+        type: 'log',
+        domain: [100, 10000],
+        range: ['purple', 'orange']
       }
     }
   ]);
