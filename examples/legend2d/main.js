@@ -9,7 +9,7 @@ $(function () {
   });
 
   // Add the default osm layer
-  map.createLayer('osm');
+  // map.createLayer('osm');
 
   // Create a ui layer
   var ui = map.createLayer('ui');
@@ -49,8 +49,26 @@ $(function () {
       type: 'discrete',
       scale: {
         type: 'ordinal',
-        domain: [1, 2, 3],
+        domain: ['beijing', 'new york', 'london'],
         range: ['red', 'green', 'blue']
+      }
+    },
+    {
+      name: 'test2',
+      type: 'discrete',
+      scale: {
+        type: 'quantize',
+        domain: [0, 99],
+        range: colorbrewer.YlGnBu["9"]
+      }
+    },
+    {
+      name: 'test3',
+      type: 'continuous',
+      scale: {
+        type: 'log',
+        domain: [1, 100],
+        range: ['red', 'blue']
       }
     }
   ]);
