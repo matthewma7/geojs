@@ -48,27 +48,25 @@ var legend2dWidget = function (arg) {
     var container = d3.select(m_this.canvas()).append('div');
 
     var width = 700;
-    this.width = width;
+    var margin = 15;
+    // this.width = width;
 
     m_categories.forEach(function (category, index) {
       var legendSvg = container
         .append('div')
-        .style({
-          'width': width + 'px',
-          'height': '50px'
-        })
         .append('svg')
         .attr({
-          'width': '100%',
-          'height': '100%'
+          'width': width,
+          'height': '50px',
+          'viewBox': -margin + ' 0 ' + width + ' 50'
         })
 
       if (category.type === 'discrete') {
-        m_this._drawDiscrete(legendSvg, category);
+        m_this._drawDiscrete(legendSvg, width - 2 * margin, category);
       }
 
       else if (category.type === 'continuous') {
-        m_this.drawContinous(legendSvg, category);
+        m_this.drawContinous(legendSvg, width - 2 * margin, category);
       }
     });
 
@@ -79,25 +77,25 @@ var legend2dWidget = function (arg) {
     this.draw();
   }
 
-  this._drawDiscrete = function (svg, category) {
+  this._drawDiscrete = function (svg, width, category) {
     if (category.scale === 'ordinal') {
       var colorScale = d3.scale.ordinal().domain(category.domain).range(category.colors);
-      m_this._renderDiscreteColors(svg, category.domain, colorScale, m_this.width);
+      m_this._renderDiscreteColors(svg, category.domain, colorScale, width);
 
       axisScale = d3.scale.ordinal()
         .domain(category.domain)
-        .rangePoints([0, m_this.width]);
+        .rangeRoundBands([0, width]);
       var axis = d3.svg.axis()
         .scale(axisScale);
-      m_this._renderDiscreteAxis(svg, axis);
+      m_this._renderAxis(svg, axis);
 
     }
     else if (['linear', 'log', 'sqrt', 'pow'].indexOf(category.scale) != -1) {
       var valueRange = [0, category.colors.length];
-      var valueScale = d3.scale[category.scale]().domain(category.domain).range(valueRange);
+      var valueScale = d3.scale[category.scale]().domain(category.domain).range(valueRange).nice();
       var colorScale = d3.scale.quantize().domain(valueRange).range(category.colors);
       var steps = range(0, category.colors.length - 1);
-      m_this._renderDiscreteColors(svg, steps, colorScale, m_this.width);
+      m_this._renderDiscreteColors(svg, steps, colorScale, width);
 
 
       var ticks = steps.slice();
@@ -106,11 +104,11 @@ var legend2dWidget = function (arg) {
         .domain(ticks.map(function (tick) {
           return valueScale.invert(tick);
         }))
-        .rangePoints([0, m_this.width]);
+        .rangePoints([0, width]);
       var axis = d3.svg.axis()
         .scale(axisScale)
-        .tickFormat(d3.format(".2s"));
-      m_this._renderDiscreteAxis(svg, axis);
+        .tickFormat(d3.format(".1s"));
+      m_this._renderAxis(svg, axis);
     }
   }
 
@@ -129,25 +127,30 @@ var legend2dWidget = function (arg) {
       });
   }
 
-  this._renderDiscreteAxis = function (svg, axis) {
+  this._renderAxis = function (svg, axis) {
     svg.append('g')
       .attr('class', 'x axis')
       .attr('transform', 'translate(0, 20)')
       .call(function (g) {
         g.call(axis);
         g.selectAll('path.domain, line')
-          .attr({
+          .style({
             'fill': 'none',
-            'stroke': 'black'
+            'stroke': 'black',
+            'stroke-width': '0.7'
+          });
+        g.selectAll('text')
+          .style({
+            'font-size': '12px'
           });
       });
   }
 
-  this.drawContinous = function (svg, category) {
+  this.drawContinous = function (svg, width, category) {
     if (['linear', 'log', 'sqrt', 'pow'].indexOf(category.scale) == -1) {
       throw new Error('unsupported scale');
     }
-    var axisScale = d3.scale[category.scale]().domain(category.domain).range([0, m_this.width]);
+    var axisScale = d3.scale[category.scale]().domain(category.domain).range([0, width]).nice();
     if (category.scale === 'log' && category.base) {
       axisScale.base(category.base);
     }
@@ -169,14 +172,14 @@ var legend2dWidget = function (arg) {
       .attr('stop-color', category.colors[1]);
     svg.append('rect')
       .attr('fill', 'url(#gradient' + randomString + ')')
-      .attr('width', '100%')
+      .attr('width', width)
       .attr('height', '20px');
 
     var axis = d3.svg.axis()
       .scale(axisScale)
-      .tickFormat(d3.format(".2s"));
+      .tickFormat(d3.format(".1s"));
 
-    this._renderDiscreteAxis(svg, axis);
+    this._renderAxis(svg, axis);
   }
 
   return this;

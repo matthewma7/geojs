@@ -87,8 +87,8 @@ $(function () {
       name: 'ordinal 1',
       type: 'discrete',
       scale: 'ordinal',
-      domain: ['beijing', 'new york', 'london'],
-      colors: ['red', 'green', 'blue']
+      domain: ['beijing', 'new york', 'london', 'paris'],
+      colors: ['red', 'green', 'blue', 'orange']
     },
     {
       name: 'discrete countinous 1',
@@ -105,6 +105,13 @@ $(function () {
       colors: colorbrewer.PRGn['8']
     },
     {
+      name: 'discrete countinous 3',
+      type: 'discrete',
+      scale: 'linear',
+      domain: [0.001, 0.00001],
+      colors: colorbrewer.RdBu["8"]
+    },
+    {
       name: 'continuous continuous 1',
       type: 'continuous',
       scale: 'pow',
@@ -114,7 +121,7 @@ $(function () {
     {
       name: 'continuous continuous 2',
       type: 'continuous',
-      scale: 'log',
+      scale: 'sqrt',
       domain: [100, 10000],
       colors: ['purple', 'orange']
     }
